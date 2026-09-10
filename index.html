@@ -1,0 +1,2502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Honeychain — Blockchain-Based System for Honey Traceability & Smart Beekeeping</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            // Golden Honey Yellow Primary Palette
+            yellow: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#facc15',
+              500: '#eab308',
+              600: '#ca8a04',
+              700: '#a16207',
+              800: '#854d0e',
+              900: '#713f12',
+              950: '#422006',
+            },
+            amber: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+              950: '#451a03',
+            },
+            honey: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            },
+            // Map legacy olive/orange classes to warm golden honey amber
+            olive: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fde047',
+              300: '#facc15',
+              400: '#eab308',
+              500: '#ca8a04',
+              600: '#a16207',
+              700: '#854d0e',
+              800: '#713f12',
+              900: '#422006',
+              950: '#261404',
+            },
+            orange: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+              950: '#451a03',
+            },
+            // Crisp Mint Green Accent Palette (Verification, Badges, Live Pic Stamps)
+            mint: {
+              50: '#f0fdf9',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-pistachio-main: #bdd2b3;
+      --bg-pistachio-surface: #d1e2cb;
+      --bg-pistachio-card: #bdd2b3;
+      --bg-pistachio-input: #e4efe0;
+      --border-pistachio: #8da981;
+      --text-pistachio-dark: #183018;
+      --text-pistachio-muted: #2f482d;
+      --accent-yellow: #facc15;
+      --accent-yellow-gold: #eab308;
+      --accent-amber: #f59e0b;
+    }
+
+    body {
+      background-color: #bdd2b3 !important;
+      background-image: radial-gradient(circle at 50% 0%, #dbe8d5 0%, #bdd2b3 60%, #a7c19c 100%) !important;
+      color: #183018 !important;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* USER REQUESTED EXACT SWATCH: #bdd2b3 (PISTACHIO) IN ALL WHITE BLANK SPACES & SURFACES */
+    .bg-white,
+    .bg-white\/95,
+    .bg-white\/90,
+    .bg-white\/80,
+    .bg-white\/70,
+    .bg-white\/60,
+    .bg-white\/50,
+    .bg-white\/40,
+    .bg-white\/30,
+    .bg-white\/20,
+    .bg-white\/25,
+    .bg-white\/10 {
+      background-color: #bdd2b3 !important;
+      color: #183018 !important;
+    }
+
+    .bg-slate-50,
+    .bg-slate-100,
+    .bg-olive-50,
+    .bg-amber-50,
+    .bg-orange-50,
+    .bg-yellow-50,
+    .bg-amber-50\/80,
+    .bg-amber-50\/70,
+    .bg-amber-50\/50,
+    .bg-orange-50\/40 {
+      background-color: #d1e2cb !important;
+      color: #183018 !important;
+    }
+
+    .bg-slate-200,
+    .bg-olive-100,
+    .bg-amber-100,
+    .bg-amber-100\/40 {
+      background-color: #a7c19c !important;
+      color: #183018 !important;
+    }
+
+    /* Gradients containing white or pale shades replaced with harmonious pistachio gradient */
+    .from-white,
+    .from-yellow-50 {
+      --tw-gradient-from: #bdd2b3 !important;
+      --tw-gradient-to: rgba(189, 210, 179, 0) !important;
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+    }
+
+    .via-white,
+    .via-orange-50\/40 {
+      --tw-gradient-to: rgba(189, 210, 179, 0) !important;
+      --tw-gradient-stops: var(--tw-gradient-from), #bdd2b3, var(--tw-gradient-to) !important;
+    }
+
+    .to-white,
+    .to-yellow-50 {
+      --tw-gradient-to: #d1e2cb !important;
+    }
+
+    /* Form inputs and textareas */
+    input,
+    select,
+    textarea {
+      background-color: #e4efe0 !important;
+      color: #183018 !important;
+      border-color: #8da981 !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #eab308 !important;
+      box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.35) !important;
+      outline: none !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #4a6c48 !important;
+    }
+
+    /* Live Bar Pic Preview Container & Modals */
+    #htmlLiveBarPicContainer,
+    #inspectedBarcodePreviewBox {
+      background-color: #bdd2b3 !important;
+      border-color: #8da981 !important;
+    }
+
+    /* Modals backdrop & container */
+    #biometricModal>div,
+    #settingsModal>div,
+    #judgeModal>div,
+    #addInspectedBarModal>div {
+      background-color: #bdd2b3 !important;
+      border-color: #8da981 !important;
+      color: #183018 !important;
+      box-shadow: 0 25px 50px -12px rgba(24, 48, 24, 0.25) !important;
+    }
+
+    /* Crisp High-Contrast Typography */
+    .text-slate-900,
+    .text-slate-800 {
+      color: #183018 !important;
+      font-weight: 800;
+    }
+
+    .text-slate-700 {
+      color: #233e22 !important;
+    }
+
+    .text-slate-600 {
+      color: #2e4d2d !important;
+    }
+
+    .text-slate-500 {
+      color: #3e623c !important;
+    }
+
+    .text-slate-400 {
+      color: #527a50 !important;
+    }
+
+    /* Pistachio Borders throughout */
+    .border-slate-100,
+    .border-slate-200,
+    .border-slate-300,
+    .border-olive-200,
+    .border-olive-300,
+    .border-amber-100,
+    .border-amber-200,
+    .border-amber-200\/80,
+    .border-amber-200\/90,
+    .border-amber-300 {
+      border-color: #8da981 !important;
+    }
+
+    @keyframes laser-sweep {
+      0% {
+        top: 6%;
+        opacity: 0.9;
+      }
+
+      50% {
+        top: 92%;
+        opacity: 1;
+      }
+
+      100% {
+        top: 6%;
+        opacity: 0.9;
+      }
+    }
+
+    .laser-beam {
+      animation: laser-sweep 2.2s ease-in-out infinite;
+      background: linear-gradient(90deg, transparent, #eab308, #8da981, transparent);
+      box-shadow: 0 0 16px rgba(234, 179, 8, 0.8), 0 0 24px rgba(141, 169, 129, 0.5);
+    }
+  </style>
+</head>
+
+<body class="bg-[#bdd2b3] min-h-screen flex flex-col selection:bg-amber-400 selection:text-slate-950">
+
+  <!-- TOP APP NAVBAR -->
+  <header class="sticky top-0 z-40 w-full bg-[#bdd2b3]/95 backdrop-blur-md border-b border-[#8da981] shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+
+      <!-- Left Side: Exit Camera Button (when in customer mode per diagram) + Brand Logo -->
+      <div class="flex items-center gap-3">
+        <button id="navExitCameraBtn" onclick="goToRoleSelect()"
+          class="hidden items-center gap-2 px-3.5 py-2 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs sm:text-sm transition-all shadow-md shadow-rose-950/30 border border-rose-400/40 active:scale-95 cursor-pointer shrink-0"
+          title="Exit camera mode and return to role selection">
+          <i class="fa-solid fa-xmark text-white"></i>
+          <span>Exit Camera</span>
+        </button>
+
+        <!-- Brand Logo: Golden Amber blending into Pistachio Green -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="goToRoleSelect()">
+          <div
+            class="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#eab308] via-[#facc15] to-[#8da981] text-slate-950 shadow-md shadow-yellow-600/30">
+            <i class="fa-solid fa-cube text-xl"></i>
+            <span class="absolute text-[10px] font-black tracking-tighter">HC</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-black tracking-tight text-[#183018]">
+                HONEY<span class="text-amber-600">CHAIN</span>
+              </span>
+              <span
+                class="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-[#fef08a] text-[#854d0e] border border-[#eab308]/50">
+                SIH 2026
+              </span>
+            </div>
+            <p class="text-[11px] font-medium text-[#2f482d] hidden sm:block">
+              Zero-Knowledge Provenance & Pure Honey Cryptographic Ledger
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Action Area -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+
+        <!-- SIH Judge Evaluation Deck Trigger -->
+        <button onclick="openJudgeDeck()"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] hover:border-amber-500 font-bold text-xs shadow-sm transition-all cursor-pointer">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i>
+          <span class="hidden md:inline">Judge Evaluation Deck</span>
+          <span class="md:hidden">Judge Deck</span>
+        </button>
+
+        <div id="navRoleBadge"
+          class="hidden items-center gap-2.5 px-3.5 py-1.5 rounded-2xl border text-xs font-medium shadow-sm bg-[#d1e2cb] border-[#8da981]">
+          <div class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></div>
+          <span id="navRoleText" class="font-bold text-[#183018]"></span>
+        </div>
+
+        <button id="switchIdentityBtn" onclick="goToRoleSelect()"
+          class="hidden items-center gap-2 px-3.5 py-2 rounded-xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Switch Identity</span>
+        </button>
+
+        <button id="introGetStartedBtn" onclick="enterApp()"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs sm:text-sm shadow-md shadow-yellow-500/30 transition-all cursor-pointer hover:scale-102 active:scale-98">
+          <span>Get Started</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+        <button onclick="openSettingsModal()"
+          class="p-2 rounded-xl text-[#2f482d] hover:text-[#183018] hover:bg-[#d1e2cb] transition-colors cursor-pointer"
+          title="Platform Settings">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN APP VIEWPORTS -->
+  <main class="flex-1 w-full">
+
+    <!-- ==================== SCREEN 1: APP INTRO (HEADING ALONE + GET STARTED + CORNER LINES) ==================== -->
+    <section id="screenIntro"
+      class="relative min-h-[calc(100vh-4.5rem)] flex flex-col justify-between px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto overflow-hidden">
+
+      <!-- Corner Lines & Technical Coordinates -->
+      <div class="pointer-events-none fixed inset-0 z-30 overflow-hidden select-none">
+        <div class="absolute top-3 left-3 text-[9px] font-mono text-slate-400">
+          <div class="flex items-center gap-1"><span
+              class="text-orange-500 font-bold">+</span><span>NILGIRI_SEC_NODE_01</span></div>
+          <div class="text-[8px] text-slate-400 pl-2">LAT 11°24'40" N • LON 76°41'30" E</div>
+          <div class="w-8 h-[1px] bg-olive-400/50 mt-0.5"></div>
+          <div class="w-[1px] h-8 bg-olive-400/50 -mt-[1px]"></div>
+        </div>
+        <div class="absolute top-3 right-3 text-[9px] font-mono text-slate-400 flex flex-col items-end">
+          <div class="flex items-center gap-1"><span>FABRIC_CONSENSUS_RAFT</span><span
+              class="text-emerald-500 font-bold">●</span></div>
+          <div class="text-[8px] text-slate-400 pr-2">PEERS: 4/4 ACTIVE • LATENCY: 12ms</div>
+          <div class="w-8 h-[1px] bg-olive-400/50 mt-0.5"></div>
+          <div class="w-[1px] h-8 bg-olive-400/50 -mt-[1px]"></div>
+        </div>
+        <div class="absolute bottom-3 left-3 text-[9px] font-mono text-slate-400">
+          <div class="w-[1px] h-8 bg-olive-400/50"></div>
+          <div class="w-8 h-[1px] bg-olive-400/50"></div>
+          <div class="flex items-center gap-1 mt-0.5"><span
+              class="text-orange-500 font-bold">#</span><span>LEDGER_BLOCK:
+              #184,920</span></div>
+          <div class="text-[8px] text-slate-400 pl-2">ZK-SNARK ENGINE: GROTH16</div>
+        </div>
+        <div class="absolute bottom-3 right-3 text-[9px] font-mono text-slate-400 flex flex-col items-end">
+          <div class="w-[1px] h-8 bg-olive-400/50"></div>
+          <div class="w-8 h-[1px] bg-olive-400/50"></div>
+          <div class="flex items-center gap-1 mt-0.5"><span>SIH_HACKATHON_PROTOTYPE</span><span
+              class="text-orange-500 font-bold">✓</span></div>
+          <div class="text-[8px] text-slate-400 pr-2">TEAM SEVEN_ATE • ENTERPRISE V2.6</div>
+        </div>
+      </div>
+
+      <!-- Top SIH Tag -->
+      <div class="text-center pt-2 relative z-10">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#d1e2cb] text-[#183018] text-xs font-mono font-bold tracking-wide shadow-md border border-[#8da981]">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span>SMART INDIA HACKATHON 2026 • SOFTWARE EDITION</span>
+          <span class="text-amber-700 text-[10px]">PS: HONEY TRACEABILITY</span>
+        </div>
+      </div>
+
+      <!-- Center Hero: Heading Alone + Get Started Button -->
+      <div class="my-auto py-12 text-center max-w-4xl mx-auto space-y-8 relative z-10">
+
+        <div
+          class="relative inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-tr from-[#eab308] via-[#facc15] to-[#8da981] text-slate-950 font-black shadow-2xl shadow-yellow-600/30">
+          <i class="fa-solid fa-cube text-4xl"></i>
+          <span class="absolute text-xl font-black tracking-tighter">HC</span>
+        </div>
+
+        <div class="space-y-3">
+          <h1 class="text-5xl sm:text-7xl font-black tracking-tight text-[#183018] leading-none">
+            HONEY<span class="text-amber-600">CHAIN</span>
+          </h1>
+          <p class="text-base sm:text-xl font-semibold text-[#233e22] max-w-2xl mx-auto tracking-tight leading-snug">
+            A Blockchain-Based System for Honey Traceability & Smart Beekeeping Management
+          </p>
+          <div class="text-xs text-[#3e623c] font-mono tracking-wider pt-1">
+            NILGIRI BIOSPHERE RESERVE • HYPERLEDGER FABRIC V2.5 • ZERO-KNOWLEDGE SNARKS
+          </div>
+        </div>
+
+        <div class="pt-4 flex flex-col items-center justify-center gap-3">
+          <button onclick="enterApp()"
+            class="inline-flex items-center gap-3.5 px-9 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-base sm:text-lg shadow-xl shadow-yellow-500/30 transition-all cursor-pointer hover:scale-103 active:scale-98">
+            <span>Get Started</span>
+            <i class="fa-solid fa-arrow-right text-slate-950"></i>
+          </button>
+
+          <span class="text-[11px] font-medium text-[#3e623c]">
+            Click to choose your role • Beekeeper, Lab Inspector, or Customer
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Bottom Controls Bar -->
+      <div
+        class="relative z-10 border-t border-[#8da981] pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#2f482d]">
+        <div class="flex items-center gap-3">
+          <button onclick="openSettingsModal()"
+            class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold transition-all cursor-pointer">
+            <i class="fa-solid fa-gear"></i>
+            <span>Platform Settings</span>
+          </button>
+          <button onclick="openJudgeDeck()"
+            class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold transition-all cursor-pointer">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i>
+            <span>SIH Judge Demo Deck</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-4 text-[11px] font-mono text-[#3e623c]">
+          <span class="flex items-center gap-1.5"><span
+              class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span><span>Raft Consensus:
+              Synced</span></span>
+          <span>•</span>
+          <span>Block Height: #184,920</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== SCREEN 2: WHO ARE YOU? ==================== -->
+    <section id="screenRoleSelect" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+
+      <div class="flex items-center justify-between gap-4">
+        <button onclick="goToIntro()"
+          class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer w-fit">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Back to App Welcome</span>
+        </button>
+      </div>
+
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Who Are You?</h1>
+        <p class="text-sm text-slate-600">Select your verified identity to enter your isolated platform workspace</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+        <!-- Beekeeper -->
+        <div
+          class="group relative bg-white border-2 border-olive-200 hover:border-olive-500 rounded-3xl p-7 sm:p-8 shadow-md hover:shadow-xl transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase bg-olive-100 text-olive-800 border border-olive-200">
+                <i class="fa-solid fa-tower-broadcast text-olive-600"></i> Apiary Workspace
+              </span>
+              <span class="flex items-center gap-1 text-[11px] font-semibold text-olive-700"><i
+                  class="fa-solid fa-lock"></i> Biometric Token</span>
+            </div>
+            <div
+              class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#344118] to-[#556c22] text-white flex items-center justify-center shadow-md mb-5">
+              <i class="fa-solid fa-tower-broadcast text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900">I am a Beekeeper</h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">Monitor your Nilgiri apiary smart hives in real time
+              (34.8°C temp, 42.5kg scale weight, 240Hz queen acoustic frequency) and mint harvest tokens directly onto
+              Hyperledger Fabric.</p>
+          </div>
+          <div class="mt-8 pt-6 border-t border-slate-100">
+            <button onclick="openBiometricModal('beekeeper')"
+              class="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-olive-600 hover:bg-olive-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer">
+              <i class="fa-solid fa-fingerprint text-lg text-orange-300"></i>
+              <span>Authenticate & Enter</span>
+              <i class="fa-solid fa-arrow-right ml-1 text-orange-300"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Lab Inspector -->
+        <div
+          class="group relative bg-white border-2 border-olive-200 hover:border-olive-500 rounded-3xl p-7 sm:p-8 shadow-md hover:shadow-xl transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase bg-olive-100 text-olive-800 border border-olive-200">
+                <i class="fa-solid fa-flask-vial text-olive-600"></i> ISO/IEC 17025
+              </span>
+              <span
+                class="flex items-center gap-1 text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200"><i
+                  class="fa-solid fa-key text-indigo-500"></i> Password Protected</span>
+            </div>
+            <div
+              class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-900 text-orange-400 flex items-center justify-center shadow-md mb-5">
+              <i class="fa-solid fa-flask-vial text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900">I am a Lab Inspector</h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">Verify honey batches using EA-IRMS carbon isotope
+              mass spectrometry (C3/C4 syrups 0.00%), HMF thermal freshness tests (8.2 mg/kg), and lock SHA-256 notary
+              certificates on-chain.</p>
+          </div>
+          <div class="mt-8 pt-6 border-t border-slate-100">
+            <button onclick="openBiometricModal('inspector')"
+              class="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all cursor-pointer hover:scale-102 active:scale-98">
+              <i class="fa-solid fa-key text-lg text-orange-400"></i>
+              <span>Authenticate with Password</span>
+              <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Customer -->
+        <div
+          class="group relative bg-gradient-to-b from-white to-olive-50/60 border-2 border-olive-300 hover:border-olive-500 rounded-3xl p-7 sm:p-8 shadow-lg hover:shadow-2xl transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <i class="fa-solid fa-camera text-emerald-600"></i> Public Scanner
+              </span>
+              <span
+                class="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Instant
+                Access</span>
+            </div>
+            <div
+              class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#344118] via-[#556c22] to-[#f97316] text-white flex items-center justify-center shadow-md mb-5">
+              <i class="fa-solid fa-camera text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900">I am a Customer</h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">Scan your honey jar using the live camera scanner to
+              discover where your honey came from in the Nilgiri forest, what natural nutrients you are consuming, and
+              verified lab test reports.</p>
+          </div>
+          <div class="mt-8 pt-6 border-t border-olive-200/80">
+            <button onclick="setRole('customer')"
+              class="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-sm shadow-md shadow-orange-500/25 transition-all cursor-pointer">
+              <i class="fa-solid fa-camera text-lg"></i>
+              <span>Launch Customer Scanner</span>
+              <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SCREEN 3: BEEKEEPER PORTAL ==================== -->
+    <section id="viewBeekeeper" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div
+        class="bg-gradient-to-r from-[#263212] via-[#384819] to-[#4d6320] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span
+                class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-white/20 text-white backdrop-blur-md">Apiary
+                Station: Nilgiri Reserve</span>
+              <span class="flex items-center gap-1 text-xs text-olive-200"><i class="fa-solid fa-shield-halved"></i>
+                FIDO2 Biometric Session Active</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white">Beekeeper Precision IoT Enclave</h1>
+            <p class="text-olive-100 text-sm mt-1 max-w-2xl">Edge IoT bio-acoustic spectrum telemetry, queen calmness
+              diagnostics, and direct Hyperledger Fabric harvest token minting.</p>
+          </div>
+          <button onclick="openMintModal()"
+            class="flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-sm shadow-md shadow-orange-500/25 transition-all cursor-pointer">
+            <i class="fa-solid fa-circle-plus text-white"></i>
+            <span>Mint Harvest Batch</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div id="cardTemp" class="p-6 bg-white border-2 border-amber-100 rounded-3xl shadow-sm transition-all">
+          <div class="flex items-center justify-between"><span class="text-xs font-bold uppercase text-slate-500">Core
+              Brood Temperature</span><i class="fa-solid fa-temperature-half text-amber-600 text-lg"></i></div>
+          <div class="mt-4 flex items-baseline gap-2"><span id="valTemp"
+              class="text-4xl font-black text-slate-900">34.8°C</span><span
+              class="text-xs font-semibold text-slate-500">(Baseline: 34.8°C)</span></div>
+          <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between text-xs"><span
+              class="text-slate-500">Brood Incubation</span><span id="statusTemp"
+              class="font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Optimal Nest Temp ✓</span>
+          </div>
+        </div>
+
+        <div class="p-6 bg-white border-2 border-amber-100 rounded-3xl shadow-sm transition-all">
+          <div class="flex items-center justify-between"><span class="text-xs font-bold uppercase text-slate-500">Gross
+              Hive Scale Weight</span><i class="fa-solid fa-weight-scale text-amber-600 text-lg"></i></div>
+          <div class="mt-4 flex items-baseline gap-2"><span class="text-4xl font-black text-slate-900">42.5
+              kg</span><span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">+1.8 kg
+              / 24h</span></div>
+          <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between text-xs"><span
+              class="text-slate-500">Foraging Nectar Flow</span><span class="font-bold text-amber-700">Active Shola
+              Forest Bloom</span></div>
+        </div>
+
+        <div id="cardAcoustic" class="p-6 bg-white border-2 border-amber-200 rounded-3xl shadow-sm transition-all">
+          <div class="flex items-center justify-between"><span
+              class="text-xs font-bold uppercase text-slate-500">Bio-Acoustic Spectrum</span><i
+              class="fa-solid fa-tower-broadcast text-amber-700 text-lg"></i></div>
+          <div class="mt-4 flex items-baseline gap-2"><span id="valFreq" class="text-4xl font-black text-slate-900">240
+              Hz</span><span id="badgeFreq"
+              class="text-xs font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">Queen Right & Calm
+              State</span></div>
+          <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between text-xs"><span
+              class="text-slate-500">Colony Health Index</span><span id="statusFreq"
+              class="font-bold text-emerald-700">Stable Colony State ✓</span></div>
+        </div>
+      </div>
+
+      <!-- Stress simulator -->
+      <div id="stressBox"
+        class="bg-white border-2 border-amber-200 rounded-3xl p-6 sm:p-8 shadow-md transition-all space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <h3 class="text-lg font-bold text-slate-900">Bio-Acoustic Frequency Synthesizer & Stress Diagnostics</h3>
+            <p class="text-xs text-slate-600">Queen bee acoustics provide early warning signals. When calm, the brood
+              nest hums harmonically at <strong>240 Hz</strong>. Under stress, frequency spikes to <strong>550
+                Hz</strong>.</p>
+          </div>
+          <button id="stressBtn" onclick="toggleStress()"
+            class="px-6 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm shadow-md cursor-pointer flex items-center gap-2">
+            <i class="fa-solid fa-volume-high"></i>
+            <span id="stressBtnText">Simulate Bio-Acoustic Stress</span>
+          </button>
+        </div>
+
+        <div id="stressAlertNotice"
+          class="hidden p-4 rounded-2xl bg-red-100 border border-red-300 text-red-900 flex items-start gap-3">
+          <i class="fa-solid fa-triangle-exclamation text-xl text-red-600 shrink-0 mt-0.5 animate-bounce"></i>
+          <div>
+            <div class="font-bold text-sm">🚨 CRITICAL ACOUSTIC ALERT: High-Frequency Queen Distress (550 Hz)</div>
+            <p class="text-xs text-red-800 mt-1">Acoustic spectrum shifted from baseline 240 Hz to 550 Hz. Indicative of
+              queen piping or swarm departure. Immediate on-site apiary inspection recommended.</p>
+          </div>
+        </div>
+
+        <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800">
+          <div class="flex justify-between text-xs text-slate-400 mb-2 font-mono"><span id="waveformHeader"
+              class="text-amber-400">Live Audio Spectrum: 240 Hz</span><span>Sampling: 44.1 kHz</span></div>
+          <div id="waveformBars" class="h-12 flex items-end gap-1 overflow-hidden px-1"></div>
+        </div>
+      </div>
+
+      <!-- Batches table -->
+      <div class="bg-white border-2 border-amber-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2"><i
+            class="fa-solid fa-cubes-stacked text-amber-500"></i> Minted Harvest Batches on Hyperledger Fabric</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">Batch ID</th>
+                <th class="py-3 px-4">Origin</th>
+                <th class="py-3 px-4">Floral Source</th>
+                <th class="py-3 px-4">Qty</th>
+                <th class="py-3 px-4">Block #</th>
+                <th class="py-3 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody id="beekeeperBatchesTable" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SCREEN 4: LAB INSPECTOR PORTAL ==================== -->
+    <section id="viewInspector" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <!-- ACTION BAR: ADD THE INSPECTED BAR -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white shadow-lg shadow-amber-500/20">
+        <div class="flex items-center gap-3.5">
+          <div
+            class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 shadow-inner">
+            <i class="fa-solid fa-barcode text-2xl"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-black tracking-tight">Lab Inspection Notary</h2>
+              <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase bg-white/25 rounded-md text-white">ISO-17025
+                Certified</span>
+            </div>
+            <p class="text-xs text-amber-100 font-medium mt-0.5">Record newly analyzed honey bottle barcodes so
+              customers can scan and verify authenticity</p>
+          </div>
+        </div>
+
+        <button type="button" onclick="openAddInspectedBarModal()"
+          class="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-sm shadow-md hover:scale-102 active:scale-98 transition-all cursor-pointer shrink-0">
+          <i class="fa-solid fa-circle-plus text-amber-400"></i>
+          <span>Add the Inspected Bar</span>
+        </button>
+      </div>
+
+      <!-- Interactive Test Simulator Controls -->
+      <div class="bg-white border-2 border-amber-100 rounded-3xl p-6 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
+            <i class="fa-solid fa-sliders text-amber-600"></i>
+            <span>Interactive Mass Spec Test Mode:</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-xs font-bold">
+            <button id="btnModePure" onclick="setLabTestMode('pure_natural')"
+              class="py-2 px-3 rounded-xl transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
+              ✓ Pure Honey 100%
+            </button>
+            <button id="btnModeCorn" onclick="setLabTestMode('corn_cane')"
+              class="py-2 px-3 rounded-xl transition-all cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700">
+              Corn Syrup
+            </button>
+            <button id="btnModeRice" onclick="setLabTestMode('rice_beet')"
+              class="py-2 px-3 rounded-xl transition-all cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700">
+              Rice Syrup
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white border-2 border-amber-100 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold text-slate-900">Sugar Adulteration Analysis (EA-IRMS)</h3>
+            <span id="labPurityBadge"
+              class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">0.00% Pure ✓</span>
+          </div>
+          <div class="space-y-3 bg-amber-50/50 p-5 rounded-2xl border border-amber-100 text-xs">
+            <div class="flex justify-between border-b border-amber-200/60 pb-2"><span>C4 Syrups (Corn /
+                Cane):</span><span id="labC4Val" class="font-bold text-emerald-700">0.00% (Undetected ✓)</span></div>
+            <div class="flex justify-between border-b border-amber-200/60 pb-2"><span>C3 Syrups (Rice /
+                Beet):</span><span id="labC3Val" class="font-bold text-emerald-700">0.00% (Undetected ✓)</span></div>
+            <div class="flex justify-between"><span>Isotope δ13C Delta Value:</span><span id="labDeltaVal"
+                class="font-bold text-slate-900">-26.8‰ Natural</span></div>
+          </div>
+        </div>
+
+        <div class="bg-white border-2 border-amber-100 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold text-slate-900">Freshness Score (HMF Assay)</h3>
+            <span id="labHmfBadge" class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">PASS
+              (8.2 mg/kg)</span>
+          </div>
+          <div class="space-y-3 bg-amber-50/50 p-5 rounded-2xl border border-amber-100 text-xs">
+            <div class="flex justify-between border-b border-amber-200/60 pb-2"><span>HMF Content:</span><span
+                id="labHmfContentVal" class="font-bold text-emerald-700">8.2 mg/kg (Raw Grade A ✓)</span></div>
+            <div class="flex justify-between border-b border-amber-200/60 pb-2"><span>Diastase Activity:</span><span
+                id="labDiastaseVal" class="font-bold text-slate-900">24.8 Schade Units</span></div>
+            <div class="flex justify-between"><span>Moisture:</span><span class="font-bold text-slate-900">16.8% (Ripe
+                Honey)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NUTRITIONAL FACTS & INGREDIENT BREAKDOWN -->
+      <div class="bg-white border-2 border-amber-100 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
+              <i class="fa-solid fa-award text-2xl"></i>
+            </div>
+            <div>
+              <span
+                class="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                Official Laboratory Assay
+              </span>
+              <h3 class="text-xl font-bold text-slate-900 mt-0.5">Nutritional Facts & Ingredients</h3>
+            </div>
+          </div>
+          <span
+            class="px-3.5 py-1.5 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-300">
+            Certified 100% Pure Natural Honey
+          </span>
+        </div>
+
+        <div
+          class="bg-gradient-to-br from-amber-50/80 via-orange-50/40 to-yellow-50 border-2 border-amber-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <div class="text-base sm:text-lg font-black text-amber-950 mb-3 flex items-center gap-1.5">
+            <span class="text-slate-700 font-bold">Ingredient:</span>
+            <span class="text-amber-800 font-extrabold">Honey (100%)</span>
+          </div>
+
+          <div class="border-2 border-amber-300 rounded-xl overflow-hidden bg-white shadow-xs">
+            <div
+              class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2.5 flex items-center justify-between font-black text-xs sm:text-sm tracking-wide">
+              <span>NUTRITIONAL FACTS*</span>
+              <span class="bg-white/25 px-2.5 py-0.5 rounded-md font-mono text-xs font-extrabold">Per 100g</span>
+            </div>
+
+            <div
+              class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-amber-200 text-xs sm:text-sm">
+              <div class="p-4 space-y-2.5">
+                <div class="flex items-center justify-between"><span class="text-slate-700 font-bold">Energy</span><span
+                    class="font-extrabold text-slate-900 font-mono">320kcal</span></div>
+                <div class="flex items-center justify-between border-t border-amber-100 pt-2"><span
+                    class="text-slate-700 font-bold">Carbohydrate</span><span
+                    class="font-extrabold text-slate-900 font-mono">80g</span></div>
+                <div class="flex items-center justify-between pl-3 text-xs"><span
+                    class="text-slate-600 font-medium">Natural Sugars</span><span
+                    class="font-bold text-slate-800 font-mono">80g</span></div>
+                <div class="flex items-center justify-between pl-3 text-xs"><span
+                    class="text-slate-600 font-medium">Added Sugar</span><span
+                    class="font-bold text-emerald-600 font-mono">0g</span></div>
+              </div>
+
+              <div class="p-4 space-y-2.5">
+                <div class="flex items-center justify-between"><span
+                    class="text-slate-700 font-bold">Protein</span><span
+                    class="font-extrabold text-slate-900 font-mono">0g</span></div>
+                <div class="flex items-center justify-between border-t border-amber-100 pt-2"><span
+                    class="text-slate-700 font-bold">Fat</span><span
+                    class="font-extrabold text-slate-900 font-mono">0g</span></div>
+                <div class="flex items-center justify-between border-t border-amber-100 pt-2"><span
+                    class="text-slate-700 font-bold">Sodium</span><span
+                    class="font-extrabold text-slate-900 font-mono">17mg</span></div>
+                <div class="flex items-center justify-between border-t border-amber-100 pt-2"><span
+                    class="text-slate-700 font-bold">Potassium</span><span
+                    class="font-extrabold text-slate-900 font-mono">138mg</span></div>
+              </div>
+
+              <div class="p-4 space-y-2.5">
+                <div class="flex items-center justify-between"><span
+                    class="text-slate-700 font-bold">Calcium</span><span
+                    class="font-extrabold text-slate-900 font-mono">13mg</span></div>
+                <div class="flex items-center justify-between border-t border-amber-100 pt-2"><span
+                    class="text-slate-700 font-bold">Iron</span><span
+                    class="font-extrabold text-slate-900 font-mono">1.5mg</span></div>
+                <div class="flex items-center justify-between border-t border-amber-100 pt-2"><span
+                    class="text-slate-700 font-bold">Phosphorus</span><span
+                    class="font-extrabold text-slate-900 font-mono">5mg</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-[11px] text-slate-500 italic mt-2">
+            *Certified via ISO/IEC 17025 laboratory spectrophotometric and elemental mineral assay. Zero synthetic
+            additives, zero preservatives, 100% natural raw honey.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SCREEN 5: CUSTOMER PASSPORT ==================== -->
+    <section id="viewCustomer" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div
+        class="bg-gradient-to-r from-[#263212] via-[#384819] to-[#4d6320] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span
+                class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-white/20 text-white backdrop-blur-md">100%
+                Pure Honey Consumer Passport</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white mt-2">Know Exactly What's In Your Honey
+            </h1>
+            <p class="text-olive-100 text-sm mt-1 max-w-2xl">Discover your honey's pristine Nilgiri forest origin,
+              explore natural active enzymes and nutrients, and review ISO-certified lab test results in simple, plain
+              English.</p>
+          </div>
+          <button onclick="triggerJarScan()"
+            class="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-extrabold text-sm shadow-lg shadow-orange-500/30 transition-all cursor-pointer hover:scale-102 active:scale-98 shrink-0">
+            <i class="fa-solid fa-bolt text-white"></i>
+            <span>Simulate Jar Scan</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-4 flex flex-col items-center">
+          <!-- Dual Options: Camera vs Upload Pic -->
+
+          <!-- Dual Options: Camera vs Upload Pic -->
+          <div
+            class="w-full max-w-[320px] mb-3 bg-slate-900 p-1.5 rounded-2xl border-2 border-slate-800 shadow-xl flex items-center gap-1.5">
+            <button id="custModeBtn_camera" onclick="setCustScanMode('camera')"
+              class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-black bg-orange-500 text-slate-950 shadow-md shadow-orange-500/30 transition-all cursor-pointer">
+              <i class="fa-solid fa-camera"></i>
+              <span>Camera</span>
+            </button>
+            <button id="custModeBtn_upload" onclick="setCustScanMode('upload')"
+              class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-black text-slate-400 hover:text-white transition-all cursor-pointer">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Upload Pic</span>
+            </button>
+          </div>
+
+          <!-- Smartphone Frame -->
+          <div
+            class="relative w-full max-w-[320px] bg-slate-900 rounded-[3rem] p-3.5 shadow-2xl border-4 border-slate-800">
+            <div
+              class="relative w-full aspect-[9/16] bg-slate-950 rounded-[2.3rem] overflow-hidden flex flex-col justify-between p-4 text-white">
+
+              <!-- Phone Status Bar -->
+              <div class="relative z-20 flex justify-between items-center text-[11px] font-semibold text-slate-300">
+                <span>9:41</span>
+                <div class="flex items-center gap-2">
+                  <span id="scannerLiveBadge" class="text-[10px] text-orange-400 font-mono font-bold">STANDBY</span>
+                  <button id="turnOffCameraBtn" onclick="stopBrowserCamera()"
+                    class="hidden px-2 py-0.5 rounded-md bg-orange-500/20 hover:bg-orange-500/40 text-orange-300 hover:text-white border border-orange-400/30 text-[10px] font-bold transition cursor-pointer"
+                    title="Turn off camera hardware">
+                    <i class="fa-solid fa-video-slash"></i> Turn Off
+                  </button>
+                  <button onclick="goToRoleSelect()"
+                    class="px-2 py-0.5 rounded-md bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-bold shadow-xs transition cursor-pointer"
+                    title="Exit and turn off camera">
+                    <i class="fa-solid fa-xmark"></i> Exit
+                  </button>
+                </div>
+              </div>
+
+              <!-- VIEW 1: LIVE CAMERA VIEW -->
+              <div id="custView_camera"
+                class="absolute inset-0 bg-slate-950 flex items-center justify-center overflow-hidden">
+                <video id="liveCameraVideo" autoplay playsinline muted
+                  class="w-full h-full object-cover hidden"></video>
+                <div id="cameraStandby" class="p-6 text-center">
+                  <i class="fa-solid fa-camera text-3xl text-orange-400 mb-2"></i>
+                  <div class="text-xs font-bold">Camera Viewfinder</div>
+                  <p class="text-[10px] text-slate-400 mt-1">Camera is off. Click below to enable live hardware scanner.
+                  </p>
+                  <div class="flex flex-col gap-2 mt-3">
+                    <button onclick="startBrowserCamera()"
+                      class="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-xs font-bold cursor-pointer transition shadow-md shadow-orange-500/25">
+                      <i class="fa-solid fa-camera mr-1"></i> Enable Camera
+                    </button>
+                    <button onclick="setCustScanMode('upload')"
+                      class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-orange-300 text-xs font-semibold cursor-pointer transition">
+                      <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Use Upload Pic Instead
+                    </button>
+                  </div>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
+                  <div
+                    class="w-44 h-44 border-2 border-olive-400/80 rounded-2xl flex items-center justify-center relative">
+                    <div
+                      class="absolute inset-x-2 h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent shadow-[0_0_14px_#f97316] laser-beam">
+                    </div>
+                    <span id="scannerStatusText"
+                      class="text-[9px] font-mono font-bold text-orange-300 bg-slate-900/80 px-2 py-1 rounded">AIM AT
+                      HONEY JAR SEAL</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 2: UPLOAD PIC VIEW -->
+              <div id="custView_upload"
+                class="hidden absolute inset-0 bg-slate-950 flex flex-col items-center justify-center p-4 pt-12 pb-14 text-center overflow-y-auto">
+                <input type="file" id="custBarcodeFileInput" accept="image/*,.svg"
+                  onchange="handleCustPhotoUpload(event)" class="hidden">
+                <div onclick="document.getElementById('custBarcodeFileInput').click()"
+                  class="w-full border-2 border-dashed border-olive-400/60 hover:border-olive-400 rounded-2xl p-4 bg-slate-900/80 cursor-pointer transition hover:bg-slate-900">
+                  <i class="fa-solid fa-cloud-arrow-up text-3xl text-orange-400 mb-2"></i>
+                  <div class="text-xs font-bold text-white">Upload Honey Barcode Photo</div>
+                  <p class="text-[10px] text-slate-400 mt-1">Click to select bottle barcode image</p>
+                  <span
+                    class="inline-block mt-2 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white text-[10px] font-black uppercase shadow-sm">Browse
+                    Device</span>
+                </div>
+
+                <div class="w-full mt-3 text-left">
+                  <div class="text-[10px] font-bold uppercase text-orange-400 tracking-wider mb-1.5">Or Click Sample
+                    Barcode:</div>
+                  <div id="htmlSampleBarcodesContainer" class="space-y-1.5">
+                    <button onclick="selectSampleBarcode('HC-2026-NIL-008421', 'Nilgiri Wild Kurinji', '8901030884210')"
+                      class="w-full text-left p-2 rounded-xl bg-slate-900 hover:bg-olive-950/60 border border-slate-800 hover:border-olive-500/50 text-[10px] text-white flex items-center justify-between cursor-pointer transition">
+                      <span class="font-bold truncate">Nilgiri Wild Kurinji</span>
+                      <span class="font-mono text-orange-400 text-[9px]">8901030884210</span>
+                    </button>
+                    <button
+                      onclick="selectSampleBarcode('HC-2026-KSH-009102', 'Kashmir Alpine Acacia', '8901030910202')"
+                      class="w-full text-left p-2 rounded-xl bg-slate-900 hover:bg-olive-950/60 border border-slate-800 hover:border-olive-500/50 text-[10px] text-white flex items-center justify-between cursor-pointer transition">
+                      <span class="font-bold truncate">Kashmir White Acacia</span>
+                      <span class="font-mono text-orange-400 text-[9px]">8901030910202</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Action -->
+              <button onclick="triggerJarScan()"
+                class="relative z-20 w-full py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-black text-xs uppercase shadow-lg shadow-orange-500/25 transition-all cursor-pointer">
+                <i class="fa-solid fa-bolt"></i> Simulate Jar Scan
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-8 space-y-6">
+          <div class="bg-white border-2 border-amber-200 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+            <div class="flex justify-between items-center pb-4 border-b border-amber-100">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span id="custPassportPurity"
+                    class="text-[11px] font-black uppercase text-emerald-800 bg-emerald-100 px-3 py-0.5 rounded-full border border-emerald-300">pure
+                    honey 100%</span>
+                  <span id="custPassportBatchId"
+                    class="text-xs font-mono font-bold text-slate-400">#HC-2026-NIL-008421</span>
+                </div>
+                <div id="custPassportCompany" class="text-xs font-bold text-amber-700 uppercase tracking-wider mt-1">
+                  Nilgiri Mountain Honey Co.</div>
+                <h2 id="custPassportTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mt-0.5">Nilgiri
+                  High-Altitude Forest Honey</h2>
+              </div>
+            </div>
+
+            <div class="flex border-b border-slate-100 overflow-x-auto gap-2 text-xs font-bold pt-2">
+              <button onclick="setCustTab('overview')" id="custTab_overview"
+                class="pb-3 px-3 text-amber-600 border-b-2 border-amber-500 font-extrabold whitespace-nowrap cursor-pointer">Overview
+                Summary</button>
+              <button onclick="setCustTab('origin')" id="custTab_origin"
+                class="pb-3 px-3 text-slate-500 hover:text-slate-800 whitespace-nowrap cursor-pointer">1.
+                Origin</button>
+              <button onclick="setCustTab('nutrition')" id="custTab_nutrition"
+                class="pb-3 px-3 text-slate-500 hover:text-slate-800 whitespace-nowrap cursor-pointer">2.
+                Nutrition</button>
+              <button onclick="setCustTab('lab')" id="custTab_lab"
+                class="pb-3 px-3 text-slate-500 hover:text-slate-800 whitespace-nowrap cursor-pointer">3. Lab Report
+                Card</button>
+              <button onclick="setCustTab('blockchain')" id="custTab_blockchain"
+                class="pb-3 px-3 text-slate-500 hover:text-slate-800 whitespace-nowrap cursor-pointer">4. Blockchain
+                Proof</button>
+            </div>
+
+            <div id="custPanel_overview" class="space-y-4">
+              <!-- Ingredients & Description Card -->
+              <div
+                class="p-4 bg-gradient-to-r from-amber-50 via-white to-amber-50 rounded-2xl border-2 border-amber-300 shadow-xs space-y-2">
+                <div class="flex items-center justify-between">
+                  <div class="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-1.5">
+                    <i class="fa-solid fa-droplet text-amber-600"></i> Ingredients & Official Description
+                  </div>
+                  <span id="custPassportIngredientsPurity"
+                    class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300">pure
+                    honey 100%</span>
+                </div>
+                <p id="custPassportIngredients"
+                  class="text-xs font-semibold text-slate-800 leading-relaxed bg-white/90 p-3 rounded-xl border border-amber-200/80">
+                  100% Pure Raw Natural Honey, Wild Botanical Floral Nectar, Active Enzymes (Diastase). No added sugars,
+                  no syrups.</p>
+                <div class="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
+                  <span>Bottled By: <strong id="custPassportProducer" class="text-slate-800">Nilgiri Mountain Honey
+                      Co.</strong></span>
+                  <span>Origin: <strong id="custPassportOrigin" class="text-slate-800">Nilgiris, Tamil
+                      Nadu</strong></span>
+                </div>
+              </div>
+
+              <div class="p-5 bg-gradient-to-r from-amber-50 to-amber-100/40 rounded-2xl border border-amber-200">
+                <div id="custPassportApiary" class="text-sm font-bold text-slate-900">Nilgiri Biosphere Reserve (1,850m
+                  Altitude)</div>
+                <p id="custPassportSubtitle" class="text-xs text-slate-600 mt-1">Single-origin forest honey with 0%
+                  added sugar, 0% corn/rice syrup, and 24.8 DN live enzymes.</p>
+              </div>
+            </div>
+
+            <div id="custPanel_origin" class="hidden space-y-4 text-xs">
+              <div class="p-5 bg-white border border-amber-200 rounded-2xl space-y-2">
+                <h3 class="font-bold text-slate-900">Western Ghats UNESCO Reserve</h3>
+                <p class="text-slate-600">Harvested by native Indian honeybees foraging on wild mountain acacia and
+                  Neelakurinji blossoms.</p>
+              </div>
+            </div>
+
+            <div id="custPanel_nutrition" class="hidden space-y-4 text-xs">
+              <div class="p-5 bg-white border border-amber-200 rounded-2xl space-y-2">
+                <div class="flex justify-between"><span>Energy</span><span class="font-bold">304 kcal / 100g</span>
+                </div>
+                <div class="flex justify-between text-emerald-800 font-bold"><span>Added Sugars</span><span>0.00g (0%)
+                    ✓</span></div>
+                <div class="flex justify-between"><span>Active Diastase Enzyme</span><span class="font-bold">24.8
+                    DN</span></div>
+              </div>
+            </div>
+
+            <div id="custPanel_lab" class="hidden space-y-4 text-xs">
+              <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-1">
+                <div class="font-bold text-slate-900">EA-IRMS Isotope Carbon Test: PASS (0.00% Sugar Syrups)</div>
+                <p class="text-slate-600">Zero corn, cane, rice, or beet sugar added.</p>
+              </div>
+              <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-1">
+                <div class="font-bold text-slate-900">HMF Freshness: PASS (8.2 mg/kg)</div>
+                <p class="text-slate-600">Guaranteed unheated and raw.</p>
+              </div>
+            </div>
+
+            <div id="custPanel_blockchain" class="hidden space-y-4 text-xs">
+              <div class="p-5 bg-slate-950 text-white rounded-2xl space-y-2 font-mono">
+                <div class="text-emerald-400 font-bold">ZERO-KNOWLEDGE PROOF VERIFIED</div>
+                <div class="text-slate-400">Block #184920 • ZK-SNARK circuit valid</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BIOMETRIC & PASSWORD AUTH MODAL -->
+  <div id="biometricModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+    <div
+      class="relative w-full max-w-md bg-white border border-amber-200 rounded-3xl shadow-2xl p-6 sm:p-8 overflow-hidden">
+      <button onclick="closeBiometricModal()"
+        class="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-700 cursor-pointer"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div id="modalRoleIcon"
+          class="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-600">
+          <i id="modalRoleIconInner" class="fa-solid fa-fingerprint text-2xl"></i>
+        </div>
+        <div>
+          <h3 id="modalRoleTitle" class="text-lg font-bold text-slate-900">Beekeeper Enclave</h3>
+          <p id="modalRoleSubtitle" class="text-xs text-slate-500">Biometric authorization required</p>
+        </div>
+      </div>
+
+      <!-- Option A: Beekeeper Fingerprint Scanner -->
+      <div id="modalBeekeeperScan"
+        class="my-6 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-amber-50 to-amber-100/40 rounded-3xl border border-amber-200">
+        <button onclick="startBiometricScanProcess()"
+          class="w-24 h-24 rounded-full flex items-center justify-center bg-gradient-to-br from-amber-400 to-amber-500 text-white shadow-lg cursor-pointer hover:scale-105 transition">
+          <i class="fa-solid fa-fingerprint text-4xl"></i>
+        </button>
+        <p class="mt-4 text-xs font-semibold text-slate-700">Click fingerprint to authenticate</p>
+      </div>
+
+      <!-- Option B: Lab Inspector Password Authentication -->
+      <div id="modalInspectorPassword" class="hidden my-4 space-y-4">
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-700">
+            <span>Inspector Password</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-lock text-sm"></i>
+            </div>
+            <input type="password" id="inspectorPasswordInput" placeholder="Enter inspector password"
+              onkeydown="if(event.key==='Enter') submitInspectorPassword()"
+              class="w-full pl-10 pr-10 py-3 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 focus:outline-none text-sm font-medium text-slate-900 transition" />
+            <button type="button" onclick="toggleInspectorPasswordVisibility()"
+              class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer">
+              <i id="inspectorEyeIcon" class="fa-solid fa-eye text-sm"></i>
+            </button>
+          </div>
+          <p id="inspectorPasswordError" class="hidden text-[11px] font-bold text-red-600 pt-1 flex items-center gap-1">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Incorrect password! Access denied.</span>
+          </p>
+        </div>
+
+        <button onclick="submitInspectorPassword()"
+          class="w-full py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 hover:scale-102 active:scale-98">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Authenticate & Enter Lab Terminal</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settingsModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
+    <div class="relative w-full max-w-md bg-white border border-amber-200 rounded-3xl shadow-2xl p-6 overflow-hidden">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">Platform Settings</h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-700"><i
+            class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="py-4 space-y-3 text-xs">
+        <div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center">
+          <span>Active Peer Node</span>
+          <span class="font-mono font-bold text-emerald-700">Nilgiri-Gateway-01</span>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center">
+          <span>Consensus</span>
+          <span class="font-mono font-bold">Raft CFT (4 Peers)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JUDGE DECK MODAL -->
+  <div id="judgeModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md">
+    <div class="relative w-full max-w-xl bg-white border-2 border-amber-400 rounded-3xl shadow-2xl p-6 overflow-hidden">
+      <div class="flex justify-between items-center pb-3 border-b border-amber-200">
+        <h3 class="font-bold text-slate-900 text-lg">SIH Judge Evaluation Deck</h3>
+        <button onclick="closeJudgeDeck()" class="text-slate-400 hover:text-slate-700"><i
+            class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="py-4 space-y-4 text-xs">
+        <button onclick="simulateAttackInDeck()"
+          class="w-full p-3 rounded-2xl bg-red-50 border border-red-200 text-left cursor-pointer hover:bg-red-100">
+          <div class="font-bold text-red-800">Simulate Syrup Adulteration Attack</div>
+          <p class="text-[11px] text-red-600 mt-0.5">Injects fake C4 syrup $\rightarrow$ watch ZK-SNARK proof fail and
+            Hyperledger quarantine the batch.</p>
+        </button>
+        <button onclick="restorePurityInDeck()"
+          class="w-full p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-left cursor-pointer hover:bg-emerald-100">
+          <div class="font-bold text-emerald-800">Restore Pure Genesis Baseline</div>
+          <p class="text-[11px] text-emerald-600 mt-0.5">Validates 100% natural botanical signature.</p>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD THE INSPECTED BAR MODAL -->
+  <div id="addInspectedBarModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md">
+    <div
+      class="relative w-full max-w-lg bg-[#bdd2b3] border-2 border-[#8da981] rounded-3xl shadow-2xl p-6 sm:p-8 overflow-hidden max-h-[90vh] overflow-y-auto text-[#183018]">
+      <button onclick="closeAddInspectedBarModal()"
+        class="absolute top-5 right-5 p-2 rounded-full text-[#2f482d] hover:text-[#183018] hover:bg-[#d1e2cb] cursor-pointer">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- Form View -->
+      <div id="inspectedBarFormView" class="space-y-5">
+        <div class="flex items-center gap-3 pb-3 border-b border-[#8da981]">
+          <div
+            class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-yellow-500 to-amber-500 border border-yellow-600 flex items-center justify-center text-slate-950 shrink-0 shadow-md">
+            <i class="fa-solid fa-barcode text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-[#183018]">Add the Inspected Bar</h3>
+            <p class="text-xs text-[#2f482d]">Record an inspected honey bottle barcode into the provenance ledger</p>
+          </div>
+        </div>
+
+        <form onsubmit="handleSaveInspectedBar(event)" class="space-y-4">
+          <!-- HERO: GENERATED BAR PIC (BARCODE PICTURE) PREVIEW & ACTIONS -->
+          <div class="p-4 bg-[#d1e2cb] rounded-2xl border-2 border-[#8da981] shadow-sm space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                <span class="text-xs font-black uppercase text-[#183018] tracking-wide">
+                  Generated Bar Pic (Smart Seal Sticker)
+                </span>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-[#bdd2b3] text-[#183018] border border-[#8da981]">
+                  Live Bar Pic
+                </span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="generateRandomBarcodeForHtml()"
+                  class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-slate-950 font-black text-xs shadow-md shadow-yellow-500/25 cursor-pointer transition-all hover:scale-103 active:scale-97">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span>Generate Code</span>
+                </button>
+
+                <button type="button" onclick="downloadBarcodePngFromHtml()"
+                  class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#bdd2b3] hover:bg-[#a7c19c] text-[#183018] border border-[#8da981] text-xs font-bold transition-all cursor-pointer shadow-xs"
+                  title="Download Barcode as PNG">
+                  <i class="fa-solid fa-download text-amber-700"></i>
+                  <span>PNG</span>
+                </button>
+
+                <button type="button" onclick="downloadBarcodeSvgFromHtml()"
+                  class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#bdd2b3] hover:bg-[#a7c19c] text-[#183018] border border-[#8da981] text-xs font-bold transition-all cursor-pointer shadow-xs"
+                  title="Download Barcode as vector SVG">
+                  <i class="fa-solid fa-download text-amber-700"></i>
+                  <span>SVG</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Visual Barcode Picture Render -->
+            <div id="htmlLiveBarPicContainer"
+              class="bg-[#bdd2b3] rounded-xl p-2.5 border border-[#8da981] shadow-xs flex flex-col items-center justify-center">
+              <!-- Live Bar Pic SVG rendered here -->
+            </div>
+
+            <!-- Optional Custom Barcode Number Toggle -->
+            <details class="text-[11px] text-[#2f482d] pt-1">
+              <summary class="cursor-pointer hover:text-[#183018] font-semibold select-none flex items-center gap-1">
+                <span>Manually edit barcode number (Optional)</span>
+              </summary>
+              <div class="mt-2 pt-2 border-t border-[#8da981]">
+                <input type="text" id="htmlBarcodeNumber" value="8901030099881" maxlength="13"
+                  oninput="updateHtmlLiveBarPic()"
+                  class="w-full px-3 py-2 rounded-xl border border-[#8da981] focus:border-amber-500 focus:outline-none font-mono text-xs text-[#183018] bg-[#e4efe0]" />
+              </div>
+            </details>
+          </div>
+
+          <!-- BOTTLE COMPANY NAME & PURITY LEVEL -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-[#183018] mb-1.5">Bottle Company / Brand Name</label>
+              <input type="text" id="htmlCompanyName" value="Nilgiri Mountain Honey Co."
+                oninput="updateHtmlLiveBarPic()" placeholder="Nilgiri Mountain Honey Co." required
+                class="w-full px-4 py-2.5 rounded-xl border-2 border-[#8da981] focus:border-amber-500 focus:outline-none text-sm text-[#183018] bg-[#e4efe0]" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#183018] mb-1.5">How Much Purity (Purity Level)</label>
+              <input type="text" id="htmlPurityScore" value="pure honey 100%" oninput="updateHtmlLiveBarPic()"
+                placeholder="pure honey 100%" required
+                class="w-full px-4 py-2.5 rounded-xl border-2 border-[#8da981] focus:border-amber-500 focus:outline-none text-sm text-[#183018] bg-[#e4efe0]" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#183018] mb-1.5">Honey Bottle / Product Name</label>
+            <input type="text" id="htmlBottleName" value="Nilgiri Wild Mountain Honey (Grade A Raw)"
+              oninput="updateHtmlLiveBarPic()" required
+              class="w-full px-4 py-2.5 rounded-xl border-2 border-[#8da981] focus:border-amber-500 focus:outline-none text-sm text-[#183018] bg-[#e4efe0]" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#183018] mb-1.5">
+              Ingredients Description <span class="text-[#2f482d] font-normal">(Included directly on Barcode
+                Seal)</span>
+            </label>
+            <textarea id="htmlIngredientsDesc" oninput="updateHtmlLiveBarPic()" rows="2" required
+              class="w-full px-4 py-2 rounded-xl border-2 border-[#8da981] focus:border-amber-500 focus:outline-none text-xs text-[#183018] bg-[#e4efe0] resize-none leading-relaxed">100% Pure Raw Natural Honey, Wild Botanical Floral Nectar, Active Enzymes (Diastase). No added sugars, no syrups.</textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-[#183018] mb-1.5">Botanical Floral Source</label>
+              <input type="text" id="htmlFloraSource" value="Wild Kurinji & Acacia Nectar"
+                oninput="updateHtmlLiveBarPic()" required
+                class="w-full px-4 py-2.5 rounded-xl border-2 border-[#8da981] focus:border-amber-500 focus:outline-none text-sm text-[#183018] bg-[#e4efe0]" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-[#183018] mb-1.5">Geographic Origin & Region</label>
+              <input type="text" id="htmlOriginRegion" value="Nilgiris, Tamil Nadu" oninput="updateHtmlLiveBarPic()"
+                required
+                class="w-full px-4 py-2.5 rounded-xl border-2 border-[#8da981] focus:border-amber-500 focus:outline-none text-sm text-[#183018] bg-[#e4efe0]" />
+            </div>
+          </div>
+
+          <!-- Certified Lab Snapshot -->
+          <div class="p-3.5 bg-[#d1e2cb] rounded-2xl border border-[#8da981] text-xs space-y-2">
+            <div class="font-bold text-[#183018] flex items-center justify-between">
+              <span>Lab Test Results Attached to this Barcode:</span>
+              <span id="htmlLabSnapshotBadge"
+                class="font-mono text-[10px] bg-[#e4efe0] text-[#183018] border border-[#8da981] px-2 py-0.5 rounded-md font-bold">100%
+                PURE ✓</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 font-mono text-[11px] text-[#2f482d]">
+              <div>Isotope: <strong id="htmlLabIsotopeVal" class="text-[#183018]">-26.8‰ Natural</strong></div>
+              <div>HMF: <strong id="htmlLabHmfVal" class="text-[#183018]">8.2 mg/kg</strong></div>
+              <div>Diastase: <strong id="htmlLabDiastaseVal" class="text-[#183018]">24.8 Schade</strong></div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onclick="closeAddInspectedBarModal()"
+              class="px-5 py-2.5 rounded-xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold text-xs cursor-pointer transition-colors">
+              Cancel
+            </button>
+            <button type="submit"
+              class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 via-amber-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/25 cursor-pointer transition-all hover:scale-102 active:scale-98">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Save & Register Inspected Bar</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Success View -->
+      <div id="inspectedBarSuccessView" class="hidden text-center space-y-5 py-2">
+        <div
+          class="w-16 h-16 rounded-full bg-[#d1e2cb] text-emerald-800 border-2 border-[#8da981] flex items-center justify-center mx-auto shadow-md">
+          <i class="fa-solid fa-check text-2xl"></i>
+        </div>
+        <div>
+          <h3 class="text-2xl font-black text-[#183018]">Inspected Barcode Registered!</h3>
+          <p class="text-xs text-[#2f482d] mt-1">Smart Seal Barcode generated and broadcast to the cryptographic
+            provenance registry.</p>
+        </div>
+        <div id="inspectedBarcodePreviewBox" class="p-3 bg-[#d1e2cb] border border-[#8da981] rounded-2xl">
+          <!-- Dynamic Barcode Preview -->
+        </div>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <button onclick="downloadBarcodePngFromHtml()"
+            class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/25 transition-all cursor-pointer">
+            <i class="fa-solid fa-download"></i>
+            <span>Download Bar Pic (PNG)</span>
+          </button>
+          <button onclick="downloadBarcodeSvgFromHtml()"
+            class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold text-xs shadow-md transition-all cursor-pointer">
+            <i class="fa-solid fa-download text-amber-700"></i>
+            <span>Download Bar Pic (SVG)</span>
+          </button>
+          <button onclick="testRegisteredBarInCustomerScanner()"
+            class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold text-xs shadow-md transition-all cursor-pointer">
+            <i class="fa-solid fa-camera text-amber-700"></i>
+            <span>Test in Customer Scanner</span>
+          </button>
+          <button onclick="closeAddInspectedBarModal()"
+            class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold text-xs transition-all cursor-pointer">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    let appScreen = 'intro';
+    let currentRole = null;
+    let targetBiometricRole = null;
+    let isStressActive = false;
+    let audioCtx = null;
+
+    const DEFAULT_BATCHES = [
+      { id: 'HC-2026-NIL-004821', hiveId: 'HIVE-NILGIRI-014', floralSource: 'Wild Acacia & Forest Blossom', qty: '42.5 kg', blockNumber: 184920, status: 'CERTIFIED_AUTHENTIC' }
+    ];
+
+    let batches = DEFAULT_BATCHES;
+    try {
+      const storedBatches = localStorage.getItem('honeychain_batches');
+      if (storedBatches) {
+        const parsed = JSON.parse(storedBatches);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          batches = parsed;
+        }
+      }
+    } catch (e) { }
+
+    function persistBatches() {
+      try {
+        localStorage.setItem('honeychain_batches', JSON.stringify(batches));
+      } catch (e) { }
+    }
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playTone(freq, duration = 0.2, type = 'sine') {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) { }
+    }
+
+    function enterApp() {
+      goToRoleSelect(true);
+    }
+
+    function goToIntro(updateUrl = true) {
+      stopBrowserCamera();
+      appScreen = 'intro';
+      currentRole = null;
+      try {
+        localStorage.setItem('honeychain_screen', 'intro');
+        localStorage.removeItem('honeychain_role');
+      } catch (e) { }
+
+      if (updateUrl && typeof history !== 'undefined') {
+        if (window.location.hash) {
+          history.replaceState(null, '', window.location.pathname);
+        }
+      }
+      updateScreenVisibility();
+    }
+
+    function goToRoleSelect(updateUrl = true) {
+      appScreen = 'role_select';
+      currentRole = null;
+      stopBrowserCamera();
+      try {
+        localStorage.setItem('honeychain_screen', 'role_select');
+        localStorage.removeItem('honeychain_role');
+      } catch (e) { }
+
+      if (updateUrl && typeof history !== 'undefined') {
+        const newHash = '#role_select';
+        if (window.location.hash !== newHash) {
+          history.pushState({ screen: 'role_select', role: null }, '', newHash);
+        }
+      }
+      updateScreenVisibility();
+    }
+
+    function setRole(role, updateUrl = true) {
+      currentRole = role;
+      appScreen = 'portal';
+      try {
+        localStorage.setItem('honeychain_screen', 'portal');
+        localStorage.setItem('honeychain_role', role);
+      } catch (e) { }
+
+      if (updateUrl && typeof history !== 'undefined') {
+        const newHash = '#' + role;
+        if (window.location.hash !== newHash) {
+          history.pushState({ screen: 'portal', role: role }, '', newHash);
+        }
+      }
+      updateScreenVisibility();
+
+      if (role === 'beekeeper') {
+        stopBrowserCamera();
+        renderBatchesTable();
+        renderWaveform(false);
+      } else if (role === 'inspector') {
+        stopBrowserCamera();
+      } else if (role === 'customer') {
+        setCustScanMode('camera');
+        try {
+          const savedTab = localStorage.getItem('honeychain_cust_tab') || 'overview';
+          setCustTab(savedTab);
+        } catch (e) { }
+      }
+    }
+
+    function updateScreenVisibility() {
+      document.getElementById('screenIntro').classList.add('hidden');
+      document.getElementById('screenRoleSelect').classList.add('hidden');
+      document.getElementById('viewBeekeeper').classList.add('hidden');
+      document.getElementById('viewInspector').classList.add('hidden');
+      document.getElementById('viewCustomer').classList.add('hidden');
+
+      const navRoleBadge = document.getElementById('navRoleBadge');
+      const navRoleText = document.getElementById('navRoleText');
+      const switchIdentityBtn = document.getElementById('switchIdentityBtn');
+      const introGetStartedBtn = document.getElementById('introGetStartedBtn');
+      const navExitCameraBtn = document.getElementById('navExitCameraBtn');
+
+      navRoleBadge.classList.add('hidden');
+      navRoleBadge.classList.remove('flex');
+      switchIdentityBtn.classList.add('hidden');
+      switchIdentityBtn.classList.remove('flex');
+      introGetStartedBtn.classList.add('hidden');
+      if (navExitCameraBtn) {
+        navExitCameraBtn.classList.add('hidden');
+        navExitCameraBtn.classList.remove('flex');
+      }
+
+      if (appScreen === 'intro') {
+        document.getElementById('screenIntro').classList.remove('hidden');
+        introGetStartedBtn.classList.remove('hidden');
+      } else if (appScreen === 'role_select') {
+        document.getElementById('screenRoleSelect').classList.remove('hidden');
+      } else if (appScreen === 'portal') {
+        navRoleBadge.classList.remove('hidden');
+        navRoleBadge.classList.add('flex');
+
+        if (currentRole === 'beekeeper') {
+          document.getElementById('viewBeekeeper').classList.remove('hidden');
+          navRoleText.innerText = 'Beekeeper Portal';
+          switchIdentityBtn.classList.remove('hidden');
+          switchIdentityBtn.classList.add('flex');
+          switchIdentityBtn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer';
+          switchIdentityBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i><span>Switch Identity</span>';
+        } else if (currentRole === 'inspector') {
+          document.getElementById('viewInspector').classList.remove('hidden');
+          navRoleText.innerText = 'Lab Inspector Terminal';
+          switchIdentityBtn.classList.remove('hidden');
+          switchIdentityBtn.classList.add('flex');
+          switchIdentityBtn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981] font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer';
+          switchIdentityBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i><span>Switch Identity</span>';
+        } else if (currentRole === 'customer') {
+          document.getElementById('viewCustomer').classList.remove('hidden');
+          navRoleText.innerText = 'Customer Verification';
+          // Exit camera button is placed at the far-left corner per diagram
+          if (navExitCameraBtn) {
+            navExitCameraBtn.classList.remove('hidden');
+            navExitCameraBtn.classList.add('flex');
+          }
+          switchIdentityBtn.classList.add('hidden');
+          switchIdentityBtn.classList.remove('flex');
+        }
+      }
+    }
+
+    function openBiometricModal(role) {
+      targetBiometricRole = role;
+      const modal = document.getElementById('biometricModal');
+      const title = document.getElementById('modalRoleTitle');
+      const sub = document.getElementById('modalRoleSubtitle');
+      const iconWrapper = document.getElementById('modalRoleIcon');
+      const iconInner = document.getElementById('modalRoleIconInner');
+      const beekeeperScan = document.getElementById('modalBeekeeperScan');
+      const inspectorPass = document.getElementById('modalInspectorPassword');
+      const passInput = document.getElementById('inspectorPasswordInput');
+      const passError = document.getElementById('inspectorPasswordError');
+
+      if (passError) passError.classList.add('hidden');
+      if (passInput) passInput.value = '';
+
+      if (role === 'inspector') {
+        title.innerText = 'ISO-17025 Lab Inspector Terminal';
+        sub.innerText = 'Password authentication required';
+        iconWrapper.className = 'w-12 h-12 rounded-2xl bg-indigo-100 border border-indigo-300 flex items-center justify-center text-indigo-600';
+        if (iconInner) iconInner.className = 'fa-solid fa-flask-vial text-2xl';
+        beekeeperScan.classList.add('hidden');
+        inspectorPass.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          if (passInput) passInput.focus();
+        }, 150);
+      } else {
+        title.innerText = 'Beekeeper Apiary Enclave';
+        sub.innerText = 'Biometric FIDO2 fingerprint authorization';
+        iconWrapper.className = 'w-12 h-12 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-600';
+        if (iconInner) iconInner.className = 'fa-solid fa-fingerprint text-2xl';
+        inspectorPass.classList.add('hidden');
+        beekeeperScan.classList.remove('hidden');
+        modal.classList.remove('hidden');
+      }
+    }
+
+    function closeBiometricModal() {
+      document.getElementById('biometricModal').classList.add('hidden');
+      const passInput = document.getElementById('inspectorPasswordInput');
+      if (passInput) passInput.value = '';
+    }
+
+    function toggleInspectorPasswordVisibility() {
+      const input = document.getElementById('inspectorPasswordInput');
+      const icon = document.getElementById('inspectorEyeIcon');
+      if (!input || !icon) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash text-sm';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye text-sm';
+      }
+    }
+
+    function submitInspectorPassword() {
+      const input = document.getElementById('inspectorPasswordInput');
+      const err = document.getElementById('inspectorPasswordError');
+      const val = input ? input.value.trim() : '';
+
+      if (val === 'honey@123') {
+        if (err) err.classList.add('hidden');
+        playTone(900, 0.2);
+        setTimeout(() => playTone(1200, 0.3), 150);
+        confetti({ particleCount: 70, spread: 80 });
+        closeBiometricModal();
+        setRole('inspector');
+      } else {
+        playTone(350, 0.4, 'sawtooth');
+        if (err) {
+          err.classList.remove('hidden');
+          err.innerText = 'Invalid password! Access denied.';
+        }
+        if (input) {
+          input.classList.add('border-red-500', 'bg-red-50');
+          setTimeout(() => {
+            input.classList.remove('border-red-500', 'bg-red-50');
+          }, 1500);
+          input.focus();
+          input.select();
+        }
+      }
+    }
+
+    function startBiometricScanProcess() {
+      playTone(600, 0.2);
+      setTimeout(() => {
+        playTone(1000, 0.3);
+        confetti({ particleCount: 50, spread: 60 });
+        closeBiometricModal();
+        setRole(targetBiometricRole);
+      }, 700);
+    }
+
+    function toggleStress() {
+      isStressActive = !isStressActive;
+      const valTemp = document.getElementById('valTemp');
+      const valFreq = document.getElementById('valFreq');
+      const stressAlertNotice = document.getElementById('stressAlertNotice');
+
+      if (isStressActive) {
+        playTone(550, 0.5, 'sawtooth');
+        valTemp.innerText = '36.4°C';
+        valFreq.innerText = '550 Hz';
+        stressAlertNotice.classList.remove('hidden');
+        renderWaveform(true);
+      } else {
+        playTone(240, 0.4, 'sine');
+        valTemp.innerText = '34.8°C';
+        valFreq.innerText = '240 Hz';
+        stressAlertNotice.classList.add('hidden');
+        renderWaveform(false);
+      }
+    }
+
+    function renderWaveform(isStress) {
+      const container = document.getElementById('waveformBars');
+      const header = document.getElementById('waveformHeader');
+      if (!container) return;
+      header.innerText = isStress ? 'Live Audio Spectrum: 550 Hz (Agitation Spike)' : 'Live Audio Spectrum: 240 Hz (Queen Right)';
+      let html = '';
+      for (let i = 0; i < 48; i++) {
+        const height = isStress ? Math.min(95, 30 + Math.sin(i * 0.8) * 35 + (i % 3 === 0 ? 30 : 5)) : Math.min(90, 15 + Math.sin(i * 0.4) * 15 + (i % 4 === 0 ? 10 : 2));
+        const color = isStress ? 'bg-red-500' : 'bg-amber-400';
+        html += `<div style="height: ${height}%" class="flex-1 ${color} rounded-t-sm transition-all duration-150"></div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function renderBatchesTable() {
+      const table = document.getElementById('beekeeperBatchesTable');
+      if (!table) return;
+      table.innerHTML = batches.map(b => `
+        <tr class="hover:bg-amber-50/40">
+          <td class="py-3 px-4 font-bold">${b.id}</td>
+          <td class="py-3 px-4">${b.hiveId}</td>
+          <td class="py-3 px-4">${b.floralSource}</td>
+          <td class="py-3 px-4 font-bold">${b.qty}</td>
+          <td class="py-3 px-4 font-bold text-amber-700">#${b.blockNumber}</td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">✓ Certified</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function openMintModal() {
+      const newId = 'HC-2026-NIL-' + Math.floor(100000 + Math.random() * 900000);
+      batches.unshift({ id: newId, hiveId: 'HIVE-NILGIRI-014', floralSource: 'Wild Acacia & Forest Blossom', qty: '35.0 kg', blockNumber: 184920 + batches.length + 1, status: 'MINTED_PENDING_LAB' });
+      persistBatches();
+      playTone(880, 0.3);
+      confetti({ particleCount: 60, spread: 70 });
+      alert(`Harvest Batch ${newId} minted on Hyperledger Fabric!`);
+      renderBatchesTable();
+    }
+
+    function notarizeBatchInTerminal() {
+      playTone(1000, 0.4);
+      confetti({ particleCount: 70, spread: 80 });
+      alert('Laboratory test certificate notarized on Hyperledger Fabric with live SHA-256 digest!');
+    }
+
+    // =========================================================================
+    // UNIVERSAL CAMERA STREAM HARDWARE LIFECYCLE & INTERCEPTOR
+    // =========================================================================
+    const globalCameraStreams = new Set();
+    let isCustomerCameraHardwarePermitted = false;
+    let cameraStream = null;
+    let isCustomerCameraActive = false;
+    let custScanMode = 'camera';
+
+    // Global navigator.mediaDevices.getUserMedia Interceptor
+    if (typeof navigator !== 'undefined' && navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+      const nativeGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+      navigator.mediaDevices.getUserMedia = async function (constraints) {
+        if (!isCustomerCameraHardwarePermitted) {
+          throw new DOMException('Camera access blocked: not in customer view', 'AbortError');
+        }
+
+        // Kill any existing streams first to prevent hardware stacking
+        globalCameraStreams.forEach(s => {
+          try {
+            s.getTracks().forEach(t => {
+              t.stop();
+              t.enabled = false;
+              try { s.removeTrack(t); } catch (e) { }
+            });
+          } catch (e) { }
+        });
+        globalCameraStreams.clear();
+
+        const stream = await nativeGetUserMedia(constraints);
+        globalCameraStreams.add(stream);
+
+        // If user exited/navigated away while getUserMedia was resolving:
+        if (!isCustomerCameraHardwarePermitted || currentRole !== 'customer') {
+          stream.getTracks().forEach(t => {
+            t.stop();
+            t.enabled = false;
+            try { stream.removeTrack(t); } catch (e) { }
+          });
+          globalCameraStreams.delete(stream);
+          throw new DOMException('Camera cancelled: navigated away', 'AbortError');
+        }
+
+        return stream;
+      };
+    }
+
+    async function startBrowserCamera() {
+      stopBrowserCamera();
+      isCustomerCameraHardwarePermitted = true;
+      isCustomerCameraActive = true;
+      const standby = document.getElementById('cameraStandby');
+      const video = document.getElementById('liveCameraVideo');
+      const liveBadge = document.getElementById('scannerLiveBadge');
+      const turnOffBtn = document.getElementById('turnOffCameraBtn');
+
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          if (!isCustomerCameraHardwarePermitted || currentRole !== 'customer') {
+            stream.getTracks().forEach(t => {
+              t.stop();
+              t.enabled = false;
+              try { stream.removeTrack(t); } catch (e) { }
+            });
+            stopBrowserCamera();
+            return;
+          }
+          cameraStream = stream;
+          if (video) {
+            video.srcObject = cameraStream;
+            video.classList.remove('hidden');
+            if (standby) standby.classList.add('hidden');
+            if (liveBadge) {
+              liveBadge.innerText = 'LIVE';
+              liveBadge.className = 'text-[10px] text-emerald-400 font-mono font-bold';
+            }
+            if (turnOffBtn) turnOffBtn.classList.remove('hidden');
+            try { await video.play(); } catch (e) { }
+          }
+        }
+      } catch (e) {
+        console.warn('Camera access denied or unavailable', e);
+        stopBrowserCamera();
+      }
+    }
+
+    function stopBrowserCamera() {
+      isCustomerCameraHardwarePermitted = false;
+      isCustomerCameraActive = false;
+
+      // 1. Stop all registered streams
+      globalCameraStreams.forEach(stream => {
+        try {
+          stream.getTracks().forEach(t => {
+            t.stop();
+            t.enabled = false;
+            try { stream.removeTrack(t); } catch (e) { }
+          });
+        } catch (e) { }
+      });
+      globalCameraStreams.clear();
+
+      // 2. Stop cameraStream reference
+      if (cameraStream) {
+        try {
+          cameraStream.getTracks().forEach(t => {
+            t.stop();
+            t.enabled = false;
+            try { cameraStream.removeTrack(t); } catch (e) { }
+          });
+        } catch (e) { }
+        cameraStream = null;
+      }
+
+      // 3. Purge all video elements in DOM
+      try {
+        document.querySelectorAll('video').forEach(v => {
+          try { v.pause(); } catch (e) { }
+          if (v.srcObject) {
+            try {
+              const s = v.srcObject;
+              if (s && s.getTracks) {
+                s.getTracks().forEach(t => {
+                  t.stop();
+                  t.enabled = false;
+                  try { s.removeTrack(t); } catch (e) { }
+                });
+              }
+            } catch (e) { }
+            v.srcObject = null;
+          }
+          try { v.removeAttribute('src'); v.load(); } catch (e) { }
+          v.classList.add('hidden');
+        });
+      } catch (e) { }
+
+      const standby = document.getElementById('cameraStandby');
+      if (standby) standby.classList.remove('hidden');
+      const liveBadge = document.getElementById('scannerLiveBadge');
+      if (liveBadge) {
+        liveBadge.innerText = 'STANDBY';
+        liveBadge.className = 'text-[10px] text-amber-400 font-mono font-bold';
+      }
+      const turnOffBtn = document.getElementById('turnOffCameraBtn');
+      if (turnOffBtn) turnOffBtn.classList.add('hidden');
+    }
+
+    function setCustScanMode(mode) {
+      custScanMode = mode;
+      const btnCam = document.getElementById('custModeBtn_camera');
+      const btnUp = document.getElementById('custModeBtn_upload');
+      const camView = document.getElementById('custView_camera');
+      const upView = document.getElementById('custView_upload');
+
+      if (mode === 'camera') {
+        if (btnCam) btnCam.className = 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-black bg-orange-500 text-slate-950 shadow-md shadow-orange-500/30 transition-all cursor-pointer';
+        if (btnUp) btnUp.className = 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-black text-slate-400 hover:text-white transition-all cursor-pointer';
+        if (camView) camView.classList.remove('hidden');
+        if (upView) upView.classList.add('hidden');
+        startBrowserCamera();
+      } else {
+        if (btnUp) btnUp.className = 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-black bg-orange-500 text-slate-950 shadow-md shadow-orange-500/30 transition-all cursor-pointer';
+        if (btnCam) btnCam.className = 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-black text-slate-400 hover:text-white transition-all cursor-pointer';
+        if (upView) upView.classList.remove('hidden');
+        if (camView) camView.classList.add('hidden');
+        stopBrowserCamera(); // Guarantee camera hardware is OFF
+      }
+    }
+
+    function selectSampleBarcode(batchId, name, ean, company, purity, ingredients, origin) {
+      playTone(850, 0.2);
+      const titleEl = document.getElementById('custPassportTitle');
+      const compEl = document.getElementById('custPassportCompany');
+      const purityEl = document.getElementById('custPassportPurity');
+      const batchEl = document.getElementById('custPassportBatchId');
+      const ingPurityEl = document.getElementById('custPassportIngredientsPurity');
+      const ingTextEl = document.getElementById('custPassportIngredients');
+      const prodEl = document.getElementById('custPassportProducer');
+      const originEl = document.getElementById('custPassportOrigin');
+
+      if (titleEl) titleEl.innerText = name || 'Nilgiri High-Altitude Forest Honey';
+      if (compEl) compEl.innerText = company || 'Nilgiri Mountain Honey Co.';
+      if (purityEl) purityEl.innerText = purity || 'pure honey 100%';
+      if (batchEl) batchEl.innerText = '#' + (batchId || 'HC-2026-NIL-008421');
+      if (ingPurityEl) ingPurityEl.innerText = purity || 'pure honey 100%';
+      if (ingTextEl) ingTextEl.innerText = ingredients || '100% Pure Raw Natural Honey, Wild Botanical Floral Nectar, Active Enzymes (Diastase). No added sugars, no syrups.';
+      if (prodEl) prodEl.innerText = company || 'Nilgiri Mountain Honey Co.';
+      if (originEl) originEl.innerText = origin || 'Nilgiris, Tamil Nadu';
+
+      triggerJarScanWithSuccess((name || 'Honey Jar') + ' (' + (ean || batchId) + ')');
+    }
+
+    function handleCustPhotoUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      // Direct SVG text decode
+      if (file.type.includes('svg') || file.name.toLowerCase().endsWith('.svg')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target.result;
+          const compMatch = text.match(/data-company="([^"]+)"/i);
+          const purityMatch = text.match(/data-purity="([^"]+)"/i);
+          const ingMatch = text.match(/data-ingredients="([^"]+)"/i);
+          const batchMatch = text.match(/data-batch-id="([^"]+)"/i) || text.match(/Digital Batch ID:\s*([A-Za-z0-9-]+)/i);
+          const barcodeMatch = text.match(/data-barcode="([^"]+)"/i) || text.match(/Code:\s*([0-9]{12,13})/i);
+
+          const company = compMatch ? compMatch[1] : (latestRegisteredBatch?.companyName || 'Nilgiri Mountain Honey Co.');
+          const purity = purityMatch ? purityMatch[1] : (latestRegisteredBatch?.purityScore || 'pure honey 100%');
+          const ingredients = ingMatch ? ingMatch[1] : (latestRegisteredBatch?.ingredients || '100% Pure Raw Natural Honey');
+          const batchId = batchMatch ? batchMatch[1] : (latestRegisteredBatch?.id || 'HC-2026-INSP-99881');
+          const barcode = barcodeMatch ? barcodeMatch[1] : (latestRegisteredBatch?.barcode || '8901030099881');
+
+          selectSampleBarcode(batchId, (latestRegisteredBatch?.name || 'Inspected Honey Bottle'), barcode, company, purity, ingredients, (latestRegisteredBatch?.region || 'Nilgiris, Tamil Nadu'));
+        };
+        reader.readAsText(file);
+        return;
+      }
+
+      // Check if image filename matches latest registered batch
+      if (latestRegisteredBatch && (file.name.includes(latestRegisteredBatch.barcode) || file.name.includes(latestRegisteredBatch.id))) {
+        selectSampleBarcode(
+          latestRegisteredBatch.id,
+          latestRegisteredBatch.name,
+          latestRegisteredBatch.barcode,
+          latestRegisteredBatch.companyName,
+          latestRegisteredBatch.purityScore,
+          latestRegisteredBatch.ingredients,
+          latestRegisteredBatch.region
+        );
+      } else {
+        triggerJarScanWithSuccess(file.name);
+      }
+    }
+
+    function triggerJarScanWithSuccess(label) {
+      const txt = document.getElementById('scannerStatusText');
+      if (txt) txt.innerText = 'ANALYZING BARCODE...';
+      playTone(750, 0.2);
+      setTimeout(() => {
+        playTone(1050, 0.3);
+        confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+        if (txt) txt.innerText = 'VERIFIED: ' + (label || 'HC-2026-NIL-008421');
+        alert('Honey Bottle Barcode Verified!\n' + (label || 'Nilgiri Wild Kurinji Reserve') + '\nEA-IRMS Purity: 100% Pure Natural Honey (0.00% Syrups)');
+      }, 700);
+    }
+
+    window.addEventListener('beforeunload', stopBrowserCamera);
+    window.addEventListener('pagehide', stopBrowserCamera);
+    window.addEventListener('popstate', () => {
+      stopBrowserCamera();
+      handleRouteSync();
+    });
+    window.addEventListener('hashchange', () => {
+      stopBrowserCamera();
+      handleRouteSync();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopBrowserCamera();
+    });
+
+    function triggerJarScan() {
+      playTone(750, 0.2);
+      const txt = document.getElementById('scannerStatusText');
+      if (txt) txt.innerText = 'VERIFYING ZK-PROOF...';
+      setTimeout(() => {
+        playTone(1050, 0.3);
+        confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+        if (txt) txt.innerText = 'PASSPORT UNLOCKED ✓';
+      }, 700);
+    }
+
+    function setCustTab(tab) {
+      try {
+        localStorage.setItem('honeychain_cust_tab', tab);
+      } catch (e) { }
+      ['overview', 'origin', 'nutrition', 'lab', 'blockchain'].forEach(t => {
+        const btn = document.getElementById('custTab_' + t);
+        const panel = document.getElementById('custPanel_' + t);
+        if (btn && panel) {
+          if (t === tab) {
+            btn.className = 'pb-3 px-3 text-amber-600 border-b-2 border-amber-500 font-extrabold whitespace-nowrap cursor-pointer';
+            panel.classList.remove('hidden');
+          } else {
+            btn.className = 'pb-3 px-3 text-slate-500 hover:text-slate-800 whitespace-nowrap cursor-pointer';
+            panel.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); }
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+
+    function openJudgeDeck() { document.getElementById('judgeModal').classList.remove('hidden'); }
+    function closeJudgeDeck() { document.getElementById('judgeModal').classList.add('hidden'); }
+
+    function simulateAttackInDeck() {
+      playTone(400, 0.4, 'sawtooth');
+      alert('Simulated Syrup Injection: EA-IRMS Carbon Isotope δ13C shifted to -18.4‰. ZK-SNARK proof rejected and batch quarantined on Hyperledger Fabric!');
+    }
+
+    function restorePurityInDeck() {
+      playTone(880, 0.3);
+      confetti({ particleCount: 60, spread: 70 });
+      alert('Restored 100% natural Nilgiri botanical baseline (-26.8‰ natural).');
+    }
+
+    // Interactive Lab Test Simulator Mode
+    let labTestMode = 'pure_natural';
+    let latestRegisteredBatch = null;
+    try {
+      const storedLatest = localStorage.getItem('honeychain_latest_batch');
+      if (storedLatest) latestRegisteredBatch = JSON.parse(storedLatest);
+    } catch (e) { }
+
+    function setLabTestMode(mode) {
+      labTestMode = mode;
+      const btnPure = document.getElementById('btnModePure');
+      const btnCorn = document.getElementById('btnModeCorn');
+      const btnRice = document.getElementById('btnModeRice');
+      const purityBadge = document.getElementById('labPurityBadge');
+      const c4Val = document.getElementById('labC4Val');
+      const c3Val = document.getElementById('labC3Val');
+      const deltaVal = document.getElementById('labDeltaVal');
+      const hmfBadge = document.getElementById('labHmfBadge');
+      const hmfContent = document.getElementById('labHmfContentVal');
+      const diastaseVal = document.getElementById('labDiastaseVal');
+
+      const modalBadge = document.getElementById('htmlLabSnapshotBadge');
+      const modalIsotope = document.getElementById('htmlLabIsotopeVal');
+      const modalHmf = document.getElementById('htmlLabHmfVal');
+
+      // Reset button classes
+      [btnPure, btnCorn, btnRice].forEach(b => {
+        if (b) b.className = 'py-2 px-3 rounded-xl transition-all cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700';
+      });
+
+      if (mode === 'pure_natural') {
+        if (btnPure) btnPure.className = 'py-2 px-3 rounded-xl transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/30';
+        if (purityBadge) { purityBadge.innerText = '0.00% Pure ✓'; purityBadge.className = 'px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full'; }
+        if (c4Val) { c4Val.innerText = '0.00% (Undetected ✓)'; c4Val.className = 'font-bold text-emerald-700'; }
+        if (c3Val) { c3Val.innerText = '0.00% (Undetected ✓)'; c3Val.className = 'font-bold text-emerald-700'; }
+        if (deltaVal) deltaVal.innerText = '-26.8‰ Natural';
+        if (hmfBadge) { hmfBadge.innerText = 'PASS (8.2 mg/kg)'; hmfBadge.className = 'px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full'; }
+        if (hmfContent) hmfContent.innerText = '8.2 mg/kg (Raw Grade A ✓)';
+        if (diastaseVal) diastaseVal.innerText = '24.8 Schade Units';
+
+        if (modalBadge) { modalBadge.innerText = '100% PURE ✓'; modalBadge.className = 'font-mono text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-bold'; }
+        if (modalIsotope) modalIsotope.innerText = '-26.8‰ Natural';
+        if (modalHmf) modalHmf.innerText = '8.2 mg/kg';
+      } else if (mode === 'corn_cane') {
+        if (btnCorn) btnCorn.className = 'py-2 px-3 rounded-xl transition-all cursor-pointer bg-red-600 text-white shadow-md shadow-red-600/30';
+        if (purityBadge) { purityBadge.innerText = 'ADULTERATION DETECTED'; purityBadge.className = 'px-3 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full'; }
+        if (c4Val) { c4Val.innerText = '18.4% Adulterated (FAIL)'; c4Val.className = 'font-bold text-red-600'; }
+        if (c3Val) { c3Val.innerText = '0.00%'; c3Val.className = 'font-bold text-emerald-700'; }
+        if (deltaVal) deltaVal.innerText = '-18.2‰ (Exceeds Limit)';
+        if (hmfBadge) { hmfBadge.innerText = 'ELEVATED (24.5 mg/kg)'; hmfBadge.className = 'px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full'; }
+        if (hmfContent) hmfContent.innerText = '24.5 mg/kg';
+        if (diastaseVal) diastaseVal.innerText = '11.2 Schade Units';
+
+        if (modalBadge) { modalBadge.innerText = 'ADULTERATED ⚠'; modalBadge.className = 'font-mono text-[10px] bg-red-100 text-red-800 px-2 py-0.5 rounded-md font-bold'; }
+        if (modalIsotope) modalIsotope.innerText = '-18.2‰ Exceeds';
+        if (modalHmf) modalHmf.innerText = '24.5 mg/kg';
+      } else if (mode === 'rice_beet') {
+        if (btnRice) btnRice.className = 'py-2 px-3 rounded-xl transition-all cursor-pointer bg-red-600 text-white shadow-md shadow-red-600/30';
+        if (purityBadge) { purityBadge.innerText = 'ADULTERATION DETECTED'; purityBadge.className = 'px-3 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full'; }
+        if (c4Val) { c4Val.innerText = '0.00%'; c4Val.className = 'font-bold text-emerald-700'; }
+        if (c3Val) { c3Val.innerText = '22.8% Adulterated (FAIL)'; c3Val.className = 'font-bold text-red-600'; }
+        if (deltaVal) deltaVal.innerText = '-21.4‰ (Exceeds Limit)';
+        if (hmfBadge) { hmfBadge.innerText = 'ELEVATED (19.8 mg/kg)'; hmfBadge.className = 'px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full'; }
+        if (hmfContent) hmfContent.innerText = '19.8 mg/kg';
+        if (diastaseVal) diastaseVal.innerText = '12.0 Schade Units';
+
+        if (modalBadge) { modalBadge.innerText = 'ADULTERATED ⚠'; modalBadge.className = 'font-mono text-[10px] bg-red-100 text-red-800 px-2 py-0.5 rounded-md font-bold'; }
+        if (modalIsotope) modalIsotope.innerText = '-21.4‰ Exceeds';
+        if (modalHmf) modalHmf.innerText = '19.8 mg/kg';
+      }
+    }
+
+    function updateHtmlLiveBarPic() {
+      const barcode = (document.getElementById('htmlBarcodeNumber')?.value || '8901030099881').trim();
+      const name = (document.getElementById('htmlBottleName')?.value || 'Nilgiri Wild Mountain Honey (Grade A Raw)').trim();
+      const company = (document.getElementById('htmlCompanyName')?.value || 'Nilgiri Mountain Honey Co.').trim();
+      const purity = (document.getElementById('htmlPurityScore')?.value || 'pure honey 100%').trim();
+      const ingredients = (document.getElementById('htmlIngredientsDesc')?.value || '100% Pure Raw Natural Honey').trim();
+      const flora = (document.getElementById('htmlFloraSource')?.value || 'Wild Kurinji & Acacia Nectar').trim();
+      const origin = (document.getElementById('htmlOriginRegion')?.value || 'Nilgiris, Tamil Nadu').trim();
+      const container = document.getElementById('htmlLiveBarPicContainer');
+      if (container) {
+        container.innerHTML = generateBarcodeSvgString(barcode, name, company, purity, ingredients, origin, flora);
+      }
+    }
+
+    function openAddInspectedBarModal() {
+      const formView = document.getElementById('inspectedBarFormView');
+      const successView = document.getElementById('inspectedBarSuccessView');
+      if (formView) formView.classList.remove('hidden');
+      if (successView) successView.classList.add('hidden');
+      document.getElementById('addInspectedBarModal').classList.remove('hidden');
+      updateHtmlLiveBarPic();
+    }
+
+    function closeAddInspectedBarModal() {
+      document.getElementById('addInspectedBarModal').classList.add('hidden');
+    }
+
+    function generateRandomBarcodeForHtml() {
+      const prefix = '89010300';
+      const suffix = Math.floor(1000 + Math.random() * 9000);
+      const code12 = prefix + suffix;
+      let sum = 0;
+      for (let i = 0; i < 12; i++) {
+        sum += parseInt(code12[i], 10) * (i % 2 === 0 ? 1 : 3);
+      }
+      const checksum = (10 - (sum % 10)) % 10;
+      const fullCode = code12 + checksum;
+      const input = document.getElementById('htmlBarcodeNumber');
+      if (input) input.value = fullCode;
+      updateHtmlLiveBarPic();
+      playTone(850, 0.15);
+      try { confetti({ particleCount: 40, spread: 65 }); } catch (e) { }
+    }
+
+    function xmlEscapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    function generateBarcodeSvgString(code, title, company, purity, ingredients, origin, flora) {
+      const safeTitle = xmlEscapeHtml(title || 'Nilgiri Wild Mountain Honey');
+      const safeCompany = xmlEscapeHtml((company || 'Nilgiri Mountain Honey Co.').toUpperCase());
+      const safePurity = xmlEscapeHtml(purity || 'pure honey 100%');
+      const safeIngredients = xmlEscapeHtml(ingredients || '100% Pure Raw Natural Honey');
+      const safeOrigin = xmlEscapeHtml(origin || 'Nilgiris, Tamil Nadu');
+      const safeFlora = xmlEscapeHtml(flora || 'Wild Kurinji & Acacia Nectar');
+
+      let bars = '';
+      let x = 36;
+      for (let i = 0; i < code.length; i++) {
+        const digit = parseInt(code[i], 10) || 0;
+        const pattern = [
+          [2, 1, 2, 2], [1, 2, 2, 2], [2, 2, 1, 2], [1, 1, 4, 1], [3, 1, 1, 2],
+          [1, 3, 1, 2], [1, 1, 1, 4], [1, 3, 2, 1], [2, 1, 3, 1], [1, 2, 1, 3]
+        ][digit % 10];
+        pattern.forEach((w, idx) => {
+          if (idx % 2 === 0) {
+            bars += `<rect x="${x}" y="145" width="${w * 2.2}" height="52" fill="#0f172a"/>`;
+          }
+          x += w * 2.2 + 1.2;
+        });
+        x += 2.8;
+      }
+
+      return `
+        <svg viewBox="0 0 380 270" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-sm mx-auto shadow-md rounded-2xl bg-[#d1e2cb] border-2 border-[#8da981]" style="display: block; margin: 0 auto;">
+          <metadata id="hc_meta" data-batch-id="HC-2026-INSP-${code.slice(-6)}" data-barcode="${code}" data-company="${safeCompany}" data-purity="${safePurity}" data-ingredients="${safeIngredients}"/>
+          <rect width="100%" height="100%" fill="#d1e2cb" rx="16"/>
+          <!-- Header Bar: Warm Amber Honey -->
+          <rect x="0" y="0" width="380" height="36" fill="#eab308" rx="16"/>
+          <rect x="0" y="16" width="380" height="20" fill="#eab308"/>
+          <text x="20" y="24" fill="#183018" font-size="11" font-weight="900" letter-spacing="1">HONEYCHAIN • SMART SEAL BAR PIC</text>
+          <rect x="250" y="9" width="112" height="18" rx="9" fill="#183018"/>
+          <text x="306" y="22" font-family="monospace" font-size="8.5" font-weight="bold" fill="#bdd2b3" text-anchor="middle">ISO-17025 CERT</text>
+          
+          <!-- Company & Product Name -->
+          <text x="20" y="55" fill="#a16207" font-size="9.5" font-weight="800" letter-spacing="0.5">${safeCompany}</text>
+          <text x="20" y="74" fill="#183018" font-size="13" font-weight="900">${safeTitle}</text>
+          
+          <!-- Purity & Origin Badge: Pistachio Green Accent -->
+          <rect x="20" y="82" width="138" height="18" rx="5" fill="#bdd2b3" stroke="#8da981" stroke-width="1"/>
+          <text x="89" y="94" font-size="8.5" font-weight="800" fill="#183018" text-anchor="middle">PURITY: ${safePurity}</text>
+          <text x="166" y="95" font-size="9" font-weight="600" fill="#2f482d">${safeOrigin} • ${safeFlora}</text>
+          
+          <!-- Ingredients Description -->
+          <text x="20" y="115" font-size="8.5" font-weight="600" fill="#2f482d">Ingredients: <tspan fill="#183018" font-weight="700">${safeIngredients.length > 50 ? safeIngredients.substring(0, 48) + '...' : safeIngredients}</tspan></text>
+          <text x="20" y="132" font-family="monospace" font-size="9" font-weight="700" fill="#a16207">Digital Batch ID: <tspan fill="#183018">HC-2026-INSP-${code.slice(-6)}</tspan></text>
+          
+          <!-- Barcode container: user specified Pistachio swatch #bdd2b3 -->
+          <rect x="18" y="138" width="344" height="84" rx="8" fill="#bdd2b3" stroke="#8da981" stroke-width="1.5"/>
+          ${bars}
+          <text x="190" y="214" text-anchor="middle" fill="#183018" font-family="monospace" font-size="12" font-weight="bold" letter-spacing="3">${code}</text>
+          
+          <text x="20" y="246" fill="#2f482d" font-size="8.5" font-weight="700">100% PURE BOTANICAL • ISO/IEC 17025 TESTED • HYPERLEDGER SECURED</text>
+          <text x="20" y="258" fill="#3e623c" font-family="monospace" font-size="8" font-weight="600">UPLOAD PIC TO CUSTOMER PORTAL TO UNLOCK PASSPORT</text>
+        </svg>
+      `;
+    }
+
+    function downloadBarcodeSvgFromHtml() {
+      const barcode = (document.getElementById('htmlBarcodeNumber')?.value || '8901030099881').trim();
+      const name = (document.getElementById('htmlBottleName')?.value || 'Nilgiri Wild Mountain Honey (Grade A Raw)').trim();
+      const company = (document.getElementById('htmlCompanyName')?.value || 'Nilgiri Mountain Honey Co.').trim();
+      const purity = (document.getElementById('htmlPurityScore')?.value || 'pure honey 100%').trim();
+      const ingredients = (document.getElementById('htmlIngredientsDesc')?.value || '100% Pure Raw Natural Honey').trim();
+      const flora = (document.getElementById('htmlFloraSource')?.value || 'Wild Kurinji & Acacia Nectar').trim();
+      const origin = (document.getElementById('htmlOriginRegion')?.value || 'Nilgiris, Tamil Nadu').trim();
+
+      const svg = generateBarcodeSvgString(barcode, name, company, purity, ingredients, origin, flora);
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'honeychain-barcode-' + barcode + '.svg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function downloadBarcodePngFromHtml() {
+      const barcode = (document.getElementById('htmlBarcodeNumber')?.value || '8901030099881').trim();
+      const name = (document.getElementById('htmlBottleName')?.value || 'Nilgiri Wild Mountain Honey (Grade A Raw)').trim();
+      const company = (document.getElementById('htmlCompanyName')?.value || 'Nilgiri Mountain Honey Co.').trim();
+      const purity = (document.getElementById('htmlPurityScore')?.value || 'pure honey 100%').trim();
+      const ingredients = (document.getElementById('htmlIngredientsDesc')?.value || '100% Pure Raw Natural Honey').trim();
+      const flora = (document.getElementById('htmlFloraSource')?.value || 'Wild Kurinji & Acacia Nectar').trim();
+      const origin = (document.getElementById('htmlOriginRegion')?.value || 'Nilgiris, Tamil Nadu').trim();
+
+      const svg = generateBarcodeSvgString(barcode, name, company, purity, ingredients, origin, flora);
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = 760;
+        canvas.height = 540;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#bdd2b3';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(function (pngBlob) {
+          const pngUrl = URL.createObjectURL(pngBlob);
+          const a = document.createElement('a');
+          a.href = pngUrl;
+          a.download = 'honeychain-barcode-' + barcode + '.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
+        }, 'image/png');
+      };
+      img.src = url;
+    }
+
+    function handleSaveInspectedBar(event) {
+      if (event) event.preventDefault();
+      const barcode = document.getElementById('htmlBarcodeNumber').value.trim();
+      const name = document.getElementById('htmlBottleName').value.trim();
+      const company = document.getElementById('htmlCompanyName').value.trim();
+      const purity = document.getElementById('htmlPurityScore').value.trim();
+      const ingredients = document.getElementById('htmlIngredientsDesc').value.trim();
+      const flora = document.getElementById('htmlFloraSource').value.trim();
+      const origin = document.getElementById('htmlOriginRegion').value.trim();
+
+      const newId = 'HC-2026-INSP-' + barcode.slice(-6);
+      latestRegisteredBatch = {
+        id: newId,
+        barcode: barcode,
+        name: name,
+        companyName: company,
+        purityScore: purity,
+        ingredients: ingredients,
+        floralSource: flora,
+        region: origin,
+        hiveId: 'APIARY-INSP-' + barcode.slice(-3),
+        qty: '40.0 kg',
+        blockNumber: 184920 + batches.length + 1,
+        status: 'CERTIFIED_AUTHENTIC'
+      };
+
+      batches.unshift(latestRegisteredBatch);
+      persistBatches();
+      try {
+        localStorage.setItem('honeychain_latest_batch', JSON.stringify(latestRegisteredBatch));
+      } catch (e) { }
+      renderBatchesTable();
+
+      // Add to sample barcodes list in customer view
+      const sampleContainer = document.getElementById('htmlSampleBarcodesContainer');
+      if (sampleContainer) {
+        const btn = document.createElement('button');
+        btn.onclick = () => selectSampleBarcode(newId, name, barcode, company, purity, ingredients, origin);
+        btn.className = 'w-full text-left p-2 rounded-xl bg-amber-950/80 hover:bg-amber-900 border border-amber-400/80 text-[10px] text-white flex items-center justify-between cursor-pointer transition animate-fadeIn';
+        btn.innerHTML = `<span class="font-bold truncate text-amber-200">${name}</span><span class="font-mono text-amber-400 text-[9px]">${barcode}</span>`;
+        sampleContainer.prepend(btn);
+      }
+
+      // Render barcode preview in success view
+      const previewBox = document.getElementById('inspectedBarcodePreviewBox');
+      if (previewBox) {
+        previewBox.innerHTML = generateBarcodeSvgString(barcode, name, company, purity, ingredients, origin, flora);
+      }
+
+      document.getElementById('inspectedBarFormView').classList.add('hidden');
+      document.getElementById('inspectedBarSuccessView').classList.remove('hidden');
+
+      playTone(900, 0.2);
+      setTimeout(() => playTone(1200, 0.3), 150);
+      try {
+        confetti({ particleCount: 80, spread: 90 });
+      } catch (e) { }
+    }
+
+    function testRegisteredBarInCustomerScanner() {
+      closeAddInspectedBarModal();
+      setRole('customer');
+      if (latestRegisteredBatch) {
+        selectSampleBarcode(
+          latestRegisteredBatch.id,
+          latestRegisteredBatch.name,
+          latestRegisteredBatch.barcode,
+          latestRegisteredBatch.companyName,
+          latestRegisteredBatch.purityScore,
+          latestRegisteredBatch.ingredients,
+          latestRegisteredBatch.region
+        );
+      }
+    }
+
+    function populateCustomBarcodes() {
+      const sampleContainer = document.getElementById('htmlSampleBarcodesContainer');
+      if (!sampleContainer) return;
+      batches.forEach(b => {
+        if (b.barcode && b.id && b.id.includes('INSP')) {
+          const btn = document.createElement('button');
+          btn.onclick = () => selectSampleBarcode(b.id, b.name || 'Inspected Honey Bottle', b.barcode, b.companyName, b.purityScore, b.ingredients, b.region);
+          btn.className = 'w-full text-left p-2 rounded-xl bg-amber-950/80 hover:bg-amber-900 border border-amber-400/80 text-[10px] text-white flex items-center justify-between cursor-pointer transition animate-fadeIn';
+          btn.innerHTML = `<span class="font-bold truncate text-amber-200">${b.name || 'Inspected Honey'}</span><span class="font-mono text-amber-400 text-[9px]">${b.barcode}</span>`;
+          sampleContainer.prepend(btn);
+        }
+      });
+    }
+
+    function handleRouteSync() {
+      const hash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
+      if (['beekeeper', 'inspector', 'customer'].includes(hash)) {
+        if (currentRole !== hash || appScreen !== 'portal') {
+          setRole(hash, false);
+        }
+      } else if (hash === 'role_select' || hash === 'roles') {
+        if (appScreen !== 'role_select') {
+          goToRoleSelect(false);
+        }
+      } else if (hash === 'intro' || hash === 'home' || hash === '') {
+        if (appScreen !== 'intro') {
+          goToIntro(false);
+        }
+      }
+    }
+
+    function initNavigation() {
+      // 1. Populate any custom/registered barcodes
+      populateCustomBarcodes();
+
+      // 2. Check URL hash first (direct links, bookmark, refresh with hash)
+      const hash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
+      if (['beekeeper', 'inspector', 'customer'].includes(hash)) {
+        setRole(hash, false);
+        return;
+      }
+      if (hash === 'role_select' || hash === 'roles') {
+        goToRoleSelect(false);
+        return;
+      }
+      if (hash === 'intro' || hash === 'home') {
+        goToIntro(false);
+        return;
+      }
+
+      // 3. Check localStorage (refresh without hash or browser tab re-open)
+      try {
+        const savedScreen = localStorage.getItem('honeychain_screen');
+        const savedRole = localStorage.getItem('honeychain_role');
+        if (savedScreen === 'portal' && ['beekeeper', 'inspector', 'customer'].includes(savedRole)) {
+          setRole(savedRole, true);
+          return;
+        }
+        if (savedScreen === 'role_select') {
+          goToRoleSelect(true);
+          return;
+        }
+      } catch (e) { }
+
+      // 4. Default to intro screen
+      goToIntro(false);
+    }
+
+    // Initialize application state and restore route on refresh
+    initNavigation();
+  </script>
+</body>
+
+</html>
