@@ -109,6 +109,33 @@ const HoneychainContext = createContext<HoneychainContextType | undefined>(undef
 
 const PRODUCTION_BATCHES: BatchItem[] = [
   {
+    id: 'HNY-TG-2026-0001',
+    name: 'Warangal Forest Multiflora Pure Reserve',
+    hiveId: 'HIVE-TG-017',
+    apiary: 'Warangal Rural Cluster Apiary AP-TG-01',
+    region: 'Warangal, Telangana',
+    elevation: '302 meters above sea level',
+    harvestDate: '2026-09-12',
+    harvestQtyKg: 68.5,
+    floralSource: 'Wild Multiflora & Teak Forest Blossom',
+    moisturePct: 17.2,
+    c4SugarPct: 0.0,
+    c3SugarPct: 0.0,
+    isotopeDeltaC13: -26.8,
+    hmfMgKg: 8.4,
+    diastaseUnits: 22.4,
+    status: 'CERTIFIED_AUTHENTIC',
+    labInspectorId: 'LAB-ISO-17025-TG-01',
+    labCertificateId: 'NABL-ISO17025-TG-88102',
+    notarizedAt: '2026-09-13 14:00:00 UTC',
+    blockNumber: 2,
+    txHash: '0x99aBEE42F559483A610992310b8C1E0A892F73C14882199042bcee81944a10',
+    sha256Digest: '0x55dca81944a10e0f1c2b3a4e5d6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4',
+    zkProofHash: 'zk_snark_purity_c4c3_0x99aBEE42F_verified',
+    zkPublicCommitment: '0x42bcee81944a10e0f1c2b3a4e5d6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4',
+    tampered: false
+  },
+  {
     id: 'HC-2026-NIL-008421',
     name: 'Nilgiri Wild Kurinji Pure Raw Reserve',
     hiveId: 'HIVE-084',

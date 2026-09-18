@@ -1,437 +1,651 @@
-import React, { useState } from 'react';
-import { useHoneychain } from '../context/HoneychainContext';
-import { soundManager } from '../utils/audio';
+import React, { useState, useEffect } from 'react';
 import {
-  ShieldAlert,
+  Building2,
   ShieldCheck,
+  ShieldAlert,
   CheckCircle2,
   AlertTriangle,
-  Database,
-  Cpu,
-  UserCheck,
-  Lock,
-  Activity,
-  RefreshCw,
-  Sliders,
-  Flame,
-  Search,
-  Key,
+  MapPin,
   Users,
-  Award,
-  Unlock,
-  Radio,
-  ArrowLeft
+  Cpu,
+  Layers,
+  Search,
+  Download,
+  Activity,
+  FileText,
+  UserCheck,
+  RefreshCw,
+  Sparkles,
+  ArrowRight,
+  Filter,
+  Flame,
+  Check,
+  RotateCcw
 } from 'lucide-react';
+import { soundManager } from '../utils/audio';
+
+interface ClusterInfo {
+  id: string;
+  name: string;
+  state: string;
+  region: string;
+  coordinates: string;
+  leadOfficer: string;
+  beekeepersCount: number;
+  hivesCount: number;
+  annualProductionKg: number;
+  riskStatus: 'HEALTHY' | 'MODERATE_RISK' | 'HIGH_RISK';
+  activeAlertsCount: number;
+}
+
+interface AlertItem {
+  id: string;
+  clusterId?: string;
+  hiveId?: string;
+  batchId?: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'WARNING';
+  title: string;
+  whyReason: string;
+  recommendedAction: string;
+  assignedTo?: string;
+  status: 'PENDING' | 'ACKNOWLEDGED' | 'ASSIGNED' | 'RESOLVED';
+  timestamp: string;
+}
 
 export const AdminPortal: React.FC = () => {
-  const { batches, setAppScreen, setCurrentRole } = useHoneychain();
-
-  const [activeTab, setActiveTab] = useState<'overview' | 'batches' | 'attack_sim' | 'users'>('overview');
-  const [localBatches, setLocalBatches] = useState(batches);
+  const [activeTab, setActiveTab] = useState<'clusters' | 'alerts' | 'analytics' | 'reports'>('clusters');
+  const [clusters, setClusters] = useState<ClusterInfo[]>([]);
+  const [selectedCluster, setSelectedCluster] = useState<ClusterInfo | null>(null);
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [attackLoading, setAttackLoading] = useState(false);
-  const [attackMsg, setAttackMsg] = useState<string | null>(null);
+  const [reportDownloadMsg, setReportDownloadMsg] = useState<string | null>(null);
 
-  // Toggle quarantine for a batch
-  const handleToggleQuarantine = (batchId: string) => {
-    soundManager.playClick();
-    setLocalBatches(prev =>
-      prev.map(b => {
-        if (b.id === batchId) {
-          const isCurrentlyQuarantined = b.status === 'QUARANTINED';
-          const newStatus = isCurrentlyQuarantined ? 'CERTIFIED_AUTHENTIC' : 'QUARANTINED';
-          return {
-            ...b,
-            status: newStatus,
-            tampered: !isCurrentlyQuarantined
-          };
+  // Load cluster & alert data from backend
+  useEffect(() => {
+    async function loadAdminData() {
+      try {
+        const [cRes, aRes] = await Promise.all([
+          fetch('/api/clusters'),
+          fetch('/api/alerts')
+        ]);
+        if (cRes.ok) {
+          const cData = await cRes.json();
+          setClusters(cData);
+          setSelectedCluster(cData[0] || null);
         }
-        return b;
-      })
-    );
-  };
-
-  // Simulate C4 Adulteration Attack
-  const handleSimulateAttack = async () => {
-    setAttackLoading(true);
-    soundManager.playStressAlarm();
-    
-    try {
-      await fetch('/api/simulate/attack', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ batchId: 'HC-2026-NIL-008421' })
-      });
-    } catch {
-      // local fallback simulation
+        if (aRes.ok) {
+          const aData = await aRes.json();
+          setAlerts(aData);
+        }
+      } catch (err) {
+        console.warn('Using local admin fallback data');
+      } finally {
+        setLoading(false);
+      }
     }
+    loadAdminData();
+  }, []);
 
-    setTimeout(() => {
-      setLocalBatches(prev =>
-        prev.map(b => {
-          if (b.id === 'HC-2026-NIL-008421') {
-            return {
-              ...b,
-              status: 'QUARANTINED',
-              isotopeDeltaC13: -14.2,
-              c4SugarPct: 38.4,
-              tampered: true
-            };
-          }
-          return b;
-        })
-      );
-      setAttackLoading(false);
-      setAttackMsg('ALERT: EA-IRMS Isotope Anomaly Triggered! Smart Contract locked batch #HC-2026-NIL-008421 automatically.');
-    }, 1000);
+  // Alert Action Handlers
+  const handleAcknowledgeAlert = async (alertId: string) => {
+    soundManager.playClick();
+    try {
+      await fetch(`/api/alerts/${alertId}/ack`, { method: 'POST' });
+    } catch {}
+    setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, status: 'ACKNOWLEDGED' } : a));
   };
 
-  // Restore Batch
-  const handleRestoreBatch = async () => {
-    soundManager.playCalmChime();
+  const handleAssignAlert = async (alertId: string) => {
+    soundManager.playClick();
+    const officer = 'Field Officer T. Ramesh (Warangal Central)';
     try {
-      await fetch('/api/simulate/restore', {
+      await fetch(`/api/alerts/${alertId}/assign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ batchId: 'HC-2026-NIL-008421' })
+        body: JSON.stringify({ officer })
       });
     } catch {}
-
-    setLocalBatches(prev =>
-      prev.map(b => {
-        if (b.id === 'HC-2026-NIL-008421') {
-          return {
-            ...b,
-            status: 'CERTIFIED_AUTHENTIC',
-            isotopeDeltaC13: -26.8,
-            c4SugarPct: 0.0,
-            tampered: false
-          };
-        }
-        return b;
-      })
-    );
-    setAttackMsg(null);
+    setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, status: 'ASSIGNED', assignedTo: officer } : a));
   };
 
-  const filteredBatches = localBatches.filter(
-    b => b.id.toLowerCase().includes(searchQuery.toLowerCase()) || b.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleResolveAlert = async (alertId: string) => {
+    soundManager.playCalmChime();
+    try {
+      await fetch(`/api/alerts/${alertId}/resolve`, { method: 'POST' });
+    } catch {}
+    setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, status: 'RESOLVED' } : a));
+  };
+
+  // Report Generator
+  const handleDownloadReport = (reportType: string) => {
+    soundManager.playClick();
+    setReportDownloadMsg(`Generating & downloading ${reportType} (PDF)...`);
+    
+    // Simulate real file download
+    const blob = new Blob([
+      `KVIC HONEY CHAIN OFFICIAL AUDIT REPORT\n` +
+      `Report Type: ${reportType}\n` +
+      `Generated: ${new Date().toISOString()}\n` +
+      `Authority: Khadi and Village Industries Commission (KVIC)\n` +
+      `Consortium Height: 35 Blocks Verified\n` +
+      `Cluster: Warangal Rural Cluster AP-TG-01\n` +
+      `Integrity: 100% Cryptographically Verified on Hyperledger Fabric.`
+    ], { type: 'text/plain' });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `HoneyChain_${reportType.replace(/\s+/g, '_')}_${Date.now()}.txt`;
+    a.click();
+
+    setTimeout(() => setReportDownloadMsg(null), 3000);
+  };
+
+  const filteredClusters = clusters.filter(c =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.state.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn text-slate-100">
       
-      {/* Top Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-slate-950/20 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  setCurrentRole(null);
-                  setAppScreen('role_select');
-                }}
-                className="px-3 py-1 rounded-full text-xs font-bold bg-white text-slate-900 hover:bg-amber-100 flex items-center gap-1 shadow-sm transition-all cursor-pointer z-30"
-              >
-                <ArrowLeft className="w-3.5 h-3.5 text-amber-600" />
-                <span>Switch Role</span>
-              </button>
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30 flex items-center gap-1.5">
-                <ShieldAlert className="w-3.5 h-3.5 text-red-400" /> System Administrator Console
-              </span>
-              <span className="text-xs text-slate-300 font-mono">
-                Authorized: <strong className="text-amber-400">aryanrutheswar1823@gmail.com</strong>
-              </span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-              Honeychain Security & Ledger Governance
-            </h1>
-            <p className="text-slate-300 text-sm mt-1 max-w-2xl">
-              Superuser access to node telemetry, smart contract quarantine overrides, EA-IRMS isotope fraud monitoring, and user governance.
-            </p>
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-3 py-1 rounded-full text-xs font-black uppercase bg-amber-500 text-slate-950 tracking-wider">
+              KVIC INSTITUTIONAL COMMAND CONSOLE
+            </span>
+            <span className="text-xs font-mono text-slate-400">
+              National Honey Mission Oversight System
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+            Cluster Governance & Early Warning Network
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+            Statewide institutional oversight across Telangana beekeeper clusters and national organic bioreserves. Real-time bio-acoustic alerts, harvest totals, and fraud prevention sentinel.
+          </p>
+        </div>
+
+        {/* Global Institutional Metrics */}
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Active Clusters</span>
+            <span className="text-2xl font-black text-amber-400">12</span>
+            <span className="text-[10px] text-emerald-400 block mt-0.5">6 Telangana</span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                setCurrentRole(null);
-                setAppScreen('auth');
-              }}
-              className="px-4 py-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all cursor-pointer"
-            >
-              Sign Out Admin
-            </button>
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Monitored Hives</span>
+            <span className="text-2xl font-black text-emerald-400">52</span>
+            <span className="text-[10px] text-slate-400 block mt-0.5">20 Beekeepers</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Active Alerts</span>
+            <span className={`text-2xl font-black ${alerts.filter(a => a.status !== 'RESOLVED').length > 0 ? 'text-rose-400 animate-pulse' : 'text-slate-400'}`}>
+              {alerts.filter(a => a.status !== 'RESOLVED').length}
+            </span>
+            <span className="text-[10px] text-rose-300/80 block mt-0.5">Early Warning</span>
           </div>
         </div>
       </div>
 
-      {/* Admin Tab Switcher */}
-      <div className="flex border-b border-amber-200 bg-white p-1 rounded-2xl shadow-xs">
+      {/* Navigation Tabs */}
+      <div className="flex border-b border-slate-800 gap-2 overflow-x-auto">
         <button
-          onClick={() => setActiveTab('overview')}
-          className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-            activeTab === 'overview'
-              ? 'bg-amber-500 text-white shadow-md'
-              : 'text-slate-600 hover:text-slate-900'
+          onClick={() => setActiveTab('clusters')}
+          className={`py-3 px-5 text-xs font-bold border-b-2 transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'clusters'
+              ? 'border-amber-400 text-amber-400 bg-amber-500/10 rounded-t-xl'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
-          <Activity className="w-4 h-4" />
-          <span>System Overview</span>
+          <MapPin className="w-4 h-4" />
+          <span>Telangana & National Cluster Heatmap</span>
         </button>
 
         <button
-          onClick={() => setActiveTab('batches')}
-          className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-            activeTab === 'batches'
-              ? 'bg-amber-500 text-white shadow-md'
-              : 'text-slate-600 hover:text-slate-900'
+          onClick={() => setActiveTab('alerts')}
+          className={`py-3 px-5 text-xs font-bold border-b-2 transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'alerts'
+              ? 'border-amber-400 text-amber-400 bg-amber-500/10 rounded-t-xl'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
-          <Database className="w-4 h-4" />
-          <span>Batch Quarantine Center</span>
+          <AlertTriangle className="w-4 h-4 text-rose-400" />
+          <span>Centralized Early Warning Sentinel ({alerts.filter(a => a.status !== 'RESOLVED').length})</span>
         </button>
 
         <button
-          onClick={() => setActiveTab('attack_sim')}
-          className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-            activeTab === 'attack_sim'
-              ? 'bg-red-600 text-white shadow-md'
-              : 'text-slate-600 hover:text-slate-900'
+          onClick={() => setActiveTab('analytics')}
+          className={`py-3 px-5 text-xs font-bold border-b-2 transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'analytics'
+              ? 'border-amber-400 text-amber-400 bg-amber-500/10 rounded-t-xl'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
-          <Flame className="w-4 h-4 text-red-500" />
-          <span>Attack Simulator</span>
+          <Activity className="w-4 h-4 text-emerald-400" />
+          <span>Institutional Analytics & Production Trends</span>
         </button>
 
         <button
-          onClick={() => setActiveTab('users')}
-          className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-            activeTab === 'users'
-              ? 'bg-amber-500 text-white shadow-md'
-              : 'text-slate-600 hover:text-slate-900'
+          onClick={() => setActiveTab('reports')}
+          className={`py-3 px-5 text-xs font-bold border-b-2 transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'reports'
+              ? 'border-amber-400 text-amber-400 bg-amber-500/10 rounded-t-xl'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
-          <Users className="w-4 h-4" />
-          <span>Node & User Governance</span>
+          <FileText className="w-4 h-4 text-indigo-400" />
+          <span>Exportable Audit Reports</span>
         </button>
       </div>
 
-      {/* TAB 1: SYSTEM OVERVIEW */}
-      {activeTab === 'overview' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-3xl border border-amber-200 shadow-xs space-y-1">
-              <span className="text-xs text-slate-500 font-bold uppercase">Total Batches Minted</span>
-              <div className="text-3xl font-black text-slate-900">{localBatches.length}</div>
-              <span className="text-[11px] text-emerald-600 font-semibold">100% Notarized on-chain</span>
-            </div>
-
-            <div className="bg-white p-5 rounded-3xl border border-amber-200 shadow-xs space-y-1">
-              <span className="text-xs text-slate-500 font-bold uppercase">Quarantined Batches</span>
-              <div className="text-3xl font-black text-red-600">
-                {localBatches.filter(b => b.status === 'QUARANTINED').length}
-              </div>
-              <span className="text-[11px] text-red-500 font-semibold">Smart Contract Locked</span>
-            </div>
-
-            <div className="bg-white p-5 rounded-3xl border border-amber-200 shadow-xs space-y-1">
-              <span className="text-xs text-slate-500 font-bold uppercase">Hyperledger Nodes</span>
-              <div className="text-3xl font-black text-slate-900">14 / 14</div>
-              <span className="text-[11px] text-emerald-600 font-semibold">Raft Consensus Synced</span>
-            </div>
-
-            <div className="bg-white p-5 rounded-3xl border border-amber-200 shadow-xs space-y-1">
-              <span className="text-xs text-slate-500 font-bold uppercase">Database Engine</span>
-              <div className="text-xl font-black text-slate-900">SQLite 3 (Local)</div>
-              <span className="text-[11px] text-amber-600 font-semibold">`honeychain.db` Active</span>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-3xl border border-amber-200 shadow-sm space-y-4">
-            <h3 className="text-lg font-bold text-slate-900">Active Blockchain Validator Peers</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                <div className="font-bold text-xs text-slate-900 flex items-center justify-between">
-                  <span>Node-01 (Nilgiri Trust)</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                </div>
-                <div className="text-[11px] text-slate-500 font-mono">MSP: Org1BeekeeperMSP</div>
-                <div className="text-[10px] text-emerald-700 font-bold">Latency: 12ms • Block #184920</div>
+      {/* TAB 1: CLUSTERS HEATMAP & INSPECTOR */}
+      {activeTab === 'clusters' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fadeIn">
+          
+          {/* Left 2 Cols: Cluster Grid & Heatmap */}
+          <div className="lg:col-span-2 space-y-4">
+            
+            <div className="flex items-center justify-between gap-4">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Filter by cluster name, district or state..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:border-amber-400"
+                />
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                <div className="font-bold text-xs text-slate-900 flex items-center justify-between">
-                  <span>Node-02 (NABL Lab Chennai)</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                </div>
-                <div className="text-[11px] text-slate-500 font-mono">MSP: Org2LabInspectorMSP</div>
-                <div className="text-[10px] text-emerald-700 font-bold">Latency: 18ms • ISO 17025 Verifier</div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                <div className="font-bold text-xs text-slate-900 flex items-center justify-between">
-                  <span>Node-03 (FSSAI Anchor Node)</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                </div>
-                <div className="text-[11px] text-slate-500 font-mono">MSP: Org3NationalRegulatoryMSP</div>
-                <div className="text-[10px] text-emerald-700 font-bold">Latency: 15ms • Public Passport Notary</div>
+              {/* Heatmap Legend */}
+              <div className="hidden sm:flex items-center gap-3 text-[11px] font-bold">
+                <span className="flex items-center gap-1 text-emerald-400">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Healthy (6)
+                </span>
+                <span className="flex items-center gap-1 text-amber-400">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Moderate Risk (4)
+                </span>
+                <span className="flex items-center gap-1 text-rose-400">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-400" /> High Risk (2)
+                </span>
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* TAB 2: BATCH QUARANTINE CENTER */}
-      {activeTab === 'batches' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search batch ID or floral name..."
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs font-mono"
-              />
-            </div>
-          </div>
+            {/* Cluster Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {filteredClusters.map(cluster => {
+                const isSelected = selectedCluster?.id === cluster.id;
+                return (
+                  <div
+                    key={cluster.id}
+                    onClick={() => {
+                      soundManager.playClick();
+                      setSelectedCluster(cluster);
+                    }}
+                    className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-slate-850 border-amber-400 shadow-lg shadow-amber-500/20 scale-[1.02]'
+                        : 'bg-slate-900 border-slate-800 hover:border-slate-700 hover:bg-slate-850/60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full ${
+                        cluster.riskStatus === 'HEALTHY'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                          : cluster.riskStatus === 'MODERATE_RISK'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          : 'bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse'
+                      }`}>
+                        {cluster.riskStatus === 'HEALTHY' ? '🟢 HEALTHY' : cluster.riskStatus === 'MODERATE_RISK' ? '🟡 MODERATE' : '🔴 HIGH RISK'}
+                      </span>
+                      <span className="text-[11px] font-mono text-slate-400">{cluster.state}</span>
+                    </div>
 
-          <div className="bg-white rounded-3xl border border-amber-200 overflow-hidden shadow-sm">
-            <div className="p-4 bg-slate-50 border-b border-slate-200 font-bold text-xs text-slate-700 grid grid-cols-6 gap-2">
-              <div className="col-span-2">Batch Name / Digital ID</div>
-              <div>Status</div>
-              <div>&delta;¹³C Isotope</div>
-              <div>Block #</div>
-              <div className="text-right">Admin Override</div>
-            </div>
+                    <h4 className="font-bold text-base text-white">{cluster.name}</h4>
+                    <p className="text-xs text-slate-400 mt-0.5">{cluster.region}</p>
 
-            <div className="divide-y divide-slate-100 text-xs">
-              {filteredBatches.map(b => (
-                <div key={b.id} className="p-4 grid grid-cols-6 gap-2 items-center hover:bg-slate-50/50">
-                  <div className="col-span-2">
-                    <div className="font-bold text-slate-900">{b.name}</div>
-                    <div className="font-mono text-[11px] text-slate-400">{b.id}</div>
+                    <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-800/80 text-center">
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Beekeepers</span>
+                        <span className="text-xs font-bold text-white">{cluster.beekeepersCount}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Hives</span>
+                        <span className="text-xs font-bold text-white">{cluster.hivesCount}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Production</span>
+                        <span className="text-xs font-bold text-amber-400">{cluster.annualProductionKg} kg</span>
+                      </div>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
 
-                  <div>
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
-                        b.status === 'QUARANTINED'
-                          ? 'bg-red-100 text-red-800 border border-red-300'
-                          : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                      }`}
-                    >
-                      {b.status}
-                    </span>
+          </div>
+
+          {/* Right Col: Selected Cluster Inspector Drawer */}
+          {selectedCluster && (
+            <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-5 h-fit">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                  CLUSTER REGISTRATION DOSSIER
+                </span>
+                <h3 className="text-xl font-black text-white mt-2">
+                  {selectedCluster.name}
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {selectedCluster.region} • State: {selectedCluster.state}
+                </p>
+              </div>
+
+              {/* Status Ribbon */}
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
+                <span className="text-slate-400">Cluster Risk Classification:</span>
+                <span className={`font-bold ${
+                  selectedCluster.riskStatus === 'HEALTHY' ? 'text-emerald-400' : 'text-rose-400'
+                }`}>
+                  {selectedCluster.riskStatus}
+                </span>
+              </div>
+
+              {/* Detail Metrics */}
+              <div className="space-y-2 text-xs">
+                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2">
+                  <div className="flex justify-between border-b border-slate-800 pb-1.5">
+                    <span className="text-slate-400">KVIC Nodal Officer:</span>
+                    <span className="font-semibold text-white">{selectedCluster.leadOfficer}</span>
                   </div>
-
-                  <div className="font-mono">{b.isotopeDeltaC13}‰</div>
-                  <div className="font-mono">#{b.blockNumber}</div>
-
-                  <div className="text-right">
-                    <button
-                      onClick={() => handleToggleQuarantine(b.id)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        b.status === 'QUARANTINED'
-                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                          : 'bg-red-500 hover:bg-red-600 text-white'
-                      }`}
-                    >
-                      {b.status === 'QUARANTINED' ? 'Unquarantine & Release' : 'Quarantine Batch'}
-                    </button>
+                  <div className="flex justify-between border-b border-slate-800 pb-1.5">
+                    <span className="text-slate-400">GPS Coordinates:</span>
+                    <span className="font-mono text-amber-300">{selectedCluster.coordinates}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-slate-800 pb-1.5">
+                    <span className="text-slate-400">Registered Beekeepers:</span>
+                    <span className="font-bold text-white">{selectedCluster.beekeepersCount} Members</span>
+                  </div>
+                  <div className="flex justify-between border-b border-slate-800 pb-1.5">
+                    <span className="text-slate-400">Active Sensor Hives:</span>
+                    <span className="font-bold text-white">{selectedCluster.hivesCount} Hives</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Annual Honey Produced:</span>
+                    <span className="font-bold text-amber-400">{selectedCluster.annualProductionKg} kg</span>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+              </div>
 
-      {/* TAB 3: ATTACK SIMULATOR */}
-      {activeTab === 'attack_sim' && (
-        <div className="bg-white p-6 rounded-3xl border border-red-200 shadow-md space-y-6">
-          <div className="flex items-center gap-3 text-red-700">
-            <div className="p-3 rounded-2xl bg-red-100">
-              <Flame className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">1-Click C4 Sugar Adulteration Attack Simulator</h3>
-              <p className="text-xs text-slate-500">Test how Hyperledger Smart Contracts automatically quarantine fraudulent honey batches.</p>
-            </div>
-          </div>
-
-          {attackMsg && (
-            <div className="p-4 bg-red-50 border border-red-300 rounded-2xl text-red-800 text-xs font-bold flex items-center justify-between">
-              <span>{attackMsg}</span>
-              <button
-                onClick={handleRestoreBatch}
-                className="px-3 py-1 rounded-xl bg-white border border-red-300 text-red-900 font-bold hover:bg-red-100"
-              >
-                Restore Pristine State
-              </button>
+              {/* Quick Actions */}
+              <div className="space-y-2 pt-2">
+                <button
+                  onClick={() => handleDownloadReport(`${selectedCluster.name} Audit Dossier`)}
+                  className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition flex items-center justify-center gap-2"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Export Cluster Audit Dossier</span>
+                </button>
+              </div>
             </div>
           )}
 
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <h4 className="font-bold text-xs text-slate-800 uppercase">Target Batch: #HC-2026-NIL-008421</h4>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Clicking below injects 38.4% C4 high-fructose corn syrup into the batch record. The automated smart contract triggers an EA-IRMS isotopic anomaly (&delta;¹³C shifts from -26.8‰ to -14.2‰) and locks the digital passport on-chain.
-            </p>
+        </div>
+      )}
 
-            <div className="flex items-center gap-3 pt-2">
-              <button
-                onClick={handleSimulateAttack}
-                disabled={attackLoading}
-                className="px-5 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-lg shadow-red-500/30 transition-all cursor-pointer disabled:opacity-50"
-              >
-                {attackLoading ? 'Injecting Fraud Payload...' : '🚀 Trigger 1-Click Adulteration Attack'}
-              </button>
-
-              <button
-                onClick={handleRestoreBatch}
-                className="px-5 py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition-all cursor-pointer"
-              >
-                Reset Ledger to Pure Baseline
-              </button>
+      {/* TAB 2: CENTRALIZED EARLY WARNING ALERTS (Requirement 15) */}
+      {activeTab === 'alerts' && (
+        <div className="space-y-4 animate-fadeIn">
+          <div className="flex items-center justify-between pb-2">
+            <div>
+              <h3 className="text-lg font-bold text-white">Centralized Early Warning Alert Engine</h3>
+              <p className="text-xs text-slate-400">Autonomous anomaly alerts generated from acoustic IoT sensors, tare scales, and consumer scans</p>
             </div>
+          </div>
+
+          <div className="space-y-3">
+            {alerts.map(alert => (
+              <div
+                key={alert.id}
+                className={`p-5 rounded-2xl border transition-all ${
+                  alert.status === 'RESOLVED'
+                    ? 'bg-slate-900/50 border-slate-800 opacity-60'
+                    : alert.severity === 'CRITICAL'
+                    ? 'bg-rose-500/10 border-rose-500/40 shadow-lg shadow-rose-500/5'
+                    : alert.severity === 'HIGH'
+                    ? 'bg-amber-500/10 border-amber-500/40'
+                    : 'bg-slate-900 border-slate-800'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                  <div className="flex items-center gap-2.5">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                      alert.severity === 'CRITICAL' ? 'bg-rose-600 text-white' : 'bg-amber-500 text-slate-950'
+                    }`}>
+                      {alert.severity}
+                    </span>
+                    <h4 className="font-extrabold text-sm sm:text-base text-white">{alert.title}</h4>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="font-mono text-slate-400">{alert.id}</span>
+                    <span className={`px-2.5 py-0.5 rounded-full font-bold text-[11px] ${
+                      alert.status === 'RESOLVED'
+                        ? 'bg-emerald-500/20 text-emerald-300'
+                        : alert.status === 'ASSIGNED'
+                        ? 'bg-indigo-500/20 text-indigo-300'
+                        : 'bg-rose-500/20 text-rose-300'
+                    }`}>
+                      {alert.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 text-xs">
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[10px] block">Root Cause Analysis (Why?)</span>
+                    <p className="text-slate-300 mt-1">{alert.whyReason}</p>
+                  </div>
+                  <div>
+                    <span className="text-amber-400 font-bold uppercase text-[10px] block">Recommended Action</span>
+                    <p className="text-slate-300 mt-1">{alert.recommendedAction}</p>
+                  </div>
+                </div>
+
+                {alert.assignedTo && (
+                  <p className="text-xs text-indigo-300 mt-2 font-medium">
+                    Assigned Field Officer: <strong>{alert.assignedTo}</strong>
+                  </p>
+                )}
+
+                {/* Alert Action Buttons (Requirement 15) */}
+                {alert.status !== 'RESOLVED' && (
+                  <div className="flex items-center gap-2 pt-4 mt-3 border-t border-slate-800/80">
+                    {alert.status === 'PENDING' && (
+                      <button
+                        onClick={() => handleAcknowledgeAlert(alert.id)}
+                        className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition"
+                      >
+                        Acknowledge
+                      </button>
+                    )}
+
+                    {alert.status !== 'ASSIGNED' && (
+                      <button
+                        onClick={() => handleAssignAlert(alert.id)}
+                        className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition"
+                      >
+                        Assign Field Officer
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => handleResolveAlert(alert.id)}
+                      className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition"
+                    >
+                      ✓ Mark Resolved
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* TAB 4: USERS */}
-      {activeTab === 'users' && (
-        <div className="bg-white p-6 rounded-3xl border border-amber-200 shadow-sm space-y-4 text-xs">
-          <h3 className="text-lg font-bold text-slate-900">Registered Enterprise Identities</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
-              <div className="font-bold text-slate-900 flex items-center justify-between">
-                <span>System Administrator</span>
-                <span className="px-2 py-0.5 rounded-md bg-red-100 text-red-800 font-bold text-[10px]">Superuser</span>
+      {/* TAB 3: INSTITUTIONAL ANALYTICS & PRODUCTION TRENDS (Requirement 44) */}
+      {activeTab === 'analytics' && (
+        <div className="space-y-6 animate-fadeIn">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Risk Distribution */}
+            <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+              <h4 className="text-sm font-bold text-white uppercase tracking-wider">
+                Cluster Health Distribution
+              </h4>
+              <div className="space-y-3 pt-2 text-xs">
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-emerald-400 font-bold">Healthy Equilibrium (50%)</span>
+                    <span className="text-slate-400">6 Clusters</span>
+                  </div>
+                  <div className="w-full bg-slate-800 rounded-full h-2">
+                    <div className="bg-emerald-400 h-full rounded-full" style={{ width: '50%' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-amber-400 font-bold">Moderate Observation (33.3%)</span>
+                    <span className="text-slate-400">4 Clusters</span>
+                  </div>
+                  <div className="w-full bg-slate-800 rounded-full h-2">
+                    <div className="bg-amber-400 h-full rounded-full" style={{ width: '33.3%' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-rose-400 font-bold">High Risk / Alert (16.7%)</span>
+                    <span className="text-slate-400">2 Clusters</span>
+                  </div>
+                  <div className="w-full bg-slate-800 rounded-full h-2">
+                    <div className="bg-rose-500 h-full rounded-full" style={{ width: '16.7%' }} />
+                  </div>
+                </div>
               </div>
-              <div className="text-slate-600 font-mono mt-1">aryanrutheswar1823@gmail.com</div>
-              <div className="text-[10px] text-amber-800 mt-2 font-semibold">WebAuthn Hardware Token Activated</div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="font-bold text-slate-900 flex items-center justify-between">
-                <span>Beekeeper Partner</span>
-                <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-bold text-[10px]">Apiary</span>
+            {/* Verified vs Quarantined Ratio */}
+            <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+              <h4 className="text-sm font-bold text-white uppercase tracking-wider">
+                Batch Integrity Ratio
+              </h4>
+              <div className="flex items-center justify-center py-4">
+                <div className="text-center space-y-1">
+                  <span className="text-5xl font-black text-emerald-400">96.8%</span>
+                  <p className="text-xs text-slate-400">Certified Authentic Batches</p>
+                  <p className="text-[11px] text-rose-400 font-semibold">1 Batch Intercepted / Quarantined</p>
+                </div>
               </div>
-              <div className="text-slate-600 font-mono mt-1">ramanathan.apiary@honeychain.io</div>
-              <div className="text-[10px] text-slate-500 mt-2 font-semibold">Apiary Cluster AP-01 • Nilgiris</div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="font-bold text-slate-900 flex items-center justify-between">
-                <span>Chief Lab Analyst</span>
-                <span className="px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 font-bold text-[10px]">Inspector</span>
+            {/* Fair-Trade Producer Payout */}
+            <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+              <h4 className="text-sm font-bold text-white uppercase tracking-wider">
+                Direct Producer Value Realized
+              </h4>
+              <div className="flex items-center justify-center py-4">
+                <div className="text-center space-y-1">
+                  <span className="text-4xl font-black text-amber-400">₹8,42,500</span>
+                  <p className="text-xs text-slate-400">Disbursed via Direct Benefit Transfer</p>
+                  <p className="text-[11px] text-emerald-400 font-semibold">45% Baseline Fair Producer Share</p>
+                </div>
               </div>
-              <div className="text-slate-600 font-mono mt-1">ananya.iyer@nabl-honeycert.gov.in</div>
-              <div className="text-[10px] text-slate-500 mt-2 font-semibold">ISO/IEC 17025 Certified</div>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: EXPORTABLE REPORTS (Requirement 45) */}
+      {activeTab === 'reports' && (
+        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 space-y-6 animate-fadeIn">
+          <div>
+            <h3 className="text-lg font-bold text-white">Exportable Regulatory & Audit Reports</h3>
+            <p className="text-xs text-slate-400">Generate verified cryptographic audit documentation for KVIC directors, FSSAI auditors, and agricultural banks.</p>
+          </div>
+
+          {reportDownloadMsg && (
+            <div className="p-3.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-200 text-xs font-bold flex items-center gap-2">
+              <RefreshCw className="w-4 h-4 animate-spin text-amber-400" />
+              <span>{reportDownloadMsg}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <div>
+                <h5 className="font-bold text-sm text-white">Batch Provenance Audit Report</h5>
+                <p className="text-xs text-slate-400 mt-0.5">Comprehensive custody timeline for Batch HNY-TG-2026-0001</p>
+              </div>
+              <button
+                onClick={() => handleDownloadReport('Batch Provenance Report')}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download</span>
+              </button>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <div>
+                <h5 className="font-bold text-sm text-white">ISO/IEC 17025 Lab Test Certificate</h5>
+                <p className="text-xs text-slate-400 mt-0.5">EA-IRMS isotope δ13C and HMF freshness laboratory ledger</p>
+              </div>
+              <button
+                onClick={() => handleDownloadReport('Lab Certificate Dossier')}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download</span>
+              </button>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <div>
+                <h5 className="font-bold text-sm text-white">Statewide Cluster Compliance Report</h5>
+                <p className="text-xs text-slate-400 mt-0.5">Annual production and bio-acoustic risk scoring for 12 clusters</p>
+              </div>
+              <button
+                onClick={() => handleDownloadReport('Statewide Cluster Report')}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download</span>
+              </button>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <div>
+                <h5 className="font-bold text-sm text-white">Cryptographic Blockchain Ledger Export</h5>
+                <p className="text-xs text-slate-400 mt-0.5">Raw SHA-256 block sequence and validator signature proofs</p>
+              </div>
+              <button
+                onClick={() => handleDownloadReport('Blockchain Ledger Dump')}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download</span>
+              </button>
+            </div>
+
           </div>
         </div>
       )}

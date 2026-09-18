@@ -4,208 +4,345 @@ import { soundManager } from '../utils/audio';
 import { stopAllCameraHardware } from '../utils/mediaManager';
 
 import {
-  ShieldCheck,
-  ShieldAlert,
   Hexagon,
+  Sparkles,
   Cpu,
   UserCheck,
   Eye,
-  ArrowLeft,
-  ArrowRight,
-  Database,
+  ShieldAlert,
+  Building2,
+  GitBranch,
+  TrendingUp,
+  Coins,
+  Scale,
+  Wifi,
+  WifiOff,
+  Globe,
   Lock,
-  X
+  ArrowRight,
+  Menu,
+  X,
+  Play,
+  Layers,
+  ShoppingBag,
+  Award
 } from 'lucide-react';
 
-export const HoneychainNavbar: React.FC = () => {
-  const { appScreen, currentRole, goToRoleSelect, goBack, enterApp, isBackendConnected, setAppScreen } = useHoneychain();
+interface HoneychainNavbarProps {
+  onOpenJudgeDemo?: () => void;
+  onOpenProvenanceGraph?: () => void;
+  onOpenIoTSimulator?: () => void;
+  onOpenExplainableAi?: () => void;
+  onOpenYieldSimulator?: () => void;
+  onOpenRuralMode?: () => void;
+  onOpenWallet?: () => void;
+  onOpenQrDetector?: () => void;
+  onOpenCertificate?: () => void;
+  currentActiveView?: string;
+  onNavigateView?: (view: string) => void;
+}
 
+export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
+  onOpenJudgeDemo,
+  onOpenProvenanceGraph,
+  onOpenIoTSimulator,
+  onOpenExplainableAi,
+  onOpenYieldSimulator,
+  onOpenRuralMode,
+  onOpenWallet,
+  onOpenQrDetector,
+  onOpenCertificate,
+  currentActiveView = 'landing',
+  onNavigateView
+}) => {
+  const { appScreen, currentRole, goToRoleSelect, enterApp, setAppScreen, setCurrentRole } = useHoneychain();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
 
-  const getRoleBadge = () => {
-    switch (currentRole) {
-      case 'beekeeper':
-        return {
-          title: 'Beekeeper Portal',
-          subtitle: 'Apiary IoT Telemetry & Minting',
-          icon: <Cpu className="w-3.5 h-3.5 text-amber-600" />
-        };
-      case 'inspector':
-        return {
-          title: 'Lab Inspector Terminal',
-          subtitle: 'EA-IRMS Isotope & HMF Analysis',
-          icon: <UserCheck className="w-3.5 h-3.5 text-indigo-600" />
-        };
-      case 'customer':
-        return {
-          title: 'Customer Verification',
-          subtitle: 'Live Camera & ZK-Passport',
-          icon: <Eye className="w-3.5 h-3.5 text-emerald-600" />
-        };
-      case 'admin':
-        return {
-          title: 'System Admin Console',
-          subtitle: 'Enterprise Governance & Security',
-          icon: <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
-        };
-      default:
-        return null;
+  const navigateTo = (view: string) => {
+    soundManager.playClick();
+    stopAllCameraHardware();
+    if (onNavigateView) {
+      onNavigateView(view);
     }
+    setMobileMenuOpen(false);
   };
 
-  const badge = getRoleBadge();
-
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#bdd2b3]/95 backdrop-blur-md border-b border-[#8da981] shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+    <header className="sticky top-0 z-40 w-full bg-slate-950/95 backdrop-blur-md border-b border-slate-800 shadow-xl select-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         
-        {/* Left Side: Exit Camera (placed at far-left corner per diagram) + Brand Logo */}
-        <div className="flex items-center gap-3 sm:gap-4 relative z-30">
-          {currentRole === 'customer' && (
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playClick();
-                stopAllCameraHardware();
-                goToRoleSelect();
-              }}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl font-extrabold text-xs bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-950/30 border border-rose-400/40 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
-              title="Exit camera mode and return to role selection"
-            >
-              <X className="w-4 h-4 text-white" />
-              <span>Exit Camera</span>
-            </button>
-          )}
-
-          {/* Brand Logo: Golden Amber blending into Pistachio Green */}
-          <div 
-            onClick={() => {
-              soundManager.playClick();
-              stopAllCameraHardware();
-              goToRoleSelect();
-            }}
-            className="flex items-center gap-3 cursor-pointer select-none hover:opacity-90 transition-opacity"
-            title="Go to Role Selection"
-          >
-            <div className="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#eab308] via-[#facc15] to-[#8da981] text-slate-950 shadow-md shadow-yellow-600/30">
-              <Hexagon className="w-6 h-6 stroke-[2.2]" />
-              <span className="absolute text-[11px] font-black tracking-tighter">HC</span>
+        {/* Brand Logo: Glowing Golden Amber Hexagon */}
+        <div 
+          onClick={() => navigateTo('landing')}
+          className="flex items-center gap-3 cursor-pointer select-none hover:opacity-95 transition-opacity shrink-0"
+          title="HoneyChain Home"
+        >
+          <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/25">
+            <Hexagon className="w-7 h-7 stroke-[2.3]" />
+            <span className="absolute text-xs font-black tracking-tighter">HC</span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                HONEY<span className="text-amber-400">CHAIN</span>
+              </span>
+              <span className="hidden md:inline px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                KVIC MISSION
+              </span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-black tracking-tight text-[#183018]">
-                  HONEY<span className="text-amber-600">CHAIN</span>
-                </span>
-              </div>
-              <p className="text-[11px] font-medium text-[#2f482d] hidden sm:block">
-                Zero-Knowledge Provenance & Pure Honey Cryptographic Ledger
-              </p>
-            </div>
+            <p className="text-[11px] font-medium text-slate-400 hidden sm:block">
+              From Hive to Home — Every Drop Has a Digital Identity
+            </p>
           </div>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2 sm:gap-2.5 relative z-30">
+        {/* Center Desktop Navigation Tabs */}
+        <nav className="hidden xl:flex items-center gap-1.5 text-xs font-bold text-slate-300">
+          <button
+            onClick={() => navigateTo('landing')}
+            className={`px-3 py-2 rounded-xl transition ${
+              currentActiveView === 'landing'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'hover:bg-slate-900 hover:text-white'
+            }`}
+          >
+            Home
+          </button>
+
+          <button
+            onClick={() => {
+              setCurrentRole('beekeeper');
+              setAppScreen('portal');
+              navigateTo('beekeeper');
+            }}
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+              currentActiveView === 'beekeeper'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'hover:bg-slate-900 hover:text-white'
+            }`}
+          >
+            <Cpu className="w-3.5 h-3.5 text-amber-400" />
+            <span>Beekeeper</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setCurrentRole('admin');
+              setAppScreen('portal');
+              navigateTo('admin');
+            }}
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+              currentActiveView === 'admin'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'hover:bg-slate-900 hover:text-white'
+            }`}
+          >
+            <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+            <span>KVIC Admin</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setCurrentRole('inspector');
+              setAppScreen('portal');
+              navigateTo('inspector');
+            }}
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+              currentActiveView === 'inspector'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'hover:bg-slate-900 hover:text-white'
+            }`}
+          >
+            <UserCheck className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Lab</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setCurrentRole('customer');
+              setAppScreen('portal');
+              navigateTo('customer');
+            }}
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+              currentActiveView === 'customer'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'hover:bg-slate-900 hover:text-white'
+            }`}
+          >
+            <Eye className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Consumer QR</span>
+          </button>
+
+          <button
+            onClick={() => navigateTo('blockchain')}
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+              currentActiveView === 'blockchain'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'hover:bg-slate-900 hover:text-white'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 text-amber-400" />
+            <span>Ledger</span>
+          </button>
+
+          <button
+            onClick={() => navigateTo('marketplace')}
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+              currentActiveView === 'marketplace'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'hover:bg-slate-900 hover:text-white'
+            }`}
+          >
+            <ShoppingBag className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Buyer</span>
+          </button>
+        </nav>
+
+        {/* Right Actions: Prominent Judge Mode Button & Indicators */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
           
-          {/* Universal Back Button */}
-          {appScreen !== 'intro' && currentRole !== 'customer' && (
+          {/* PWA Online/Offline Status Indicator (Requirement 19) */}
+          <button
+            onClick={() => setIsOnline(!isOnline)}
+            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition ${
+              isOnline
+                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+            }`}
+            title="Click to simulate going offline in remote rural areas"
+          >
+            {isOnline ? <Wifi className="w-3.5 h-3.5 text-emerald-400" /> : <WifiOff className="w-3.5 h-3.5 text-amber-400" />}
+            <span>{isOnline ? 'ONLINE 🟢' : 'OFFLINE 🟠'}</span>
+          </button>
+
+          {/* Rural Beekeeper Touch Mode Modal Trigger */}
+          {onOpenRuralMode && (
             <button
-              type="button"
-              onClick={() => {
-                stopAllCameraHardware();
-                goBack();
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-extrabold text-xs transition-all shadow-xs active:scale-95 cursor-pointer z-30 bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] border border-[#8da981]"
-              title="Go back to previous screen"
+              onClick={onOpenRuralMode}
+              className="hidden lg:flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-850 text-slate-300 border border-slate-700 transition"
+              title="Open Simplified Rural Beekeeper Touch UI with Telugu & Hindi"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back</span>
+              <Globe className="w-3.5 h-3.5 text-amber-400" />
+              <span>తెలుగు | हिन्दी</span>
             </button>
           )}
 
-          {/* Always Accessible Home Button */}
+          {/* Crown Jewel: 🎬 ENTER JUDGE DEMO MODE (Requirement 34) */}
           <button
-            type="button"
             onClick={() => {
               soundManager.playClick();
-              stopAllCameraHardware();
-              goToRoleSelect();
-              setAppScreen('intro');
+              if (onOpenJudgeDemo) {
+                onOpenJudgeDemo();
+              } else {
+                navigateTo('judge-demo');
+              }
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-              appScreen === 'intro'
-                ? 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black shadow-md shadow-yellow-500/25'
-                : 'bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] hover:text-black border border-[#8da981] shadow-xs'
-            }`}
+            className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-amber-500/30 hover:shadow-2xl hover:scale-103 active:scale-98 transition-all cursor-pointer shrink-0"
           >
-            <span>Welcome Home</span>
+            <Sparkles className="w-4 h-4 text-slate-950 animate-spin" style={{ animationDuration: '4s' }} />
+            <span>🎬 JUDGE DEMO MODE</span>
           </button>
 
-          {/* Sign In / Auth Reference Button */}
+          {/* Mobile Menu Toggle */}
           <button
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              stopAllCameraHardware();
-              goToRoleSelect();
-              setAppScreen('auth');
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-              appScreen === 'auth'
-                ? 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black shadow-md shadow-yellow-500/25'
-                : 'bg-[#d1e2cb] hover:bg-[#dbe8d5] text-[#183018] hover:text-black border border-[#8da981] shadow-xs'
-            }`}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 xl:hidden"
+            aria-label="Toggle navigation menu"
           >
-            <Lock className="w-3.5 h-3.5 text-amber-700" />
-            <span>Sign In</span>
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
-
-          {/* Inside a Specific Portal Dashboard */}
-          {appScreen === 'portal' && currentRole && badge && (
-            <>
-              <div className="hidden md:flex items-center gap-2 pl-3 border-l border-[#8da981]">
-                <div className="flex flex-col text-right">
-                  <span className="font-bold text-[#183018] flex items-center gap-1.5">
-                    {badge.icon} {badge.title}
-                  </span>
-                  <span className="text-[10px] text-[#2f482d]">{badge.subtitle}</span>
-                </div>
-              </div>
-
-              {/* Right Role Switch (only when NOT customer, since Exit Camera is on far-left corner per diagram) */}
-              {currentRole !== 'customer' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundManager.playClick();
-                    stopAllCameraHardware();
-                    goToRoleSelect();
-                  }}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl font-bold text-xs transition-all shadow-xs active:scale-95 cursor-pointer bg-[#d1e2cb] hover:bg-[#dbe8d5] hover:text-black text-[#183018] border border-[#8da981]"
-                  title="Switch role"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Switch Role</span>
-                </button>
-              )}
-            </>
-          )}
-
-          {/* On Intro Screen */}
-          {appScreen === 'intro' && (
-            <button
-              onClick={enterApp}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-xs shadow-md shadow-yellow-500/30 transition-all cursor-pointer"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
 
         </div>
 
       </div>
 
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="xl:hidden px-4 py-4 border-t border-slate-800 bg-slate-950 text-xs font-bold space-y-2 animate-fadeIn">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => navigateTo('landing')}
+              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-slate-200"
+            >
+              Home Page
+            </button>
+            <button
+              onClick={() => {
+                setCurrentRole('beekeeper');
+                setAppScreen('portal');
+                navigateTo('beekeeper');
+              }}
+              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-amber-400"
+            >
+              🐝 Beekeeper Portal
+            </button>
+            <button
+              onClick={() => {
+                setCurrentRole('admin');
+                setAppScreen('portal');
+                navigateTo('admin');
+              }}
+              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-indigo-400"
+            >
+              🏛 KVIC Admin
+            </button>
+            <button
+              onClick={() => {
+                setCurrentRole('inspector');
+                setAppScreen('portal');
+                navigateTo('inspector');
+              }}
+              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-cyan-400"
+            >
+              🧪 Lab Inspector
+            </button>
+            <button
+              onClick={() => {
+                setCurrentRole('customer');
+                setAppScreen('portal');
+                navigateTo('customer');
+              }}
+              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-emerald-400"
+            >
+              🔍 Consumer Scanner
+            </button>
+            <button
+              onClick={() => navigateTo('blockchain')}
+              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-amber-300"
+            >
+              ⛓ Blockchain Ledger
+            </button>
+          </div>
 
+          <div className="pt-2 border-t border-slate-800 flex flex-wrap gap-2">
+            {onOpenProvenanceGraph && (
+              <button
+                onClick={() => { onOpenProvenanceGraph(); setMobileMenuOpen(false); }}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 text-amber-300 text-[11px]"
+              >
+                Provenance Graph
+              </button>
+            )}
+            {onOpenRuralMode && (
+              <button
+                onClick={() => { onOpenRuralMode(); setMobileMenuOpen(false); }}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 text-[11px]"
+              >
+                తెలుగు / हिन्दी
+              </button>
+            )}
+            {onOpenWallet && (
+              <button
+                onClick={() => { onOpenWallet(); setMobileMenuOpen(false); }}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 text-emerald-400 text-[11px]"
+              >
+                My Honey Wallet
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
