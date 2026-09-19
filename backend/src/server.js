@@ -967,7 +967,12 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(FRONTEND_DIST, 'index.html'));
 });
 
-// Start listening
-app.listen(PORT, () => {
-  console.log(`🍯 HoneyChain Core Backend & SQLite Engine active on http://localhost:${PORT}`);
-});
+// Start listening if executed directly (e.g. local dev)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🍯 HoneyChain Core Backend & SQLite Engine active on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
+
