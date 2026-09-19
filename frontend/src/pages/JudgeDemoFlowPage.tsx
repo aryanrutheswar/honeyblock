@@ -217,38 +217,39 @@ export const JudgeDemoFlowPage: React.FC<JudgeDemoFlowPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#08080b] text-yellow-50 p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
       
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 rounded-3xl p-6 sm:p-8 text-slate-950 shadow-2xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
+      {/* Top Banner with Bumblebee Styling */}
+      <div className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 rounded-3xl p-6 sm:p-8 text-slate-950 shadow-2xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 bumble-border-top border-2 border-yellow-200">
+        <div className="absolute inset-0 opacity-10 pointer-events-none bumble-stripes" />
+        <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-3 py-1 rounded-full text-xs font-black uppercase bg-slate-950 text-amber-400 tracking-wider">
-              🎬 3-MINUTE JUDGE DEMO MODE
+            <span className="px-3 py-1 rounded-full text-xs font-black uppercase bg-[#09090c] text-yellow-400 tracking-wider flex items-center gap-1.5 border border-yellow-400/30 shadow-xs">
+              <span>🐝</span> 🎬 3-MINUTE JUDGE DEMO MODE
             </span>
-            <span className="text-xs font-bold text-slate-900 hidden sm:inline">
+            <span className="text-xs font-black text-slate-950 hidden sm:inline">
               Smart India Hackathon • KVIC Honey Mission
             </span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-950">
             From Hive to Home — End-to-End Walkthrough
           </h1>
-          <p className="text-xs sm:text-sm font-semibold text-slate-900/80 mt-1 max-w-2xl">
+          <p className="text-xs sm:text-sm font-bold text-slate-900/90 mt-1 max-w-2xl">
             Live working prototype demonstrating physical IoT hive intelligence, AI decision support, ISO-17025 lab testing, cryptographic blockchain ledger, and consumer QR verification.
           </p>
         </div>
 
         {/* Auto Play & Controls */}
-        <div className="flex items-center gap-2.5 shrink-0 bg-slate-950/10 p-2 rounded-2xl backdrop-blur-sm border border-slate-950/20">
+        <div className="relative z-10 flex items-center gap-2.5 shrink-0 bg-[#09090c]/15 p-2 rounded-2xl backdrop-blur-sm border border-slate-950/30">
           <button
             onClick={() => {
               soundManager.playClick();
               setIsAutoPlaying(!isAutoPlaying);
             }}
-            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black transition shadow-md ${
+            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black transition shadow-md cursor-pointer ${
               isAutoPlaying
                 ? 'bg-rose-600 text-white animate-pulse'
-                : 'bg-slate-950 text-amber-400 hover:bg-slate-900'
+                : 'bg-[#09090c] text-yellow-400 hover:bg-[#15151e] border border-yellow-400/30'
             }`}
           >
             {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -264,7 +265,7 @@ export const JudgeDemoFlowPage: React.FC<JudgeDemoFlowPageProps> = ({
               setSimulatedAcoustic(240);
               setSimulatedHealth(86);
             }}
-            className="p-2.5 rounded-xl bg-slate-950/20 text-slate-950 hover:bg-slate-950/30 transition"
+            className="p-2.5 rounded-xl bg-[#09090c]/20 text-slate-950 hover:bg-[#09090c]/30 transition cursor-pointer"
             title="Reset to Step 1"
           >
             <RotateCcw className="w-4 h-4" />
@@ -273,7 +274,7 @@ export const JudgeDemoFlowPage: React.FC<JudgeDemoFlowPageProps> = ({
       </div>
 
       {/* 14-Step Horizontal Navigation Bar */}
-      <div className="bg-slate-900 border border-slate-800 p-3 rounded-2xl overflow-x-auto">
+      <div className="bg-[#121218] border border-yellow-400/25 p-3 rounded-2xl overflow-x-auto">
         <div className="flex items-center gap-1.5 min-w-[760px]">
           {steps.map(s => {
             const isCurrent = s.step === currentStep;
@@ -286,12 +287,12 @@ export const JudgeDemoFlowPage: React.FC<JudgeDemoFlowPageProps> = ({
                   soundManager.playClick();
                   setCurrentStep(s.step);
                 }}
-                className={`flex-1 min-w-[48px] py-2 px-1 rounded-xl text-xs font-black transition flex flex-col items-center gap-1 ${
+                className={`flex-1 min-w-[48px] py-2 px-1 rounded-xl text-xs font-black transition flex flex-col items-center gap-1 cursor-pointer ${
                   isCurrent
-                    ? 'bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/25 scale-105'
+                    ? 'bg-yellow-400 text-slate-950 shadow-lg shadow-yellow-500/30 scale-105'
                     : isCompleted
-                    ? 'bg-slate-800 text-emerald-400 hover:bg-slate-750'
-                    : 'bg-slate-950 text-slate-500 hover:text-slate-300'
+                    ? 'bg-[#181824] text-emerald-400 hover:bg-[#1e1e2d] border border-emerald-500/30'
+                    : 'bg-[#09090c] text-yellow-100/40 hover:text-yellow-200 border border-yellow-500/10'
                 }`}
                 title={s.title}
               >

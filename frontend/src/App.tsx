@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { HoneychainProvider, useHoneychain } from './context/HoneychainContext';
 import { HoneychainNavbar } from './components/HoneychainNavbar';
 import { BiometricModal } from './components/BiometricModal';
+import { AIChatbotWidget } from './components/AIChatbotWidget';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
@@ -116,7 +117,7 @@ const HoneychainMainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950">
+    <div className="min-h-screen flex flex-col bg-[#090514] text-yellow-50 selection:bg-yellow-400 selection:text-purple-950">
       
       {/* Universal Top App Navbar */}
       <HoneychainNavbar
@@ -134,63 +135,63 @@ const HoneychainMainLayout: React.FC = () => {
       />
 
       {/* Floating Innovation Toolbar (Quick Modals Launch for Judges) */}
-      <aside aria-label="Demo tools" className="hidden lg:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-30 items-center gap-1.5 p-2 rounded-2xl bg-slate-900/90 border border-slate-700 shadow-2xl backdrop-blur-md text-xs font-bold text-slate-300">
-        <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 px-2">
-          Demo Tools:
+      <aside aria-label="Demo tools" className="hidden lg:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-30 items-center gap-1.5 p-2 rounded-2xl bg-[#120a22]/95 border-2 border-purple-500/40 shadow-2xl shadow-purple-950/70 backdrop-blur-md text-xs font-bold text-yellow-100 bumble-border-top">
+        <span className="text-[10px] font-black uppercase tracking-wider text-yellow-400 px-2 flex items-center gap-1">
+          <span>🐝</span> Tools:
         </span>
         <button
           type="button"
           onClick={() => setIsProvenanceGraphOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 hover:text-white transition"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-600/30 hover:text-yellow-300 transition cursor-pointer text-purple-200/90"
         >
           Genealogy Graph
         </button>
         <button
           type="button"
           onClick={() => setIsIoTSimulatorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 hover:text-white transition"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-600/30 hover:text-yellow-300 transition cursor-pointer text-purple-200/90"
         >
           IoT Simulator
         </button>
         <button
           type="button"
           onClick={() => setIsExplainableAiOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 hover:text-white transition"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-600/30 hover:text-yellow-300 transition cursor-pointer text-purple-200/90"
         >
           Explainable AI
         </button>
         <button
           type="button"
           onClick={() => setIsYieldSimulatorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 hover:text-white transition"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-600/30 hover:text-yellow-300 transition cursor-pointer text-purple-200/90"
         >
           Yield What-If
         </button>
         <button
           type="button"
           onClick={() => setIsRuralModeOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 hover:text-white transition"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-600/30 hover:text-yellow-300 transition cursor-pointer text-purple-200/90"
         >
           Rural Voice Mode
         </button>
         <button
           type="button"
           onClick={() => setIsWalletOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 hover:text-white transition"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-600/30 hover:text-yellow-300 transition cursor-pointer text-purple-200/90"
         >
           Beekeeper Wallet
         </button>
         <button
           type="button"
           onClick={() => setIsQrDetectorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 hover:text-white transition"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-600/30 hover:text-yellow-300 transition cursor-pointer text-purple-200/90"
         >
           QR Clone Detector
         </button>
         <button
           type="button"
           onClick={() => setIsCertificateOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 hover:text-white transition"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-600/30 hover:text-yellow-300 transition cursor-pointer text-purple-200/90"
         >
           Digital Certificate
         </button>
@@ -248,6 +249,9 @@ const HoneychainMainLayout: React.FC = () => {
       />
 
       <BiometricModal />
+
+      {/* Interactive Bumblebee AI Companion Widget */}
+      <AIChatbotWidget />
 
     </div>
   );

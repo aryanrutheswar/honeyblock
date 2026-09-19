@@ -43,16 +43,19 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-3 bg-gradient-to-b from-amber-100/90 via-yellow-50 to-amber-100/70 border-b border-amber-200 select-none">
+    <div className="relative flex flex-col items-center justify-center p-3 bg-gradient-to-b from-yellow-950/40 via-[#121218] to-yellow-950/25 border-b border-yellow-400/20 select-none">
       
+      {/* Bumblebee Striped Micro-Trim */}
+      <div className="absolute top-0 left-0 right-0 h-1 bumble-stripes opacity-70" />
+
       {/* Voice & Microphone Quick Controls */}
-      <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
+      <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10">
         <button
           onClick={onStartListening}
           className={`p-1.5 rounded-full transition-all cursor-pointer shadow-xs ${
             isListening
               ? 'bg-red-500 text-white animate-pulse'
-              : 'bg-white hover:bg-amber-200 text-slate-800 border border-amber-300'
+              : 'bg-[#1a1a24] hover:bg-yellow-400 hover:text-black text-yellow-300 border border-yellow-400/40'
           }`}
           title={isListening ? 'Listening to your voice...' : 'Speak with your Microphone'}
         >
@@ -63,8 +66,8 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
           onClick={onToggleVoiceMute}
           className={`p-1.5 rounded-full transition-all cursor-pointer shadow-xs ${
             isVoiceMuted
-              ? 'bg-slate-200 text-slate-500'
-              : 'bg-amber-500 text-white shadow-amber-500/30'
+              ? 'bg-[#1a1a24] text-slate-500 border border-slate-700'
+              : 'bg-yellow-400 text-slate-950 shadow-yellow-400/30 font-bold border border-yellow-300'
           }`}
           title={isVoiceMuted ? 'Voice output Muted' : 'Voice output Active (Speaking out loud)'}
         >
@@ -72,60 +75,79 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
         </button>
       </div>
 
-      {/* Animated 2D Mascot Graphic */}
-      <div className="relative flex items-center justify-center py-1 group">
+      {/* Animated 2D Fluffy Bumblebee Graphic */}
+      <div className="relative flex items-center justify-center py-2 group">
         
-        {/* Left Translucent Wing */}
+        {/* Left Shimmering Translucent Wing */}
         <div
-          className={`absolute -left-5 top-1 w-7 h-9 rounded-full bg-white/70 border-2 border-amber-300 shadow-sm transition-transform duration-100 origin-bottom-right ${
-            wingFlap ? '-rotate-25 scale-y-110' : '-rotate-5 scale-y-95'
+          className={`absolute -left-6 top-1 w-8 h-10 rounded-full bg-gradient-to-tr from-white/90 via-yellow-100/70 to-cyan-100/40 border border-yellow-300/80 shadow-md shadow-yellow-400/20 transition-transform duration-100 origin-bottom-right ${
+            wingFlap ? '-rotate-35 scale-y-115' : '-rotate-10 scale-y-95'
           }`}
-        />
+        >
+          {/* Wing Vein Detail */}
+          <div className="absolute inset-1 rounded-full border-t border-r border-yellow-400/30 opacity-60" />
+        </div>
 
-        {/* Right Translucent Wing */}
+        {/* Right Shimmering Translucent Wing */}
         <div
-          className={`absolute -right-5 top-1 w-7 h-9 rounded-full bg-white/70 border-2 border-amber-300 shadow-sm transition-transform duration-100 origin-bottom-left ${
-            wingFlap ? 'rotate-25 scale-y-110' : 'rotate-5 scale-y-95'
+          className={`absolute -right-6 top-1 w-8 h-10 rounded-full bg-gradient-to-tl from-white/90 via-yellow-100/70 to-cyan-100/40 border border-yellow-300/80 shadow-md shadow-yellow-400/20 transition-transform duration-100 origin-bottom-left ${
+            wingFlap ? 'rotate-35 scale-y-115' : 'rotate-10 scale-y-95'
           }`}
-        />
+        >
+          {/* Wing Vein Detail */}
+          <div className="absolute inset-1 rounded-full border-t border-l border-yellow-400/30 opacity-60" />
+        </div>
 
-        {/* Round Cute Bee Body */}
-        <div className="relative w-16 h-16 rounded-full bg-gradient-to-b from-yellow-400 via-amber-400 to-amber-500 border-3 border-slate-900 shadow-lg flex flex-col items-center justify-center overflow-hidden animate-bounce">
+        {/* Plump Fuzzy Bumblebee Body */}
+        <div className="relative w-18 h-18 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 border-3 border-slate-950 shadow-xl shadow-yellow-500/25 flex flex-col items-center justify-center overflow-hidden animate-bee-hover">
           
-          {/* Cute Stripes */}
-          <div className="absolute top-4 w-full h-2 bg-slate-900" />
-          <div className="absolute top-8 w-full h-2.5 bg-slate-900" />
+          {/* Fluffy Pollen Head Collar */}
+          <div className="absolute top-0 w-full h-3 bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 opacity-90" />
 
-          {/* Cute Antennae */}
-          <div className="absolute -top-3 left-3 w-1.5 h-4 bg-slate-900 rounded-full flex flex-col items-center">
-            <div className="w-2.5 h-2.5 rounded-full bg-amber-400 border border-slate-900" />
+          {/* Bumblebee Velvety Black Stripe 1 */}
+          <div className="absolute top-4.5 w-full h-2.5 bg-[#09090c] shadow-inner" />
+          
+          {/* Bumblebee Bright Yellow Pollen Stripe */}
+          <div className="absolute top-7 w-full h-2.5 bg-yellow-400" />
+
+          {/* Bumblebee Velvety Black Stripe 2 */}
+          <div className="absolute top-9.5 w-full h-3 bg-[#09090c] shadow-inner" />
+
+          {/* Cute Little Bumblebee Stinger at Bottom */}
+          <div className="absolute -bottom-1 w-2.5 h-2.5 bg-[#09090c] rotate-45 rounded-xs" />
+
+          {/* Cute Fuzzy Antennae */}
+          <div className="absolute -top-3.5 left-3 w-1.5 h-4.5 bg-[#09090c] rounded-full flex flex-col items-center rotate-[-12deg]">
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-300 border border-[#09090c] shadow-xs animate-ping" style={{ animationDuration: '3s' }} />
           </div>
-          <div className="absolute -top-3 right-3 w-1.5 h-4 bg-slate-900 rounded-full flex flex-col items-center">
-            <div className="w-2.5 h-2.5 rounded-full bg-amber-400 border border-slate-900" />
+          <div className="absolute -top-3.5 right-3 w-1.5 h-4.5 bg-[#09090c] rounded-full flex flex-col items-center rotate-[12deg]">
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-300 border border-[#09090c] shadow-xs animate-ping" style={{ animationDuration: '3s', animationDelay: '1.5s' }} />
           </div>
 
-          {/* Cute Eyes */}
-          <div className="relative z-10 flex items-center justify-center gap-3.5 mt-2">
-            <div className="w-3.5 h-3.5 rounded-full bg-slate-900 flex items-center justify-center">
-              <div className="w-1 h-1 rounded-full bg-white -mt-1 -ml-1" />
+          {/* Big Expressive Bumblebee Eyes with starry highlights */}
+          <div className="relative z-10 flex items-center justify-center gap-3 mt-1.5">
+            <div className="w-4 h-4 rounded-full bg-[#09090c] border border-yellow-300/40 flex items-center justify-center shadow-xs">
+              <div className="w-1.5 h-1.5 rounded-full bg-white -mt-1.5 -ml-1 shadow-sm" />
+              <div className="w-0.5 h-0.5 rounded-full bg-yellow-200 mt-1 ml-1" />
             </div>
-            <div className="w-3.5 h-3.5 rounded-full bg-slate-900 flex items-center justify-center">
-              <div className="w-1 h-1 rounded-full bg-white -mt-1 -ml-1" />
+            <div className="w-4 h-4 rounded-full bg-[#09090c] border border-yellow-300/40 flex items-center justify-center shadow-xs">
+              <div className="w-1.5 h-1.5 rounded-full bg-white -mt-1.5 -ml-1 shadow-sm" />
+              <div className="w-0.5 h-0.5 rounded-full bg-yellow-200 mt-1 ml-1" />
             </div>
           </div>
 
-          {/* Cute Rosy Cheeks */}
-          <div className="relative z-10 flex items-center justify-between w-11 mt-0.5">
-            <div className="w-2 h-1.5 rounded-full bg-red-400/80" />
-            <div className="w-2 h-1.5 rounded-full bg-red-400/80" />
+          {/* Sweet Rosy Cheeks */}
+          <div className="relative z-10 flex items-center justify-between w-12 mt-0.5">
+            <div className="w-2.5 h-1.5 rounded-full bg-rose-500/80 blur-[0.4px]" />
+            <div className="w-2.5 h-1.5 rounded-full bg-rose-500/80 blur-[0.4px]" />
           </div>
 
-          {/* Animated Mouth (talking effect) */}
+          {/* Talking Mouth */}
           <div className="relative z-10 mt-0.5 flex justify-center">
             {mouthOpen ? (
-              <div className="w-3 h-2.5 rounded-b-full bg-slate-900 animate-pulse border-t border-slate-700" />
+              <div className="w-3.5 h-2.5 rounded-b-full bg-[#09090c] border-t border-amber-600 animate-pulse" />
             ) : (
-              <div className="w-2.5 h-1 rounded-full bg-slate-900" />
+              <div className="w-2.5 h-1 rounded-full bg-[#09090c]" />
             )}
           </div>
 
@@ -133,24 +155,26 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
 
       </div>
 
-      {/* Buzzy Status Badge */}
-      <div className="mt-1 flex items-center gap-1.5 text-[11px] font-black text-amber-950">
-        <span>Buzzy the HoneyBee</span>
+      {/* Bumblebee Mascot Status Badge */}
+      <div className="mt-1 flex items-center gap-1.5 text-[11px] font-black text-yellow-300">
+        <span className="flex items-center gap-1">
+          <span>🐝</span> Buzzy the Bumblebee
+        </span>
         {isSpeaking && (
-          <span className="flex items-center gap-1 text-[10px] text-amber-800 bg-amber-200 px-2 py-0.5 rounded-full font-mono animate-pulse">
-            <Sparkles className="w-3 h-3 text-amber-600" /> Speaking out loud...
+          <span className="flex items-center gap-1 text-[10px] text-black bg-yellow-400 px-2 py-0.5 rounded-full font-mono font-bold animate-pulse shadow-xs">
+            <Sparkles className="w-3 h-3 text-black" /> Buzzing...
           </span>
         )}
         {isListening && (
-          <span className="flex items-center gap-1 text-[10px] text-red-700 bg-red-100 px-2 py-0.5 rounded-full font-mono animate-pulse">
-            <Mic className="w-3 h-3 text-red-600" /> Listening...
+          <span className="flex items-center gap-1 text-[10px] text-white bg-red-600 px-2 py-0.5 rounded-full font-mono animate-pulse">
+            <Mic className="w-3 h-3 text-white" /> Listening...
           </span>
         )}
       </div>
 
       {/* Active Speech Bubble */}
       {speechText && (
-        <div className="mt-2 max-w-full px-3 py-1.5 rounded-2xl bg-white border border-amber-300 text-[11px] text-slate-800 font-medium shadow-xs text-center line-clamp-2 animate-fadeIn">
+        <div className="mt-2 max-w-full px-3 py-1.5 rounded-2xl bg-yellow-400 text-slate-950 font-bold border border-yellow-300 text-[11px] shadow-md text-center line-clamp-2 animate-fadeIn">
           💬 "{speechText}"
         </div>
       )}
