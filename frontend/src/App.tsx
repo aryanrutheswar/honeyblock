@@ -145,7 +145,7 @@ const HoneychainMainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex font-sans selection:bg-amber-100 selection:text-amber-900">
+    <div className="min-h-screen bg-[#faf8ff] text-[#1e1b4b] flex font-sans selection:bg-yellow-300 selection:text-purple-950">
       
       {/* Left Application Sidebar */}
       <HoneychainSidebar
@@ -187,57 +187,57 @@ const HoneychainMainLayout: React.FC = () => {
       {/* Floating Bottom Quick Action Bar for Judges & Evaluators */}
       <aside
         aria-label="Interactive Simulator Tools"
-        className="hidden md:flex fixed bottom-5 left-1/2 -translate-x-1/2 z-30 items-center gap-1.5 p-1.5 rounded-2xl bg-white/95 border border-slate-200/90 shadow-lg shadow-slate-900/5 backdrop-blur-md text-xs font-semibold text-slate-700"
+        className="hidden md:flex fixed bottom-5 left-1/2 -translate-x-1/2 z-30 items-center gap-1.5 p-1.5 rounded-2xl bg-white/95 border border-purple-200/90 shadow-xl shadow-purple-950/10 backdrop-blur-md text-xs font-bold text-purple-950"
       >
-        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-1 rounded-xl flex items-center gap-1">
+        <span className="text-[10px] font-black uppercase tracking-wider text-purple-950 bg-yellow-400 px-2 py-1 rounded-xl flex items-center gap-1 shadow-2xs">
           <span>⚡</span> Simulators:
         </span>
         <button
           type="button"
           onClick={() => setIsProvenanceGraphOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
         >
           Genealogy Graph
         </button>
         <button
           type="button"
           onClick={() => setIsIoTSimulatorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
         >
           IoT Sensor
         </button>
         <button
           type="button"
           onClick={() => setIsExplainableAiOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
         >
           Explainable AI
         </button>
         <button
           type="button"
           onClick={() => setIsYieldSimulatorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
         >
           Yield What-If
         </button>
         <button
           type="button"
           onClick={() => setIsRuralModeOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
         >
           Rural Mode
         </button>
         <button
           type="button"
           onClick={() => setIsQrDetectorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
         >
           Clone Detector
         </button>
         <button
           type="button"
           onClick={() => setIsCertificateOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition cursor-pointer font-bold"
+          className="px-2.5 py-1.5 rounded-xl bg-yellow-400 text-purple-950 border border-yellow-500 hover:bg-yellow-300 transition cursor-pointer font-black shadow-xs"
         >
           Digital Certificate
         </button>

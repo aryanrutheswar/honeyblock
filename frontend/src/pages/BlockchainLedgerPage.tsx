@@ -130,50 +130,50 @@ export const BlockchainLedgerPage: React.FC = () => {
     <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-7xl mx-auto">
       
       {/* Header Banner */}
-      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-purple-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider block mb-1">
+          <span className="text-[11px] font-black text-purple-900 bg-yellow-300/80 px-2.5 py-1 rounded-full border border-yellow-400 uppercase tracking-wider inline-block mb-2">
             Consortium Immutability & Audit Trail
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-purple-950 tracking-tight">
             Blockchain Ledger
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-purple-900/60 mt-1 max-w-xl font-medium">
             A transparent, permissioned audit log recording every verified milestone in the life of each honey batch.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-50 border border-purple-200 text-xs font-bold text-purple-900">
+          <ShieldCheck className="w-4 h-4 text-yellow-500" />
           <span>Consensus Health: 100% Cryptographic Integrity</span>
         </div>
       </div>
 
       {/* Simple Visual Explanation Box */}
-      <div className="p-5 rounded-2xl bg-amber-50/50 border border-amber-200/80 flex items-start gap-3.5">
-        <div className="p-2 rounded-xl bg-amber-500 text-white shrink-0 mt-0.5 shadow-xs">
+      <div className="p-5 rounded-2xl bg-purple-50/60 border border-purple-200/80 flex items-start gap-3.5">
+        <div className="p-2 rounded-xl bg-yellow-400 text-purple-950 shrink-0 mt-0.5 shadow-xs font-bold">
           <Info className="w-4 h-4" />
         </div>
         <div className="space-y-1">
-          <h3 className="text-sm font-bold text-amber-950">
+          <h3 className="text-sm font-extrabold text-purple-950">
             How the HoneyChain Ledger Works
           </h3>
-          <p className="text-xs text-amber-900/80 leading-relaxed max-w-4xl font-medium">
+          <p className="text-xs text-purple-900/80 leading-relaxed max-w-4xl font-medium">
             Every important honey transaction—such as beekeeper harvesting, lab isotope testing, and packaging—is securely recorded and cannot be secretly altered. Each milestone is cryptographically sealed across multiple independent consortium peers (KVIC, NABL labs, and regulators).
           </p>
         </div>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-4 bg-white rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs">
+      <div className="p-4 bg-white rounded-2xl border border-purple-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-purple-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search by batch ID, transaction hash, or lot name..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-400 focus:bg-white transition"
+            className="w-full pl-9 pr-4 py-2 bg-purple-50/40 border border-purple-100 rounded-xl text-xs text-purple-950 placeholder:text-purple-400 focus:outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-500/20 focus:bg-white transition font-medium"
           />
         </div>
 

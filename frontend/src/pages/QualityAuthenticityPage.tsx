@@ -28,29 +28,29 @@ export const QualityAuthenticityPage: React.FC = () => {
     <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-7xl mx-auto">
       
       {/* Top Banner & Mode Toggle */}
-      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-purple-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider block mb-1">
+          <span className="text-[11px] font-black text-purple-900 bg-yellow-300/80 px-2.5 py-1 rounded-full border border-yellow-400 uppercase tracking-wider inline-block mb-2">
             ISO/IEC 17025 Certified Laboratory Intelligence
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-purple-950 tracking-tight">
             Quality & Authenticity Verification
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-purple-900/60 mt-1 max-w-xl font-medium">
             Molecular NMR spectral profiling, Pollen-DNA metagenomics, and EA-IRMS carbon isotope mass spectrometry.
           </p>
         </div>
 
         {/* Demo Mode Toggle */}
-        <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
-          <span className="text-xs font-bold text-slate-500 px-2">Sample Test:</span>
+        <div className="flex items-center gap-2 bg-purple-50/60 p-1.5 rounded-xl border border-purple-200">
+          <span className="text-xs font-black text-purple-900/70 px-2">Sample Test:</span>
           <button
             type="button"
             onClick={() => setTestMode('pure')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
               testMode === 'pure'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-yellow-400 text-purple-950 font-black shadow-xs border border-yellow-500/50'
+                : 'text-purple-900/70 hover:text-purple-950'
             }`}
           >
             Pure Honey Sample
@@ -60,8 +60,8 @@ export const QualityAuthenticityPage: React.FC = () => {
             onClick={() => setTestMode('adulterated')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
               testMode === 'adulterated'
-                ? 'bg-rose-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-rose-600 text-white shadow-xs font-bold'
+                : 'text-purple-900/70 hover:text-purple-950'
             }`}
           >
             Adulterated Sample

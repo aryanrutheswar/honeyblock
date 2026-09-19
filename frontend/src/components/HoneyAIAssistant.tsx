@@ -235,24 +235,24 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
             soundManager.playClick();
             setIsOpen(!isOpen);
           }}
-          className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold text-xs shadow-lg shadow-amber-500/25 hover:shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer border border-amber-400/40"
+          className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gradient-to-r from-purple-700 via-purple-800 to-purple-900 hover:from-purple-800 hover:to-purple-950 text-yellow-300 font-extrabold text-xs shadow-xl shadow-purple-950/25 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-yellow-400/80"
         >
-          <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">
+          <div className="w-5 h-5 rounded-full bg-yellow-400/20 flex items-center justify-center text-xs">
             🍯
           </div>
-          <span className="tracking-tight">Ask HoneyAI</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="tracking-tight text-white">Ask HoneyAI</span>
+          <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
         </button>
       </div>
 
       {/* Slide-Over Drawer / Panel */}
       {isOpen && (
-        <div className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[min(600px,calc(100vh-6.5rem))] bg-white border border-slate-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn select-none">
+        <div className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[min(600px,calc(100vh-6.5rem))] bg-white border border-purple-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn select-none">
           
           {/* Header */}
-          <div className="p-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white flex items-center justify-between shadow-xs shrink-0">
+          <div className="p-3.5 bg-gradient-to-r from-purple-950 via-purple-900 to-purple-800 text-white flex items-center justify-between shadow-xs shrink-0 border-b border-purple-700/50">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-lg border border-white/20 shadow-xs">
+              <div className="w-9 h-9 rounded-xl bg-purple-800/80 border border-yellow-400/40 flex items-center justify-center text-lg shadow-xs text-yellow-300">
                 🍯
               </div>
               <div>
@@ -260,12 +260,12 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
                   <h3 className="text-sm font-extrabold tracking-tight text-white leading-none">
                     HoneyAI
                   </h3>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-400 text-amber-950">
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-yellow-400 text-purple-950">
                     Smart Assistant
                   </span>
                 </div>
-                <p className="text-[11px] text-amber-100 font-medium mt-0.5">
-                  Your HoneyChain Smart Assistant
+                <p className="text-[11px] text-purple-200 font-medium mt-0.5">
+                  Your HoneyChain AI Intelligence
                 </p>
               </div>
             </div>
@@ -277,7 +277,7 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
                   if (window.speechSynthesis) window.speechSynthesis.cancel();
                   setIsVoiceMuted(!isVoiceMuted);
                 }}
-                className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition cursor-pointer"
+                className="p-1.5 rounded-lg text-purple-200 hover:text-white hover:bg-white/10 transition cursor-pointer"
                 title={isVoiceMuted ? 'Unmute Speech Output' : 'Mute Speech Output'}
               >
                 {isVoiceMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -286,7 +286,7 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
               <button
                 type="button"
                 onClick={handleClose}
-                className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition cursor-pointer"
+                className="p-1.5 rounded-lg text-purple-200 hover:text-white hover:bg-white/10 transition cursor-pointer"
                 title="Close Assistant"
               >
                 <X className="w-4 h-4" />
@@ -295,7 +295,7 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
           </div>
 
           {/* Quick Action Chips Row */}
-          <div className="px-3 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-1.5 overflow-x-auto shrink-0 no-scrollbar">
+          <div className="px-3 py-2 bg-purple-50/50 border-b border-purple-100 flex items-center gap-1.5 overflow-x-auto shrink-0 no-scrollbar">
             {quickActions.map(action => {
               const Icon = action.icon;
               return (
@@ -303,9 +303,9 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
                   key={action.label}
                   type="button"
                   onClick={() => handleSendMessage(action.query)}
-                  className="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-amber-400 hover:text-amber-800 hover:bg-amber-50 text-[11px] font-medium whitespace-nowrap transition cursor-pointer flex items-center gap-1 shrink-0 shadow-2xs"
+                  className="px-2.5 py-1 rounded-full bg-white border border-purple-200 text-purple-950 hover:border-purple-400 hover:bg-purple-50 text-[11px] font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-1 shrink-0 shadow-2xs"
                 >
-                  <Icon className="w-3 h-3 text-amber-600" />
+                  <Icon className="w-3 h-3 text-purple-600" />
                   <span>{action.label}</span>
                 </button>
               );
@@ -313,7 +313,7 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
           </div>
 
           {/* Message List */}
-          <div className="flex-1 p-3.5 space-y-3.5 overflow-y-auto bg-slate-50/50">
+          <div className="flex-1 p-3.5 space-y-3.5 overflow-y-auto bg-purple-50/20">
             {messages.map(msg => (
               <div
                 key={msg.id}
@@ -321,18 +321,20 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
               >
                 <div
                   className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold shadow-2xs ${
-                    msg.sender === 'user' ? 'bg-amber-500 text-white' : 'bg-white border border-slate-200 text-slate-800'
+                    msg.sender === 'user'
+                      ? 'bg-purple-700 text-white'
+                      : 'bg-white border border-purple-200 text-purple-900'
                   }`}
                 >
-                  {msg.sender === 'user' ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5 text-amber-600" />}
+                  {msg.sender === 'user' ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5 text-yellow-500" />}
                 </div>
 
                 <div className={`max-w-[85%] space-y-1.5 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                   <div
                     className={`p-3 rounded-2xl text-xs leading-relaxed ${
                       msg.sender === 'user'
-                        ? 'bg-amber-500 text-white font-medium rounded-tr-xs shadow-xs'
-                        : 'bg-white text-slate-800 border border-slate-200/90 rounded-tl-xs shadow-xs'
+                        ? 'bg-purple-600 text-white font-medium rounded-tr-xs shadow-xs'
+                        : 'bg-white text-purple-950 border border-purple-100 rounded-tl-xs shadow-xs'
                     }`}
                   >
                     <p className="whitespace-pre-line">{msg.text}</p>
@@ -340,20 +342,20 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
 
                   {/* Rich Meta Card if attached */}
                   {msg.metaCard && (
-                    <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-2 text-left shadow-2xs">
+                    <div className="p-3 bg-white border border-purple-200 rounded-xl space-y-2 text-left shadow-2xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-slate-900">{msg.metaCard.title}</span>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="text-[11px] font-bold text-purple-950">{msg.metaCard.title}</span>
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-900 border border-yellow-300">
                           {msg.metaCard.status}
                         </span>
                       </div>
-                      <p className="text-[10px] text-slate-500">{msg.metaCard.subtitle}</p>
-                      
-                      <div className="grid grid-cols-2 gap-1.5 pt-1 border-t border-slate-100 text-[10px]">
-                        {msg.metaCard.details.map(d => (
-                          <div key={d.label}>
-                            <span className="text-slate-400 block">{d.label}:</span>
-                            <span className="font-semibold text-slate-800">{d.value}</span>
+                      <p className="text-[10px] text-purple-700/70">{msg.metaCard.subtitle}</p>
+
+                      <div className="grid grid-cols-2 gap-1.5 pt-1">
+                        {msg.metaCard.details.map((d, idx) => (
+                          <div key={idx} className="bg-purple-50/50 p-1.5 rounded-lg text-[10px]">
+                            <span className="text-purple-900/60 block">{d.label}</span>
+                            <span className="font-bold text-purple-950">{d.value}</span>
                           </div>
                         ))}
                       </div>
@@ -366,7 +368,7 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
                             else if (msg.metaCard?.type === 'batch') onNavigateTab('traceability');
                             else if (msg.metaCard?.type === 'alert') onNavigateTab('alerts');
                           }}
-                          className="w-full mt-1 py-1 px-2 rounded-lg bg-slate-50 hover:bg-amber-50 text-[10px] font-bold text-slate-700 hover:text-amber-800 flex items-center justify-center gap-1 transition cursor-pointer border border-slate-100"
+                          className="w-full mt-1 py-1 px-2 rounded-lg bg-purple-50 hover:bg-purple-100 text-[10px] font-bold text-purple-800 flex items-center justify-center gap-1 transition cursor-pointer border border-purple-100"
                         >
                           <span>Open in {msg.metaCard.type === 'hive' ? 'Smart Hives' : msg.metaCard.type === 'batch' ? 'Traceability' : 'Alerts'}</span>
                           <ChevronRight className="w-3 h-3" />
@@ -375,59 +377,57 @@ export const HoneyAIAssistant: React.FC<HoneyAIAssistantProps> = ({
                     </div>
                   )}
 
-                  <span className="text-[10px] text-slate-400 block px-1">{msg.timestamp}</span>
+                  <span className="text-[10px] text-purple-900/40 font-mono px-1">
+                    {msg.timestamp}
+                  </span>
                 </div>
               </div>
             ))}
 
             {isTyping && (
-              <div className="flex items-center gap-2 text-slate-500 text-xs pl-2">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-                <span className="font-medium text-slate-600">HoneyAI is analyzing telemetry & records...</span>
+              <div className="flex items-center gap-2 p-2 text-xs text-purple-700 bg-white border border-purple-100 rounded-xl w-fit">
+                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce" />
+                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce [animation-delay:0.2s]" />
+                <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce [animation-delay:0.4s]" />
+                <span className="text-[11px] font-medium ml-1">HoneyAI is reasoning...</span>
               </div>
             )}
-
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Bar */}
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              handleSendMessage();
-            }}
-            className="p-2.5 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0"
-          >
-            <button
-              type="button"
-              onClick={handleVoiceToggle}
-              className={`p-2 rounded-xl transition cursor-pointer ${
-                isListening
-                  ? 'bg-rose-500 text-white animate-pulse'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-              }`}
-              title="Voice Input"
-            >
-              {isListening ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-            </button>
+          {/* Input & Voice Controls Footer */}
+          <div className="p-3 bg-white border-t border-purple-100 shrink-0">
+            <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleVoiceToggle}
+                className={`p-2 rounded-xl border transition cursor-pointer ${
+                  isListening
+                    ? 'bg-rose-50 border-rose-300 text-rose-600 animate-pulse'
+                    : 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100'
+                }`}
+                title={isListening ? 'Listening... click to stop' : 'Click to speak'}
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
 
-            <input
-              type="text"
-              value={inputText}
-              onChange={e => setInputText(e.target.value)}
-              placeholder="Ask about batches, hives, lab purity, alerts..."
-              className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-400 focus:bg-white"
-            />
+              <input
+                type="text"
+                value={inputText}
+                onChange={e => setInputText(e.target.value)}
+                placeholder="Ask HoneyAI about batches, hives, or quality..."
+                className="flex-1 px-3 py-2 bg-purple-50/40 border border-purple-200 rounded-xl text-xs text-purple-950 placeholder:text-purple-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:bg-white transition"
+              />
 
-            <button
-              type="submit"
-              disabled={!inputText.trim()}
-              className="p-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white font-bold transition cursor-pointer shadow-xs"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
-
+              <button
+                type="submit"
+                disabled={!inputText.trim()}
+                className="p-2 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-purple-950 font-bold disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer shadow-xs"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </>

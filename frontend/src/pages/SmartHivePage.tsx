@@ -125,15 +125,15 @@ export const SmartHivePage: React.FC = () => {
     <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-7xl mx-auto">
       
       {/* Top Banner */}
-      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-purple-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider block mb-1">
+          <span className="text-[11px] font-black text-purple-900 bg-yellow-300/80 px-2.5 py-1 rounded-full border border-yellow-400 uppercase tracking-wider inline-block mb-2">
             Real-Time Edge IoT Telemetry
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-purple-950 tracking-tight">
             Smart Hive Monitoring Dashboard
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-purple-900/60 mt-1 max-w-xl font-medium">
             Live environmental sensing, scale weight telemetry, and bio-acoustic queen calmness diagnostics across your smart apiaries.
           </p>
         </div>
@@ -146,63 +146,63 @@ export const SmartHivePage: React.FC = () => {
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer border ${
               isAcousticStress
                 ? 'bg-rose-50 border-rose-200 text-rose-800'
-                : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                : 'bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-900'
             }`}
           >
-            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <Zap className="w-3.5 h-3.5 text-yellow-500" />
             <span>{isAcousticStress ? 'Simulating Acoustic Stress' : 'Simulate Hive Stress'}</span>
           </button>
 
           <button
             type="button"
             onClick={resetHiveHealth}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 text-xs font-bold transition cursor-pointer"
             title="Reset to Normal Baseline"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-            <span>Reset Baseline</span>
+            <RotateCcw className="w-3.5 h-3.5 text-purple-600" />
+            <span>Reset Telemetry</span>
           </button>
         </div>
       </div>
 
-      {/* 4 Clean Hive Cards Grid */}
+      {/* Grid of Smart Hives */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {hives.map((hive) => {
           const isAlert = hive.status === 'ALERT';
           return (
             <div
               key={hive.id}
-              className={`saas-card p-6 space-y-5 transition-all ${
-                isAlert ? 'border-rose-300 ring-1 ring-rose-200/80 bg-rose-50/20' : 'hover:border-amber-300'
+              className={`saas-card p-6 space-y-6 transition-all ${
+                isAlert ? 'border-rose-300 ring-2 ring-rose-500/10' : 'border-purple-100 hover:border-purple-300'
               }`}
             >
               {/* Card Header */}
-              <div className="flex items-start justify-between gap-3 pb-4 border-b border-slate-100">
+              <div className="flex items-start justify-between gap-3 pb-4 border-b border-purple-50">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-xs font-bold text-slate-700 px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200">
+                    <span className="font-mono text-xs font-black text-purple-950 px-2.5 py-0.5 rounded-md bg-yellow-300/80 border border-yellow-400">
                       {hive.id}
                     </span>
                     <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${
                       isAlert
                         ? 'bg-rose-50 text-rose-800 border-rose-200 animate-pulse'
-                        : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        : 'bg-purple-50 text-purple-900 border-purple-200'
                     }`}>
-                      {isAlert ? <AlertTriangle className="w-3 h-3 text-rose-600" /> : <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
+                      {isAlert ? <AlertTriangle className="w-3 h-3 text-rose-600" /> : <CheckCircle2 className="w-3 h-3 text-yellow-500" />}
                       <span>{hive.statusText}</span>
                     </span>
                   </div>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                  <h3 className="text-base sm:text-lg font-extrabold text-purple-950">
                     {hive.name}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-purple-900/60 mt-0.5 font-medium">
                     {hive.location}
                   </p>
                 </div>
 
                 <div className="text-right shrink-0">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Battery / Gateway</span>
-                  <span className="text-xs font-mono font-bold text-emerald-700">{hive.batteryPct}% (Online)</span>
+                  <span className="text-[10px] uppercase font-bold text-purple-900/40 block">Battery / Gateway</span>
+                  <span className="text-xs font-mono font-bold text-purple-700">{hive.batteryPct}% (Online)</span>
                 </div>
               </div>
 

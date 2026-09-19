@@ -103,24 +103,24 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white border-r border-slate-200/90 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white border-r border-purple-100/90 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         }`}
       >
         {/* Brand Header */}
-        <div className="h-16 px-5 border-b border-slate-100 flex items-center justify-between">
+        <div className="h-16 px-5 border-b border-purple-50 flex items-center justify-between">
           <div
             onClick={() => handleNavClick('dashboard')}
             className="flex items-center gap-2.5 cursor-pointer select-none group"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-sm shadow-amber-500/20 group-hover:scale-105 transition-transform">
-              <Hexagon className="w-5 h-5 fill-white/20 stroke-[2.2]" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-700 to-purple-900 border border-purple-400/30 flex items-center justify-center text-yellow-300 shadow-md shadow-purple-900/15 group-hover:scale-105 transition-transform">
+              <Hexagon className="w-5 h-5 fill-yellow-400/20 stroke-[2.2]" />
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-extrabold tracking-tight text-slate-900 leading-none">
-                HONEY<span className="text-amber-600">CHAIN</span>
+              <span className="text-base font-extrabold tracking-tight text-purple-950 leading-none">
+                HONEY<span className="text-amber-500">CHAIN</span>
               </span>
-              <span className="text-[10px] font-semibold text-slate-400 tracking-wider mt-0.5">
+              <span className="text-[10px] font-bold text-purple-700/60 tracking-wider mt-0.5">
                 ENTERPRISE SAAS
               </span>
             </div>
@@ -128,10 +128,10 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
         </div>
 
         {/* Navigation Sections */}
-        <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
           {navSections.map(section => (
             <div key={section.group} className="space-y-1">
-              <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 select-none">
+              <div className="px-3 text-[10px] font-black uppercase tracking-wider text-purple-900/50 select-none">
                 {section.group}
               </div>
               <div className="space-y-0.5 pt-1">
@@ -145,31 +145,31 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
                       onClick={() => handleNavClick(item.id)}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                         isActive
-                          ? 'bg-amber-50 text-amber-900 font-bold border border-amber-200/80 shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                          ? 'bg-purple-50 text-purple-950 font-bold border border-purple-200 shadow-xs'
+                          : 'text-slate-600 hover:text-purple-900 hover:bg-purple-50/50'
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
                         <Icon
                           className={`w-4 h-4 transition-colors ${
                             isActive
-                              ? 'text-amber-600 stroke-[2.4]'
+                              ? 'text-purple-700 stroke-[2.4]'
                               : item.highlight
-                              ? 'text-amber-500'
-                              : 'text-slate-400 group-hover:text-slate-600'
+                              ? 'text-yellow-500'
+                              : 'text-purple-400 group-hover:text-purple-700'
                           }`}
                         />
                         <span>{item.label}</span>
                       </div>
 
                       {item.badge !== undefined && item.badge > 0 && (
-                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white leading-none">
+                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-yellow-400 text-purple-950 leading-none shadow-xs">
                           {item.badge}
                         </span>
                       )}
 
                       {item.highlight && !isActive && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
                       )}
                     </button>
                   );
@@ -179,17 +179,17 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
           ))}
         </nav>
 
-        {/* Network & Node Status Footer */}
-        <div className="p-3.5 m-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+        {/* Consortium Node Footnote */}
+        <div className="p-3 m-3 rounded-2xl bg-purple-50/60 border border-purple-100">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Nilgiri Node #014
+            <span className="text-[11px] font-bold text-purple-950 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-yellow-500" />
+              Consortium Cluster
             </span>
-            <span className="text-[10px] font-mono font-bold text-slate-500">18ms</span>
+            <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
           </div>
-          <p className="text-[10px] text-slate-500 leading-tight">
-            PBFT Consortium Consensus • Block #8421
+          <p className="text-[10px] text-purple-900/60 leading-tight font-medium">
+            4/4 PBFT Nodes Online &bull; Ledger Block #8424
           </p>
         </div>
       </aside>

@@ -99,18 +99,18 @@ export const ConsumerQRVerificationPage: React.FC = () => {
     <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-4xl mx-auto">
       
       {/* Top Banner */}
-      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-purple-100 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-pulse" />
+            <span className="text-[11px] font-black text-purple-900 uppercase tracking-wider">
               Consumer Trust Verification Portal
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-purple-950 tracking-tight">
             Honey Bottle Verification Passport
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-purple-900/60 mt-1 font-medium">
             Verified origin, laboratory test dossier, and complete journey for your bottle of honey.
           </p>
         </div>
@@ -120,7 +120,7 @@ export const ConsumerQRVerificationPage: React.FC = () => {
           <select
             value={selectedProduct}
             onChange={e => setSelectedProduct(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-amber-400 cursor-pointer"
+            className="px-3.5 py-2 bg-purple-50/60 border border-purple-200 rounded-xl text-xs font-bold text-purple-950 focus:outline-none focus:border-purple-600 cursor-pointer"
           >
             <option value="NILGIRI-RAW">Sample 1: Nilgiri Kurinji</option>
             <option value="KASHMIR-ACACIA">Sample 2: Kashmir Acacia</option>
@@ -129,32 +129,32 @@ export const ConsumerQRVerificationPage: React.FC = () => {
       </div>
 
       {/* Main Verified Passport Card */}
-      <div className="saas-card p-6 sm:p-8 space-y-6">
+      <div className="saas-card p-6 sm:p-8 space-y-6 border-purple-100">
         
         {/* Verification Badge & Bottle Title */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-purple-50">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span className="px-3 py-1 rounded-full text-xs font-black bg-yellow-300/90 text-purple-950 border border-yellow-400 flex items-center gap-1.5 shadow-2xs">
+                <CheckCircle2 className="w-4 h-4 text-purple-900" />
                 <span>✓ Authenticity Verified</span>
               </span>
-              <span className="text-xs font-mono font-bold text-slate-400">
+              <span className="text-xs font-mono font-bold text-purple-900/50">
                 Batch #{currentProduct.batchNumber}
               </span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-purple-950 tracking-tight">
               {currentProduct.name}
             </h2>
-            <p className="text-xs font-semibold text-amber-700">
+            <p className="text-xs font-bold text-purple-700">
               {currentProduct.brand} • {currentProduct.tagline}
             </p>
           </div>
 
           <div className="text-left sm:text-right shrink-0">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Barcode Seal</span>
-            <span className="text-xs font-mono font-bold text-slate-800 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 inline-block mt-0.5">
+            <span className="text-[10px] uppercase font-bold text-purple-900/40 block">Barcode Seal</span>
+            <span className="text-xs font-mono font-bold text-purple-950 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 inline-block mt-0.5">
               {currentProduct.eanBarcode}
             </span>
           </div>
