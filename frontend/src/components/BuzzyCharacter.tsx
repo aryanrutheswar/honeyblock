@@ -99,38 +99,38 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
         </div>
 
         {/* Plump Fuzzy Bumblebee Body */}
-        <div className="relative w-18 h-18 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 border-3 border-slate-950 shadow-xl shadow-yellow-500/25 flex flex-col items-center justify-center overflow-hidden animate-bee-hover">
+        <div className="relative w-18 h-18 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 border-3 border-purple-950 shadow-xl shadow-yellow-500/25 flex flex-col items-center justify-center overflow-hidden animate-bee-hover">
           
           {/* Fluffy Pollen Head Collar */}
           <div className="absolute top-0 w-full h-3 bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 opacity-90" />
 
-          {/* Bumblebee Velvety Black Stripe 1 */}
-          <div className="absolute top-4.5 w-full h-2.5 bg-[#09090c] shadow-inner" />
+          {/* Bumblebee Royal Purple Stripe 1 */}
+          <div className="absolute top-4.5 w-full h-2.5 bg-purple-950 shadow-inner" />
           
           {/* Bumblebee Bright Yellow Pollen Stripe */}
           <div className="absolute top-7 w-full h-2.5 bg-yellow-400" />
 
-          {/* Bumblebee Velvety Black Stripe 2 */}
-          <div className="absolute top-9.5 w-full h-3 bg-[#09090c] shadow-inner" />
+          {/* Bumblebee Royal Purple Stripe 2 */}
+          <div className="absolute top-9.5 w-full h-3 bg-purple-950 shadow-inner" />
 
           {/* Cute Little Bumblebee Stinger at Bottom */}
-          <div className="absolute -bottom-1 w-2.5 h-2.5 bg-[#09090c] rotate-45 rounded-xs" />
+          <div className="absolute -bottom-1 w-2.5 h-2.5 bg-purple-950 rotate-45 rounded-xs" />
 
           {/* Cute Fuzzy Antennae */}
-          <div className="absolute -top-3.5 left-3 w-1.5 h-4.5 bg-[#09090c] rounded-full flex flex-col items-center rotate-[-12deg]">
-            <div className="w-2.5 h-2.5 rounded-full bg-yellow-300 border border-[#09090c] shadow-xs animate-ping" style={{ animationDuration: '3s' }} />
+          <div className="absolute -top-3.5 left-3 w-1.5 h-4.5 bg-purple-950 rounded-full flex flex-col items-center rotate-[-12deg]">
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-300 border border-purple-950 shadow-xs animate-ping" style={{ animationDuration: '3s' }} />
           </div>
-          <div className="absolute -top-3.5 right-3 w-1.5 h-4.5 bg-[#09090c] rounded-full flex flex-col items-center rotate-[12deg]">
-            <div className="w-2.5 h-2.5 rounded-full bg-yellow-300 border border-[#09090c] shadow-xs animate-ping" style={{ animationDuration: '3s', animationDelay: '1.5s' }} />
+          <div className="absolute -top-3.5 right-3 w-1.5 h-4.5 bg-purple-950 rounded-full flex flex-col items-center rotate-[12deg]">
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-300 border border-purple-950 shadow-xs animate-ping" style={{ animationDuration: '3s', animationDelay: '1.5s' }} />
           </div>
 
           {/* Big Expressive Bumblebee Eyes with starry highlights */}
           <div className="relative z-10 flex items-center justify-center gap-3 mt-1.5">
-            <div className="w-4 h-4 rounded-full bg-[#09090c] border border-yellow-300/40 flex items-center justify-center shadow-xs">
+            <div className="w-4 h-4 rounded-full bg-purple-950 border border-yellow-300/40 flex items-center justify-center shadow-xs">
               <div className="w-1.5 h-1.5 rounded-full bg-white -mt-1.5 -ml-1 shadow-sm" />
               <div className="w-0.5 h-0.5 rounded-full bg-yellow-200 mt-1 ml-1" />
             </div>
-            <div className="w-4 h-4 rounded-full bg-[#09090c] border border-yellow-300/40 flex items-center justify-center shadow-xs">
+            <div className="w-4 h-4 rounded-full bg-purple-950 border border-yellow-300/40 flex items-center justify-center shadow-xs">
               <div className="w-1.5 h-1.5 rounded-full bg-white -mt-1.5 -ml-1 shadow-sm" />
               <div className="w-0.5 h-0.5 rounded-full bg-yellow-200 mt-1 ml-1" />
             </div>
@@ -145,9 +145,9 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
           {/* Talking Mouth */}
           <div className="relative z-10 mt-0.5 flex justify-center">
             {mouthOpen ? (
-              <div className="w-3.5 h-2.5 rounded-b-full bg-[#09090c] border-t border-amber-600 animate-pulse" />
+              <div className="w-3.5 h-2.5 rounded-b-full bg-purple-950 border-t border-amber-600 animate-pulse" />
             ) : (
-              <div className="w-2.5 h-1 rounded-full bg-[#09090c]" />
+              <div className="w-2.5 h-1 rounded-full bg-purple-950" />
             )}
           </div>
 
@@ -156,13 +156,13 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
       </div>
 
       {/* Bumblebee Mascot Status Badge */}
-      <div className="mt-1 flex items-center gap-1.5 text-[11px] font-black text-yellow-300">
+      <div className="mt-1 flex items-center gap-1.5 text-[11px] font-black text-purple-950">
         <span className="flex items-center gap-1">
           <span>🐝</span> Buzzy the Bumblebee
         </span>
         {isSpeaking && (
-          <span className="flex items-center gap-1 text-[10px] text-black bg-yellow-400 px-2 py-0.5 rounded-full font-mono font-bold animate-pulse shadow-xs">
-            <Sparkles className="w-3 h-3 text-black" /> Buzzing...
+          <span className="flex items-center gap-1 text-[10px] text-purple-950 bg-yellow-400 px-2 py-0.5 rounded-full font-mono font-bold animate-pulse shadow-xs border border-yellow-500">
+            <Sparkles className="w-3 h-3 text-purple-950" /> Buzzing...
           </span>
         )}
         {isListening && (
@@ -174,7 +174,7 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
 
       {/* Active Speech Bubble */}
       {speechText && (
-        <div className="mt-2 max-w-full px-3 py-1.5 rounded-2xl bg-yellow-400 text-slate-950 font-bold border border-yellow-300 text-[11px] shadow-md text-center line-clamp-2 animate-fadeIn">
+        <div className="mt-2 max-w-full px-3 py-1.5 rounded-2xl bg-yellow-400 text-purple-950 font-black border border-yellow-300 text-[11px] shadow-md text-center line-clamp-2 animate-fadeIn">
           💬 "{speechText}"
         </div>
       )}

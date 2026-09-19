@@ -322,17 +322,17 @@ export const AIChatbotWidget: React.FC = () => {
             soundManager.playClick();
             setIsOpen(!isOpen);
           }}
-          className="relative group flex items-center gap-2.5 px-4.5 py-3 rounded-full bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 hover:from-yellow-200 hover:to-yellow-400 text-slate-950 font-black shadow-2xl shadow-yellow-500/40 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-yellow-200"
+          className="relative group flex items-center gap-2.5 px-4.5 py-3 rounded-full bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 hover:from-yellow-200 hover:to-yellow-400 text-purple-950 font-black shadow-2xl shadow-yellow-500/40 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-yellow-200"
         >
           <div className="relative flex items-center justify-center w-8 h-8 bg-yellow-100 rounded-full text-xl shadow-xs animate-bee-hover">
             🐝
           </div>
           
           <div className="flex flex-col text-left">
-            <span className="text-xs sm:text-sm font-black tracking-tight leading-none text-slate-950 flex items-center gap-1">
+            <span className="text-xs sm:text-sm font-black tracking-tight leading-none text-purple-950 flex items-center gap-1">
               Buzzy Bee 🐝
             </span>
-            <span className="text-[9px] font-bold text-slate-900/80">Voice & Multilingual</span>
+            <span className="text-[9px] font-bold text-purple-900">Voice & Multilingual</span>
           </div>
 
           <span className="px-2 py-0.5 text-[9px] uppercase font-mono font-black bg-purple-900 text-yellow-300 rounded-full border border-yellow-400/40">
@@ -343,22 +343,22 @@ export const AIChatbotWidget: React.FC = () => {
 
       {/* Main Chatbot Window Modal */}
       {isOpen && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[92vw] sm:w-[440px] h-[620px] bg-white/98 backdrop-blur-2xl border-2 border-purple-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn select-none text-purple-950 bumble-border-top">
+        <div className="fixed bottom-20 right-3 sm:right-6 z-50 w-[calc(100vw-1.5rem)] sm:w-[440px] max-w-[440px] h-[min(620px,calc(100vh-6rem))] max-h-[calc(100vh-6rem)] bg-white/98 backdrop-blur-2xl border-2 border-purple-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn select-none text-purple-950 bumble-border-top">
           
-          {/* Cute Top Bar Header */}
-          <div className="p-3.5 bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-950 text-yellow-300 flex items-center justify-between shadow-sm">
+          {/* Cute Top Bar Header - Clean White & Royal Purple */}
+          <div className="p-3.5 bg-white border-b-2 border-purple-100 flex items-center justify-between shadow-xs">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-yellow-400 text-purple-950 text-2xl flex items-center justify-center shadow-md border-2 border-yellow-200">
+              <div className="w-10 h-10 rounded-2xl bg-yellow-400 text-purple-950 text-2xl flex items-center justify-center shadow-md border-2 border-yellow-300 shrink-0">
                 🐝
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-black text-white tracking-tight">Buzzy the Bumblebee 🐝</h3>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-yellow-400 text-purple-950">
+                  <h3 className="text-base font-black text-purple-950 tracking-tight">Buzzy the Bumblebee 🐝</h3>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-yellow-400 text-purple-950 border border-yellow-500 shadow-xs">
                     Voice Active 🔊
                   </span>
                 </div>
-                <p className="text-[11px] font-medium text-yellow-200/80">
+                <p className="text-[11px] font-semibold text-purple-700/80">
                   Telugu • Hindi • English • Tamil • Kannada • Malayalam
                 </p>
               </div>
@@ -367,7 +367,7 @@ export const AIChatbotWidget: React.FC = () => {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="p-1.5 rounded-xl text-yellow-300 hover:bg-white/15 transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl text-purple-700 hover:text-purple-950 hover:bg-purple-100 transition-colors cursor-pointer"
                 title="API Settings (OpenRouter)"
               >
                 <Key className="w-4 h-4" />
@@ -375,7 +375,7 @@ export const AIChatbotWidget: React.FC = () => {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-xl text-yellow-300 hover:bg-white/15 transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl text-purple-700 hover:text-purple-950 hover:bg-purple-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
