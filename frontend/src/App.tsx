@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
 import { HoneychainProvider, useHoneychain } from './context/HoneychainContext';
-import { HoneychainNavbar } from './components/HoneychainNavbar';
-import { BiometricModal } from './components/BiometricModal';
-import { AIChatbotWidget } from './components/AIChatbotWidget';
+import { AppProvider, useApp } from './context/AppContext';
 
-// Pages
+// SaaS Navigation & Shell
+import { HoneychainSidebar, NavTabId } from './components/HoneychainSidebar';
+import { HoneychainHeader } from './components/HoneychainHeader';
+import { HoneyAIAssistant } from './components/HoneyAIAssistant';
+
+// Core Application Pages
+import { DashboardPage } from './pages/DashboardPage';
+import { HoneyBatchesPage } from './pages/HoneyBatchesPage';
+import { TraceabilityPage } from './pages/TraceabilityPage';
+import { SmartHivePage } from './pages/SmartHivePage';
+import { QualityAuthenticityPage } from './pages/QualityAuthenticityPage';
+import { BlockchainLedgerPage } from './pages/BlockchainLedgerPage';
+import { AlertsPage } from './pages/AlertsPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
+import { ConsumerQRVerificationPage } from './pages/ConsumerQRVerificationPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { LandingPage } from './pages/LandingPage';
 import { JudgeDemoFlowPage } from './pages/JudgeDemoFlowPage';
-import { BeekeeperPortal } from './pages/BeekeeperPortal';
-import { AdminPortal } from './pages/AdminPortal';
-import { LabInspectorPortal } from './pages/LabInspectorPortal';
-import { CustomerScannerPortal } from './pages/CustomerScannerPortal';
-import { BlockchainExplorer } from './pages/BlockchainExplorer';
-import { VerifiedBuyerPortal } from './pages/VerifiedBuyerPortal';
-import { RoleSelectionScreen } from './pages/RoleSelectionScreen';
-import { AuthPage } from './pages/AuthPage';
 
-// Specialized Interactive Modals
+// Specialized Deep-Dive Modals (Interactive Demonstrators)
 import { TraceabilityGraphModal } from './components/TraceabilityGraphModal';
 import { IoTSensorSimulatorModal } from './components/IoTSensorSimulatorModal';
 import { ExplainableAiModal } from './components/ExplainableAiModal';
@@ -25,10 +30,15 @@ import { RuralBeekeeperMode } from './components/RuralBeekeeperMode';
 import { BeekeeperWalletModal } from './components/BeekeeperWalletModal';
 import { QrCounterfeitDetectorModal } from './components/QrCounterfeitDetectorModal';
 import { DigitalCertificateModal } from './components/DigitalCertificateModal';
+import { BiometricModal } from './components/BiometricModal';
 
 const HoneychainMainLayout: React.FC = () => {
-  const { appScreen, currentRole, setAppScreen, setCurrentRole } = useHoneychain();
-  const [activeView, setActiveView] = useState<string>('landing');
+  const { currentRole, setCurrentRole } = useHoneychain();
+  const [activeTab, setActiveTab] = useState<NavTabId>('dashboard');
+  const [selectedBatchId, setSelectedBatchId] = useState<string>('HC-2026-00124');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
 
   // Specialized Modals State
   const [isProvenanceGraphOpen, setIsProvenanceGraphOpen] = useState(false);
@@ -40,191 +50,222 @@ const HoneychainMainLayout: React.FC = () => {
   const [isQrDetectorOpen, setIsQrDetectorOpen] = useState(false);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
 
-  const handleNavigateView = (view: string) => {
-    setActiveView(view);
-    if (view === 'beekeeper') {
-      setCurrentRole('beekeeper');
-      setAppScreen('portal');
-    } else if (view === 'admin') {
-      setCurrentRole('admin');
-      setAppScreen('portal');
-    } else if (view === 'inspector') {
-      setCurrentRole('inspector');
-      setAppScreen('portal');
-    } else if (view === 'customer') {
-      setCurrentRole('customer');
-      setAppScreen('portal');
-    } else if (view === 'auth') {
-      setAppScreen('auth');
-    } else if (view === 'role_select') {
-      setAppScreen('role_select');
+  // Handle Tab Switch
+  const handleSelectTab = (tab: string | NavTabId, batchId?: string) => {
+    if (batchId) {
+      setSelectedBatchId(batchId);
+    }
+
+    if (tab === 'ai-assistant') {
+      setIsAiDrawerOpen(true);
+      return;
+    }
+
+    if (
+      tab === 'dashboard' ||
+      tab === 'batches' ||
+      tab === 'traceability' ||
+      tab === 'smart-hive' ||
+      tab === 'quality' ||
+      tab === 'blockchain' ||
+      tab === 'alerts' ||
+      tab === 'analytics' ||
+      tab === 'qr-verify' ||
+      tab === 'settings'
+    ) {
+      setActiveTab(tab as NavTabId);
     }
   };
 
-  const renderActiveView = () => {
-    // Direct modal/page overrides
-    if (activeView === 'judge-demo') {
-      return (
-        <JudgeDemoFlowPage
-          onNavigateToTab={handleNavigateView}
-          onOpenProvenanceGraph={() => setIsProvenanceGraphOpen(true)}
-          onOpenCertificate={() => setIsCertificateOpen(true)}
-        />
-      );
-    }
+  const handleSelectBatchForTraceability = (batchId: string) => {
+    setSelectedBatchId(batchId);
+    setActiveTab('traceability');
+  };
 
-    if (activeView === 'blockchain') {
-      return <BlockchainExplorer />;
-    }
+  // Render Main Page Content
+  const renderContentPage = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return (
+          <DashboardPage
+            onNavigateTab={handleSelectTab}
+            onSelectBatchForTraceability={handleSelectBatchForTraceability}
+            onOpenMintModal={() => handleSelectTab('batches')}
+          />
+        );
 
-    if (activeView === 'marketplace') {
-      return <VerifiedBuyerPortal />;
-    }
+      case 'batches':
+        return (
+          <HoneyBatchesPage
+            onNavigateTab={(tab, batchId) => handleSelectTab(tab as NavTabId, batchId)}
+          />
+        );
 
-    if (activeView === 'beekeeper') {
-      return <BeekeeperPortal />;
-    }
+      case 'traceability':
+        return (
+          <TraceabilityPage
+            initialBatchId={selectedBatchId}
+            onOpenCertificateModal={() => setIsCertificateOpen(true)}
+          />
+        );
 
-    if (activeView === 'admin') {
-      return <AdminPortal />;
-    }
+      case 'smart-hive':
+        return <SmartHivePage />;
 
-    if (activeView === 'inspector') {
-      return <LabInspectorPortal />;
-    }
+      case 'quality':
+        return <QualityAuthenticityPage />;
 
-    if (activeView === 'customer') {
-      return <CustomerScannerPortal />;
-    }
+      case 'blockchain':
+        return <BlockchainLedgerPage />;
 
-    if (appScreen === 'auth' || activeView === 'auth') {
-      return <AuthPage />;
-    }
+      case 'alerts':
+        return (
+          <AlertsPage
+            onNavigateTab={(tab, id) => handleSelectTab(tab as NavTabId, id)}
+          />
+        );
 
-    if (appScreen === 'role_select' || activeView === 'role_select') {
-      return <RoleSelectionScreen />;
-    }
+      case 'analytics':
+        return <AnalyticsPage />;
 
-    // Default Landing Page
-    return (
-      <LandingPage
-        onEnterDemo={() => setActiveView('judge-demo')}
-        onSelectRole={(role) => handleNavigateView(role)}
-        onOpenScanner={() => handleNavigateView('customer')}
-        onOpenProvenanceGraph={() => setIsProvenanceGraphOpen(true)}
-      />
-    );
+      case 'qr-verify':
+        return <ConsumerQRVerificationPage />;
+
+      case 'settings':
+        return <SettingsPage />;
+
+      default:
+        return (
+          <DashboardPage
+            onNavigateTab={handleSelectTab}
+            onSelectBatchForTraceability={handleSelectBatchForTraceability}
+          />
+        );
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#faf8ff] text-[#1e1035] selection:bg-yellow-300 selection:text-purple-950">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex font-sans selection:bg-amber-100 selection:text-amber-900">
       
-      {/* Universal Top App Navbar */}
-      <HoneychainNavbar
-        currentActiveView={activeView}
-        onNavigateView={handleNavigateView}
-        onOpenJudgeDemo={() => setActiveView('judge-demo')}
-        onOpenProvenanceGraph={() => setIsProvenanceGraphOpen(true)}
-        onOpenIoTSimulator={() => setIsIoTSimulatorOpen(true)}
-        onOpenExplainableAi={() => setIsExplainableAiOpen(true)}
-        onOpenYieldSimulator={() => setIsYieldSimulatorOpen(true)}
-        onOpenRuralMode={() => setIsRuralModeOpen(true)}
-        onOpenWallet={() => setIsWalletOpen(true)}
-        onOpenQrDetector={() => setIsQrDetectorOpen(true)}
-        onOpenCertificate={() => setIsCertificateOpen(true)}
+      {/* Left Application Sidebar */}
+      <HoneychainSidebar
+        activeTab={activeTab}
+        onSelectTab={handleSelectTab}
+        activeAlertCount={2}
+        isOpenMobile={mobileNavOpen}
+        onCloseMobile={() => setMobileNavOpen(false)}
       />
 
-      {/* Floating Innovation Toolbar (Quick Modals Launch for Judges) */}
-      <aside aria-label="Demo tools" className="hidden lg:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-30 items-center gap-1.5 p-2 rounded-2xl bg-white/95 border-2 border-purple-200 shadow-xl shadow-purple-900/10 backdrop-blur-md text-xs font-bold text-purple-950 bumble-border-top">
-        <span className="text-[10px] font-black uppercase tracking-wider text-purple-900 px-2 flex items-center gap-1">
-          <span>🐝</span> Tools:
+      {/* Main Content Area (Offset by sidebar on desktop) */}
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-64 transition-all duration-200">
+        
+        {/* Top Sticky Header */}
+        <HoneychainHeader
+          onToggleMobileNav={() => setMobileNavOpen(!mobileNavOpen)}
+          onNavigateTab={handleSelectTab}
+          onOpenMintModal={() => handleSelectTab('batches')}
+          currentRole={currentRole || 'beekeeper'}
+          onChangeRole={(r) => setCurrentRole(r as any)}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          alertCount={2}
+        />
+
+        {/* Dynamic Page Stage */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-28">
+          {renderContentPage()}
+        </main>
+      </div>
+
+      {/* Floating HoneyAI Assistant Drawer & Trigger */}
+      <HoneyAIAssistant
+        isOpenExternal={isAiDrawerOpen}
+        onCloseExternal={() => setIsAiDrawerOpen(false)}
+        onNavigateTab={handleSelectTab}
+      />
+
+      {/* Floating Bottom Quick Action Bar for Judges & Evaluators */}
+      <aside
+        aria-label="Interactive Simulator Tools"
+        className="hidden md:flex fixed bottom-5 left-1/2 -translate-x-1/2 z-30 items-center gap-1.5 p-1.5 rounded-2xl bg-white/95 border border-slate-200/90 shadow-lg shadow-slate-900/5 backdrop-blur-md text-xs font-semibold text-slate-700"
+      >
+        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-1 rounded-xl flex items-center gap-1">
+          <span>⚡</span> Simulators:
         </span>
         <button
           type="button"
           onClick={() => setIsProvenanceGraphOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
         >
           Genealogy Graph
         </button>
         <button
           type="button"
           onClick={() => setIsIoTSimulatorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
         >
-          IoT Simulator
+          IoT Sensor
         </button>
         <button
           type="button"
           onClick={() => setIsExplainableAiOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
         >
           Explainable AI
         </button>
         <button
           type="button"
           onClick={() => setIsYieldSimulatorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
         >
           Yield What-If
         </button>
         <button
           type="button"
           onClick={() => setIsRuralModeOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
         >
-          Rural Voice Mode
-        </button>
-        <button
-          type="button"
-          onClick={() => setIsWalletOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
-        >
-          Beekeeper Wallet
+          Rural Mode
         </button>
         <button
           type="button"
           onClick={() => setIsQrDetectorOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
+          className="px-2.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer text-slate-600"
         >
-          QR Clone Detector
+          Clone Detector
         </button>
         <button
           type="button"
           onClick={() => setIsCertificateOpen(true)}
-          className="px-2.5 py-1.5 rounded-xl hover:bg-purple-100 hover:text-purple-950 transition cursor-pointer text-purple-900/80 font-semibold"
+          className="px-2.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition cursor-pointer font-bold"
         >
           Digital Certificate
         </button>
       </aside>
 
-      {/* Main Dynamic Screen View */}
-      <main className="flex-1 w-full pb-16 lg:pb-24">
-        {renderActiveView()}
-      </main>
-
       {/* Universal Specialized Modals */}
       <TraceabilityGraphModal
         isOpen={isProvenanceGraphOpen}
         onClose={() => setIsProvenanceGraphOpen(false)}
-        batchId="HNY-TG-2026-0001"
+        batchId={selectedBatchId}
       />
 
       <IoTSensorSimulatorModal
         isOpen={isIoTSimulatorOpen}
         onClose={() => setIsIoTSimulatorOpen(false)}
-        hiveId="HIVE-TG-017"
+        hiveId="HIVE-01"
       />
 
       <ExplainableAiModal
         isOpen={isExplainableAiOpen}
         onClose={() => setIsExplainableAiOpen(false)}
-        hiveId="HIVE-TG-017"
+        hiveId="HIVE-01"
       />
 
       <WhatIfYieldSimulator
         isOpen={isYieldSimulatorOpen}
         onClose={() => setIsYieldSimulatorOpen(false)}
-        hiveId="HIVE-TG-017"
+        hiveId="HIVE-01"
       />
 
       <RuralBeekeeperMode
@@ -240,7 +281,7 @@ const HoneychainMainLayout: React.FC = () => {
       <QrCounterfeitDetectorModal
         isOpen={isQrDetectorOpen}
         onClose={() => setIsQrDetectorOpen(false)}
-        batchId="HNY-TG-2026-0001"
+        batchId={selectedBatchId}
       />
 
       <DigitalCertificateModal
@@ -249,19 +290,17 @@ const HoneychainMainLayout: React.FC = () => {
       />
 
       <BiometricModal />
-
-      {/* Interactive Bumblebee AI Companion Widget */}
-      <AIChatbotWidget />
-
     </div>
   );
 };
 
 export function App() {
   return (
-    <HoneychainProvider>
-      <HoneychainMainLayout />
-    </HoneychainProvider>
+    <AppProvider>
+      <HoneychainProvider>
+        <HoneychainMainLayout />
+      </HoneychainProvider>
+    </AppProvider>
   );
 }
 
