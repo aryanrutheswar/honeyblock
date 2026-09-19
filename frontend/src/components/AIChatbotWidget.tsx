@@ -335,7 +335,7 @@ export const AIChatbotWidget: React.FC = () => {
             <span className="text-[9px] font-bold text-slate-900/80">Voice & Multilingual</span>
           </div>
 
-          <span className="px-2 py-0.5 text-[9px] uppercase font-mono font-black bg-[#09090c] text-yellow-300 rounded-full border border-yellow-400/40">
+          <span className="px-2 py-0.5 text-[9px] uppercase font-mono font-black bg-purple-900 text-yellow-300 rounded-full border border-yellow-400/40">
             🔊 Speak
           </span>
         </button>
@@ -343,22 +343,22 @@ export const AIChatbotWidget: React.FC = () => {
 
       {/* Main Chatbot Window Modal */}
       {isOpen && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[92vw] sm:w-[440px] h-[620px] bg-[#0c0c12]/98 backdrop-blur-2xl border-2 border-yellow-400/40 rounded-3xl shadow-2xl shadow-black flex flex-col overflow-hidden animate-fadeIn select-none text-yellow-50 bumble-border-top">
+        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[92vw] sm:w-[440px] h-[620px] bg-white/98 backdrop-blur-2xl border-2 border-purple-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn select-none text-purple-950 bumble-border-top">
           
           {/* Cute Top Bar Header */}
-          <div className="p-3.5 bg-[#14141c] text-yellow-300 flex items-center justify-between shadow-md border-b border-yellow-400/20">
+          <div className="p-3.5 bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-950 text-yellow-300 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-yellow-400 text-slate-950 text-2xl flex items-center justify-center shadow-md border-2 border-yellow-200">
+              <div className="w-10 h-10 rounded-2xl bg-yellow-400 text-purple-950 text-2xl flex items-center justify-center shadow-md border-2 border-yellow-200">
                 🐝
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-black text-white tracking-tight">Buzzy the Bumblebee 🐝</h3>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-yellow-400 text-slate-950">
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-yellow-400 text-purple-950">
                     Voice Active 🔊
                   </span>
                 </div>
-                <p className="text-[11px] font-medium text-yellow-200/70">
+                <p className="text-[11px] font-medium text-yellow-200/80">
                   Telugu • Hindi • English • Tamil • Kannada • Malayalam
                 </p>
               </div>
@@ -367,7 +367,7 @@ export const AIChatbotWidget: React.FC = () => {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="p-1.5 rounded-xl text-yellow-300 hover:bg-yellow-400/20 transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl text-yellow-300 hover:bg-white/15 transition-colors cursor-pointer"
                 title="API Settings (OpenRouter)"
               >
                 <Key className="w-4 h-4" />
@@ -375,7 +375,7 @@ export const AIChatbotWidget: React.FC = () => {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-xl text-yellow-300 hover:bg-yellow-400/20 transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl text-yellow-300 hover:bg-white/15 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -397,9 +397,9 @@ export const AIChatbotWidget: React.FC = () => {
           />
 
           {/* Multilingual Quick Language Bar */}
-          <div className="px-3 py-1.5 bg-[#101016] border-b border-yellow-400/15 flex items-center gap-1 overflow-x-auto no-scrollbar">
-            <span className="text-[10px] font-bold text-yellow-400 shrink-0 flex items-center gap-1 pr-1">
-              <Globe className="w-3 h-3 text-yellow-400" /> Lang:
+          <div className="px-3 py-1.5 bg-purple-50/80 border-b border-purple-100 flex items-center gap-1 overflow-x-auto no-scrollbar">
+            <span className="text-[10px] font-bold text-purple-900 shrink-0 flex items-center gap-1 pr-1">
+              <Globe className="w-3 h-3 text-purple-700" /> Lang:
             </span>
             {SUPPORTED_LANGUAGES.map(lang => (
               <button
@@ -407,8 +407,8 @@ export const AIChatbotWidget: React.FC = () => {
                 onClick={() => handleLanguageSwitch(lang.code)}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold shrink-0 transition-all cursor-pointer ${
                   selectedLang === lang.code
-                    ? 'bg-yellow-400 text-slate-950 font-black shadow-xs scale-105'
-                    : 'bg-[#181822] text-yellow-200/90 hover:bg-yellow-400/20 border border-yellow-400/20'
+                    ? 'bg-yellow-400 text-purple-950 font-black shadow-xs scale-105 border border-yellow-300'
+                    : 'bg-white text-purple-900 hover:bg-purple-100 border border-purple-200'
                 }`}
               >
                 {lang.label}
@@ -417,13 +417,13 @@ export const AIChatbotWidget: React.FC = () => {
           </div>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex border-b border-yellow-400/15 bg-[#101016] p-1">
+          <div className="flex border-b border-purple-100 bg-purple-50/80 p-1">
             <button
               onClick={() => setActiveTab('chat')}
               className={`flex-1 py-2 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'chat'
-                  ? 'bg-yellow-400 text-slate-950 font-black shadow-xs'
-                  : 'text-yellow-200/60 hover:text-yellow-100'
+                  ? 'bg-yellow-400 text-purple-950 font-black shadow-xs'
+                  : 'text-purple-900/70 hover:text-purple-950 hover:bg-purple-100/50'
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
@@ -434,8 +434,8 @@ export const AIChatbotWidget: React.FC = () => {
               onClick={() => setActiveTab('qr_inspector')}
               className={`flex-1 py-2 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === 'qr_inspector'
-                  ? 'bg-yellow-400 text-slate-950 font-black shadow-xs'
-                  : 'text-yellow-200/60 hover:text-yellow-100'
+                  ? 'bg-yellow-400 text-purple-950 font-black shadow-xs'
+                  : 'text-purple-900/70 hover:text-purple-950 hover:bg-purple-100/50'
               }`}
             >
               <QrCode className="w-3.5 h-3.5" />
@@ -445,19 +445,19 @@ export const AIChatbotWidget: React.FC = () => {
 
           {/* Settings Sub-Panel */}
           {showSettings && (
-            <div className="p-3 bg-[#161622] border-b border-yellow-400/20 text-xs space-y-2 animate-fadeIn text-yellow-100">
-              <div className="flex items-center justify-between text-[11px] font-bold text-yellow-300">
+            <div className="p-3 bg-purple-50 border-b border-purple-200 text-xs space-y-2 animate-fadeIn text-purple-950">
+              <div className="flex items-center justify-between text-[11px] font-bold text-purple-900">
                 <span className="flex items-center gap-1">
-                  <Key className="w-3.5 h-3.5 text-yellow-400" /> OpenRouter / Gemini API Key
+                  <Key className="w-3.5 h-3.5 text-amber-500" /> OpenRouter / Gemini API Key
                 </span>
-                <span className="text-[10px] text-yellow-200/60">Optional</span>
+                <span className="text-[10px] text-purple-600">Optional</span>
               </div>
               <input
                 type="password"
                 value={apiKey}
                 onChange={e => setApiKey(e.target.value)}
                 placeholder="sk-or-v1-... (Leave empty for Buzzy's built-in Indian multilingual RAG)"
-                className="w-full px-3 py-1.5 bg-[#101016] border border-yellow-400/30 rounded-xl text-xs font-mono text-yellow-100 focus:outline-hidden focus:ring-2 focus:ring-yellow-400/50"
+                className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-xl text-xs font-mono text-purple-950 placeholder-purple-400 focus:outline-hidden focus:ring-2 focus:ring-purple-400/50"
               />
             </div>
           )}
@@ -467,55 +467,55 @@ export const AIChatbotWidget: React.FC = () => {
             <div className="flex-1 flex flex-col justify-between overflow-hidden">
               
               {/* Message List */}
-              <div className="flex-1 p-4 space-y-3.5 overflow-y-auto bg-[#0a0a0e]">
+              <div className="flex-1 p-4 space-y-3.5 overflow-y-auto bg-[#faf8ff]">
                 {messages.map(msg => (
                   <div
                     key={msg.id}
                     className={`flex items-start gap-2.5 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}
                   >
                     <div
-                      className={`w-8 h-8 rounded-2xl flex items-center justify-center shrink-0 text-white text-xs font-bold shadow-md ${
-                        msg.sender === 'user' ? 'bg-yellow-400 text-slate-950 font-black' : 'bg-[#181822] text-lg border border-yellow-400/30'
+                      className={`w-8 h-8 rounded-2xl flex items-center justify-center shrink-0 text-xs font-bold shadow-xs ${
+                        msg.sender === 'user' ? 'bg-yellow-400 text-purple-950 font-black' : 'bg-purple-100 text-lg border border-purple-200'
                       }`}
                     >
-                      {msg.sender === 'user' ? <User className="w-4 h-4 text-slate-950" /> : '🐝'}
+                      {msg.sender === 'user' ? <User className="w-4 h-4 text-purple-950" /> : '🐝'}
                     </div>
 
                     <div className={`max-w-[84%] space-y-1 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                       <div
                         className={`p-3.5 rounded-2xl text-xs leading-relaxed ${
                           msg.sender === 'user'
-                            ? 'bg-yellow-400 text-slate-950 font-black rounded-tr-xs shadow-md'
-                            : 'bg-[#14141c] text-yellow-100 border border-yellow-400/25 rounded-tl-xs shadow-xs'
+                            ? 'bg-gradient-to-r from-yellow-400 to-amber-400 text-purple-950 font-bold rounded-tr-xs shadow-xs'
+                            : 'bg-white text-purple-950 border border-purple-200 rounded-tl-xs shadow-xs'
                         }`}
                       >
                         <p className="whitespace-pre-line">{msg.text}</p>
                       </div>
 
                       {msg.batchData && (
-                        <div className="p-3 rounded-2xl bg-[#14141c] border border-yellow-400/40 text-xs text-yellow-100 space-y-1.5 mt-1 text-left shadow-xs">
-                          <div className="font-black text-yellow-400 flex items-center justify-between">
+                        <div className="p-3 rounded-2xl bg-purple-50 border border-purple-200 text-xs text-purple-950 space-y-1.5 mt-1 text-left shadow-xs">
+                          <div className="font-black text-purple-950 flex items-center justify-between">
                             <span>🍯 {msg.batchData.name}</span>
-                            <span className="text-[10px] font-mono text-slate-950 bg-yellow-400 px-2 py-0.5 rounded-md font-bold">
+                            <span className="text-[10px] font-mono text-purple-950 bg-yellow-400 px-2 py-0.5 rounded-md font-black">
                               Block #{msg.batchData.blockNumber}
                             </span>
                           </div>
-                          <div className="grid grid-cols-2 gap-1 text-[11px] text-yellow-100/80">
-                            <div><span className="text-yellow-200/50">&delta;¹³C Isotope:</span> {msg.batchData.isotopeDeltaC13}‰</div>
-                            <div><span className="text-yellow-200/50">HMF Level:</span> {msg.batchData.hmfMgKg} mg/kg</div>
+                          <div className="grid grid-cols-2 gap-1 text-[11px] text-purple-800">
+                            <div><span className="text-purple-600">&delta;¹³C Isotope:</span> {msg.batchData.isotopeDeltaC13}‰</div>
+                            <div><span className="text-purple-600">HMF Level:</span> {msg.batchData.hmfMgKg} mg/kg</div>
                           </div>
                         </div>
                       )}
 
-                      <span className="text-[10px] text-yellow-200/40 block px-1">{msg.timestamp}</span>
+                      <span className="text-[10px] text-purple-400 block px-1">{msg.timestamp}</span>
                     </div>
                   </div>
                 ))}
 
                 {isTyping && (
-                  <div className="flex items-center gap-2 text-yellow-300 text-xs pl-2">
+                  <div className="flex items-center gap-2 text-purple-700 text-xs pl-2">
                     <span className="text-lg animate-spin">🐝</span>
-                    <span className="font-semibold text-yellow-400">Buzzy Bumblebee is buzzing a response...</span>
+                    <span className="font-semibold text-purple-900">Buzzy Bumblebee is buzzing a response...</span>
                   </div>
                 )}
 
@@ -523,28 +523,28 @@ export const AIChatbotWidget: React.FC = () => {
               </div>
 
               {/* Multilingual Prompt Chips */}
-              <div className="px-3 py-2 bg-[#101016] border-t border-yellow-400/15 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <div className="px-3 py-2 bg-purple-50/80 border-t border-purple-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                 <button
                   onClick={() => handleSendMessage('తెలుగులో చెప్పండి: తేనె ఎలా సరిచూడాలి?')}
-                  className="px-2.5 py-1 rounded-full bg-[#161622] border border-yellow-400/25 text-yellow-200 text-[11px] font-bold shrink-0 hover:bg-yellow-400 hover:text-black cursor-pointer transition"
+                  className="px-2.5 py-1 rounded-full bg-white border border-purple-200 text-purple-900 text-[11px] font-bold shrink-0 hover:bg-purple-100 cursor-pointer transition shadow-xs"
                 >
                   🇮🇳 తెలుగు (Telugu)
                 </button>
                 <button
                   onClick={() => handleSendMessage('हिंदी में बताओ: शहद की शुद्धता कैसे चेक करें?')}
-                  className="px-2.5 py-1 rounded-full bg-[#161622] border border-yellow-400/25 text-yellow-200 text-[11px] font-bold shrink-0 hover:bg-yellow-400 hover:text-black cursor-pointer transition"
+                  className="px-2.5 py-1 rounded-full bg-white border border-purple-200 text-purple-900 text-[11px] font-bold shrink-0 hover:bg-purple-100 cursor-pointer transition shadow-xs"
                 >
                   🇮🇳 हिंदी (Hindi)
                 </button>
                 <button
                   onClick={() => handleSendMessage('தமிழில் சொல்லுங்கள்: தேனின் தூய்மை எப்படி பார்ப்பது?')}
-                  className="px-2.5 py-1 rounded-full bg-[#161622] border border-yellow-400/25 text-yellow-200 text-[11px] font-bold shrink-0 hover:bg-yellow-400 hover:text-black cursor-pointer transition"
+                  className="px-2.5 py-1 rounded-full bg-white border border-purple-200 text-purple-900 text-[11px] font-bold shrink-0 hover:bg-purple-100 cursor-pointer transition shadow-xs"
                 >
                   🇮🇳 தமிழ் (Tamil)
                 </button>
                 <button
                   onClick={() => handleSendMessage('What is EA-IRMS carbon isotope testing?')}
-                  className="px-2.5 py-1 rounded-full bg-[#161622] border border-yellow-400/25 text-yellow-200 text-[11px] font-bold shrink-0 hover:bg-yellow-400 hover:text-black cursor-pointer transition"
+                  className="px-2.5 py-1 rounded-full bg-white border border-purple-200 text-purple-900 text-[11px] font-bold shrink-0 hover:bg-purple-100 cursor-pointer transition shadow-xs"
                 >
                   🔬 EA-IRMS Test
                 </button>
@@ -556,7 +556,7 @@ export const AIChatbotWidget: React.FC = () => {
                   e.preventDefault();
                   handleSendMessage();
                 }}
-                className="p-3 bg-[#12121a] border-t border-yellow-400/20 flex items-center gap-2"
+                className="p-3 bg-white border-t border-purple-100 flex items-center gap-2"
               >
                 <button
                   type="button"
@@ -564,7 +564,7 @@ export const AIChatbotWidget: React.FC = () => {
                   className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
                     isListening
                       ? 'bg-red-500 text-white animate-pulse'
-                      : 'bg-[#1a1a26] hover:bg-yellow-400 hover:text-black text-yellow-300 border border-yellow-400/40'
+                      : 'bg-purple-100 hover:bg-yellow-400 hover:text-purple-950 text-purple-900 border border-purple-200'
                   }`}
                   title="Speak into Microphone"
                 >
@@ -576,13 +576,13 @@ export const AIChatbotWidget: React.FC = () => {
                   value={inputText}
                   onChange={e => setInputText(e.target.value)}
                   placeholder="Type or click mic to talk to Buzzy..."
-                  className="flex-1 px-3.5 py-2.5 bg-[#181824] border border-yellow-400/30 rounded-2xl text-xs text-yellow-100 placeholder-yellow-200/40 focus:outline-hidden focus:ring-2 focus:ring-yellow-400/50"
+                  className="flex-1 px-3.5 py-2.5 bg-purple-50/50 border border-purple-200 rounded-2xl text-xs text-purple-950 placeholder-purple-400 focus:outline-hidden focus:ring-2 focus:ring-purple-400/50"
                 />
 
                 <button
                   type="submit"
                   disabled={!inputText.trim()}
-                  className="p-2.5 rounded-2xl bg-yellow-400 hover:bg-yellow-300 disabled:opacity-50 text-slate-950 font-black shadow-md cursor-pointer transition-all active:scale-95 flex items-center justify-center"
+                  className="p-2.5 rounded-2xl bg-gradient-to-r from-yellow-400 to-amber-400 hover:from-yellow-300 hover:to-amber-300 disabled:opacity-50 text-purple-950 font-black shadow-sm cursor-pointer transition-all active:scale-95 flex items-center justify-center"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -593,13 +593,13 @@ export const AIChatbotWidget: React.FC = () => {
 
           {/* TAB 2: QR BOTTLE INSPECTOR */}
           {activeTab === 'qr_inspector' && (
-            <div className="flex-1 p-4 space-y-4 overflow-y-auto text-xs bg-[#0a0a0e] text-yellow-100">
+            <div className="flex-1 p-4 space-y-4 overflow-y-auto text-xs bg-[#faf8ff] text-purple-950">
               
               <div className="text-center space-y-1">
-                <h4 className="font-bold text-yellow-300 text-sm flex items-center justify-center gap-1">
+                <h4 className="font-bold text-purple-950 text-sm flex items-center justify-center gap-1">
                   <span>🍯 Honey Jar QR Code Inspector</span>
                 </h4>
-                <p className="text-yellow-200/60 text-[11px]">
+                <p className="text-purple-700 text-[11px]">
                   Buzzy Bumblebee will decode your honey jar label photo or batch ID!
                 </p>
               </div>

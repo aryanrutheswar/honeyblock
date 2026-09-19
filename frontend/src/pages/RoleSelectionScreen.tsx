@@ -119,7 +119,7 @@ export const RoleSelectionScreen: React.FC = () => {
               </span>
             </div>
 
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-900 text-amber-400 flex items-center justify-center shadow-md shadow-slate-900/20 mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-700 to-purple-900 text-yellow-300 flex items-center justify-center shadow-md shadow-purple-900/20 mb-5">
               <FlaskConical className="w-7 h-7" />
             </div>
 
@@ -147,9 +147,9 @@ export const RoleSelectionScreen: React.FC = () => {
           <div className="mt-8 pt-6 border-t border-slate-100">
             <button
               onClick={() => selectRole('inspector')}
-              className="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md shadow-slate-900/20 transition-all active:scale-98 cursor-pointer hover:scale-102"
+              className="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-purple-900 hover:bg-purple-950 text-yellow-300 font-bold text-sm shadow-md shadow-purple-900/20 transition-all active:scale-98 cursor-pointer hover:scale-102"
             >
-              <KeyRound className="w-5 h-5 text-amber-400" />
+              <KeyRound className="w-5 h-5 text-yellow-300" />
               <span>Authenticate with Password</span>
               <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </button>

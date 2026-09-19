@@ -25,24 +25,24 @@
   --color-purple-900: #581c87;
   --color-purple-950: #3b0764;
 
-  --color-royal-dark: #090514;
-  --color-royal-card: #120a22;
-  --color-royal-card-hover: #180d2d;
-  --color-royal-border: #3b1764;
+  --color-royal-dark: #faf8ff;
+  --color-royal-card: #ffffff;
+  --color-royal-card-hover: #f5f0ff;
+  --color-royal-border: #e9d5ff;
 }
 
 @layer base {
   :root {
     --honey-gold: #facc15;
-    --royal-purple: #9333ea;
-    --royal-violet: #a855f7;
-    --royal-dark: #090514;
-    --royal-card: #120a22;
+    --royal-purple: #7e22ce;
+    --royal-violet: #9333ea;
+    --royal-dark: #faf8ff;
+    --royal-card: #ffffff;
   }
 
   body {
-    background-color: #090514;
-    color: #fefce8;
+    background-color: #faf8ff;
+    color: #1e1035;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
     padding: 0;
@@ -55,12 +55,12 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #090514;
+    background-color: #faf8ff;
   }
 }
 
 /* ===================================================
-   ROYAL PURPLE & ELECTRIC YELLOW VISUAL SYSTEM
+   ROYAL PURPLE & ELECTRIC YELLOW VISUAL SYSTEM (LIGHT MODE)
    =================================================== */
 
 /* Iconic High-Contrast Purple & Yellow Stripes */
@@ -69,8 +69,8 @@
     -45deg,
     #facc15 0px,
     #facc15 12px,
-    #1a0e30 12px,
-    #1a0e30 24px
+    #7e22ce 12px,
+    #7e22ce 24px
   );
 }
 
@@ -79,18 +79,18 @@
     -45deg,
     #facc15 0px,
     #facc15 6px,
-    #251244 6px,
-    #251244 12px
+    #9333ea 6px,
+    #9333ea 12px
   );
 }
 
 .bumble-stripes-subtle {
   background: repeating-linear-gradient(
     -45deg,
-    rgba(250, 204, 21, 0.18) 0px,
-    rgba(250, 204, 21, 0.18) 8px,
-    rgba(168, 85, 247, 0.12) 8px,
-    rgba(168, 85, 247, 0.12) 16px
+    rgba(250, 204, 21, 0.25) 0px,
+    rgba(250, 204, 21, 0.25) 8px,
+    rgba(147, 51, 234, 0.18) 8px,
+    rgba(147, 51, 234, 0.18) 16px
   );
 }
 
@@ -109,109 +109,113 @@
     -45deg,
     #facc15 0px,
     #facc15 8px,
-    #a855f7 8px,
-    #a855f7 16px
+    #9333ea 8px,
+    #9333ea 16px
   );
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
 }
 
-/* Luminous Honeycomb Hexagonal Backgrounds in Royal Purple & Gold */
+/* Luminous Honeycomb Hexagonal Backgrounds in White, Royal Purple & Gold */
 .honeycomb-pattern {
-  background-color: #090514;
+  background-color: #faf8ff;
   background-image: 
-    radial-gradient(rgba(250, 204, 21, 0.14) 1px, transparent 1px),
-    radial-gradient(rgba(168, 85, 247, 0.12) 1px, #090514 1px);
+    radial-gradient(rgba(147, 51, 234, 0.08) 1.2px, transparent 1.2px),
+    radial-gradient(rgba(234, 179, 8, 0.09) 1.2px, #faf8ff 1.2px);
   background-size: 26px 26px;
   background-position: 0 0, 13px 13px;
 }
 
 .honeycomb-pattern-subtle {
-  background-color: #0a0616;
-  background-image: radial-gradient(rgba(168, 85, 247, 0.15) 1.2px, transparent 1.2px);
+  background-color: #ffffff;
+  background-image: radial-gradient(rgba(147, 51, 234, 0.08) 1.2px, transparent 1.2px);
   background-size: 22px 22px;
 }
 
 /* Glowing Border & Aura Utilities */
 .glow-purple-yellow {
-  box-shadow: 0 0 25px -4px rgba(168, 85, 247, 0.5), 0 0 15px rgba(250, 204, 21, 0.35);
+  box-shadow: 0 10px 30px -5px rgba(147, 51, 234, 0.25), 0 0 15px rgba(250, 204, 21, 0.3);
 }
 
 .glow-bumble {
-  box-shadow: 0 0 25px -4px rgba(250, 204, 21, 0.45), 0 0 15px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 10px 30px -5px rgba(250, 204, 21, 0.35), 0 0 15px rgba(147, 51, 234, 0.2);
 }
 
 .glow-bumble-lg {
-  box-shadow: 0 0 45px -6px rgba(168, 85, 247, 0.65), 0 0 25px rgba(250, 204, 21, 0.4);
+  box-shadow: 0 15px 40px -5px rgba(147, 51, 234, 0.22), 0 0 20px rgba(250, 204, 21, 0.3);
 }
 
 .glow-bumble-text {
-  text-shadow: 0 0 16px rgba(250, 204, 21, 0.65), 0 0 30px rgba(168, 85, 247, 0.5);
+  text-shadow: 0 0 16px rgba(250, 204, 21, 0.4), 0 0 30px rgba(147, 51, 234, 0.25);
 }
 
-/* Premium Royal Purple Cards */
+/* Premium Light Mode White & Purple Cards */
 .bumble-card {
-  background: #110920;
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: #ffffff;
+  border: 1.5px solid rgba(147, 51, 234, 0.18);
   border-radius: 1.25rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(250, 204, 21, 0.15);
+  box-shadow: 0 10px 30px -5px rgba(126, 34, 206, 0.07), 0 2px 8px rgba(0, 0, 0, 0.02);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #1e1035;
 }
 
 .bumble-card:hover {
-  border-color: rgba(250, 204, 21, 0.55);
-  box-shadow: 0 12px 35px rgba(16, 8, 32, 0.8), 0 0 22px -3px rgba(168, 85, 247, 0.35);
+  border-color: rgba(250, 204, 21, 0.8);
+  box-shadow: 0 16px 36px -6px rgba(126, 34, 206, 0.14), 0 0 18px rgba(250, 204, 21, 0.25);
 }
 
 .bumble-card-glow {
-  background: #150b28;
-  border: 1.5px solid rgba(168, 85, 247, 0.5);
+  background: #ffffff;
+  border: 2px solid rgba(147, 51, 234, 0.35);
   border-radius: 1.25rem;
-  box-shadow: 0 0 30px -4px rgba(168, 85, 247, 0.35), 0 10px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 12px 35px -5px rgba(147, 51, 234, 0.15), 0 0 20px rgba(250, 204, 21, 0.2);
+  color: #1e1035;
 }
 
 .bumble-wing-glass {
-  background: rgba(20, 11, 38, 0.8);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(168, 85, 247, 0.35);
+  border: 1.5px solid rgba(147, 51, 234, 0.2);
   border-radius: 1.25rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(250, 204, 21, 0.08);
+  box-shadow: 0 10px 30px rgba(126, 34, 206, 0.08), inset 0 0 15px rgba(250, 204, 21, 0.1);
+  color: #1e1035;
 }
 
 .glow-amber {
-  box-shadow: 0 0 25px -4px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 25px -4px rgba(245, 158, 11, 0.3);
 }
 
 .glow-emerald {
-  box-shadow: 0 0 25px -4px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 25px -4px rgba(16, 185, 129, 0.3);
 }
 
 .glow-ruby {
-  box-shadow: 0 0 25px -4px rgba(225, 29, 72, 0.4);
+  box-shadow: 0 0 25px -4px rgba(225, 29, 72, 0.3);
 }
 
 .honey-card {
-  background: #110920;
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: #ffffff;
+  border: 1.5px solid rgba(147, 51, 234, 0.18);
   border-radius: 1.25rem;
-  color: #fefce8;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  color: #1e1035;
+  box-shadow: 0 10px 30px -5px rgba(126, 34, 206, 0.07);
 }
 
 .honey-card-dark {
-  background: #0d071a;
-  border: 1px solid rgba(168, 85, 247, 0.35);
+  background: #fbf9ff;
+  border: 1.5px solid rgba(147, 51, 234, 0.2);
   border-radius: 1.25rem;
-  color: #fefce8;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  color: #1e1035;
+  box-shadow: 0 8px 25px rgba(126, 34, 206, 0.06);
 }
 
 .honey-card-gold {
-  background: linear-gradient(135deg, rgba(250, 204, 21, 0.18) 0%, rgba(168, 85, 247, 0.15) 100%), #110920;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
   border: 1.5px solid #facc15;
   border-radius: 1.25rem;
-  box-shadow: 0 8px 30px -5px rgba(250, 204, 21, 0.3);
+  color: #451a03;
+  box-shadow: 0 8px 30px -5px rgba(250, 204, 21, 0.25);
 }
 
 /* ===================================================
@@ -330,18 +334,18 @@
   animation: fingerprint-pulse 1.8s infinite ease-in-out;
 }
 
-/* Custom Sleek Bumblebee Scrollbars */
+/* Custom Sleek Bumblebee Scrollbars (Light Mode) */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #08080b;
+  background: #f5f0ff;
 }
 ::-webkit-scrollbar-thumb {
-  background: #23232c;
+  background: #d8b4fe;
   border-radius: 9999px;
-  border: 1px solid rgba(250, 204, 21, 0.2);
+  border: 1px solid rgba(147, 51, 234, 0.2);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #facc15;

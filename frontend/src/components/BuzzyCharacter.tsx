@@ -43,7 +43,7 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-3 bg-gradient-to-b from-yellow-950/40 via-[#121218] to-yellow-950/25 border-b border-yellow-400/20 select-none">
+    <div className="relative flex flex-col items-center justify-center p-3 bg-gradient-to-b from-purple-50 via-white to-purple-50 border-b border-purple-200 select-none">
       
       {/* Bumblebee Striped Micro-Trim */}
       <div className="absolute top-0 left-0 right-0 h-1 bumble-stripes opacity-70" />
@@ -55,7 +55,7 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
           className={`p-1.5 rounded-full transition-all cursor-pointer shadow-xs ${
             isListening
               ? 'bg-red-500 text-white animate-pulse'
-              : 'bg-[#1a1a24] hover:bg-yellow-400 hover:text-black text-yellow-300 border border-yellow-400/40'
+              : 'bg-purple-100 hover:bg-yellow-400 hover:text-purple-950 text-purple-900 border border-purple-200'
           }`}
           title={isListening ? 'Listening to your voice...' : 'Speak with your Microphone'}
         >
@@ -66,8 +66,8 @@ export const BuzzyCharacter: React.FC<BuzzyCharacterProps> = ({
           onClick={onToggleVoiceMute}
           className={`p-1.5 rounded-full transition-all cursor-pointer shadow-xs ${
             isVoiceMuted
-              ? 'bg-[#1a1a24] text-slate-500 border border-slate-700'
-              : 'bg-yellow-400 text-slate-950 shadow-yellow-400/30 font-bold border border-yellow-300'
+              ? 'bg-purple-100 text-purple-400 border border-purple-200'
+              : 'bg-yellow-400 text-purple-950 shadow-yellow-400/30 font-bold border border-yellow-300'
           }`}
           title={isVoiceMuted ? 'Voice output Muted' : 'Voice output Active (Speaking out loud)'}
         >

@@ -168,9 +168,9 @@ export const LabInspectorPortal: React.FC = () => {
             setAddedSuccessBatch(null);
             setIsAddModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-sm shadow-md hover:scale-102 active:scale-98 transition-all cursor-pointer shrink-0"
+          className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-purple-900 hover:bg-purple-950 text-yellow-300 font-extrabold text-sm shadow-md hover:scale-102 active:scale-98 transition-all cursor-pointer shrink-0 border border-purple-800"
         >
-          <PlusCircle className="w-4 h-4 text-amber-400" />
+          <PlusCircle className="w-4 h-4 text-yellow-300" />
           <span>Add the Inspected Bar</span>
         </button>
       </div>

@@ -69,7 +69,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0b0517]/95 backdrop-blur-md border-b border-purple-500/30 shadow-2xl select-none">
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-purple-200 shadow-sm select-none">
       
       {/* Signature Purple & Yellow Top Accent Line */}
       <div className="h-1 w-full bumble-stripes opacity-90" />
@@ -82,7 +82,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
           className="flex items-center gap-3 cursor-pointer select-none hover:opacity-95 transition-opacity shrink-0 group"
           title="HoneyChain — Royal Purple & Gold"
         >
-          <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 via-fuchsia-600 to-yellow-400 text-slate-950 shadow-lg shadow-purple-900/50 border-2 border-yellow-300 group-hover:scale-105 transition-transform overflow-hidden">
+          <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 via-fuchsia-600 to-yellow-400 text-slate-950 shadow-md shadow-purple-900/20 border-2 border-yellow-300 group-hover:scale-105 transition-transform overflow-hidden">
             {/* Internal micro stripes */}
             <div className="absolute inset-0 opacity-20 pointer-events-none bumble-stripes-slim" />
             
@@ -91,28 +91,28 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center">
-                HONEY<span className="text-yellow-400 drop-shadow-[0_0_12px_rgba(250,204,21,0.6)]">CHAIN</span>
+              <span className="text-xl sm:text-2xl font-black tracking-tight text-purple-950 flex items-center">
+                HONEY<span className="text-amber-500 drop-shadow-[0_0_12px_rgba(245,158,11,0.35)]">CHAIN</span>
               </span>
-              <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-900/90 text-yellow-300 border border-purple-400/50 shadow-xs">
+              <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200 shadow-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-ping" />
                 ROYAL HIVE • PURPLE & GOLD
               </span>
             </div>
-            <p className="text-[11px] font-medium text-purple-200/70 hidden sm:block">
+            <p className="text-[11px] font-semibold text-purple-700/80 hidden sm:block">
               From Hive to Home — Every Drop Has a Digital Identity
             </p>
           </div>
         </div>
 
         {/* Center Desktop Navigation Tabs */}
-        <nav className="hidden xl:flex items-center gap-1.5 text-xs font-bold text-slate-300">
+        <nav className="hidden xl:flex items-center gap-1.5 text-xs font-bold text-purple-900/80">
           <button
             onClick={() => navigateTo('landing')}
-            className={`px-3 py-2 rounded-xl transition ${
+            className={`px-3 py-2 rounded-xl transition cursor-pointer ${
               currentActiveView === 'landing'
-                ? 'bg-purple-600/30 text-yellow-300 border border-purple-400/50 shadow-xs shadow-purple-500/20 font-black'
-                : 'hover:bg-[#160d2c] hover:text-yellow-200 text-purple-200/80'
+                ? 'bg-purple-100 text-purple-950 border border-purple-300 shadow-xs font-black'
+                : 'hover:bg-purple-50 hover:text-purple-950 text-purple-900/75'
             }`}
           >
             Home
@@ -124,13 +124,13 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
               setAppScreen('portal');
               navigateTo('beekeeper');
             }}
-            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer ${
               currentActiveView === 'beekeeper'
-                ? 'bg-purple-600/30 text-yellow-300 border border-purple-400/50 shadow-xs shadow-purple-500/20 font-black'
-                : 'hover:bg-[#160d2c] hover:text-yellow-200 text-purple-200/80'
+                ? 'bg-purple-100 text-purple-950 border border-purple-300 shadow-xs font-black'
+                : 'hover:bg-purple-50 hover:text-purple-950 text-purple-900/75'
             }`}
           >
-            <Cpu className="w-3.5 h-3.5 text-yellow-400" />
+            <Cpu className="w-3.5 h-3.5 text-amber-500" />
             <span>Beekeeper</span>
           </button>
 
@@ -140,13 +140,13 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
               setAppScreen('portal');
               navigateTo('admin');
             }}
-            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer ${
               currentActiveView === 'admin'
-                ? 'bg-purple-600/30 text-yellow-300 border border-purple-400/50 shadow-xs shadow-purple-500/20 font-black'
-                : 'hover:bg-[#160d2c] hover:text-yellow-200 text-purple-200/80'
+                ? 'bg-purple-100 text-purple-950 border border-purple-300 shadow-xs font-black'
+                : 'hover:bg-purple-50 hover:text-purple-950 text-purple-900/75'
             }`}
           >
-            <Building2 className="w-3.5 h-3.5 text-purple-300" />
+            <Building2 className="w-3.5 h-3.5 text-purple-600" />
             <span>KVIC Admin</span>
           </button>
 
@@ -156,13 +156,13 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
               setAppScreen('portal');
               navigateTo('inspector');
             }}
-            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer ${
               currentActiveView === 'inspector'
-                ? 'bg-purple-600/30 text-yellow-300 border border-purple-400/50 shadow-xs shadow-purple-500/20 font-black'
-                : 'hover:bg-[#160d2c] hover:text-yellow-200 text-purple-200/80'
+                ? 'bg-purple-100 text-purple-950 border border-purple-300 shadow-xs font-black'
+                : 'hover:bg-purple-50 hover:text-purple-950 text-purple-900/75'
             }`}
           >
-            <UserCheck className="w-3.5 h-3.5 text-cyan-400" />
+            <UserCheck className="w-3.5 h-3.5 text-cyan-600" />
             <span>Lab</span>
           </button>
 
@@ -172,37 +172,37 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
               setAppScreen('portal');
               navigateTo('customer');
             }}
-            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer ${
               currentActiveView === 'customer'
-                ? 'bg-purple-600/30 text-yellow-300 border border-purple-400/50 shadow-xs shadow-purple-500/20 font-black'
-                : 'hover:bg-[#160d2c] hover:text-yellow-200 text-purple-200/80'
+                ? 'bg-purple-100 text-purple-950 border border-purple-300 shadow-xs font-black'
+                : 'hover:bg-purple-50 hover:text-purple-950 text-purple-900/75'
             }`}
           >
-            <Eye className="w-3.5 h-3.5 text-emerald-400" />
+            <Eye className="w-3.5 h-3.5 text-emerald-600" />
             <span>Consumer QR</span>
           </button>
 
           <button
             onClick={() => navigateTo('blockchain')}
-            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer ${
               currentActiveView === 'blockchain'
-                ? 'bg-purple-600/30 text-yellow-300 border border-purple-400/50 shadow-xs shadow-purple-500/20 font-black'
-                : 'hover:bg-[#160d2c] hover:text-yellow-200 text-purple-200/80'
+                ? 'bg-purple-100 text-purple-950 border border-purple-300 shadow-xs font-black'
+                : 'hover:bg-purple-50 hover:text-purple-950 text-purple-900/75'
             }`}
           >
-            <Layers className="w-3.5 h-3.5 text-yellow-400" />
+            <Layers className="w-3.5 h-3.5 text-amber-500" />
             <span>Ledger</span>
           </button>
 
           <button
             onClick={() => navigateTo('marketplace')}
-            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer ${
               currentActiveView === 'marketplace'
-                ? 'bg-purple-600/30 text-yellow-300 border border-purple-400/50 shadow-xs shadow-purple-500/20 font-black'
-                : 'hover:bg-[#160d2c] hover:text-yellow-200 text-purple-200/80'
+                ? 'bg-purple-100 text-purple-950 border border-purple-300 shadow-xs font-black'
+                : 'hover:bg-purple-50 hover:text-purple-950 text-purple-900/75'
             }`}
           >
-            <ShoppingBag className="w-3.5 h-3.5 text-emerald-400" />
+            <ShoppingBag className="w-3.5 h-3.5 text-emerald-600" />
             <span>Buyer</span>
           </button>
         </nav>
@@ -215,12 +215,12 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
             onClick={() => setIsOnline(!isOnline)}
             className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition ${
               isOnline
-                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                : 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : 'bg-yellow-50 text-yellow-700 border-yellow-200'
             }`}
             title="Click to simulate going offline in remote rural areas"
           >
-            {isOnline ? <Wifi className="w-3.5 h-3.5 text-emerald-400" /> : <WifiOff className="w-3.5 h-3.5 text-yellow-400" />}
+            {isOnline ? <Wifi className="w-3.5 h-3.5 text-emerald-500" /> : <WifiOff className="w-3.5 h-3.5 text-amber-500" />}
             <span>{isOnline ? 'ONLINE 🟢' : 'OFFLINE 🟠'}</span>
           </button>
 
@@ -228,10 +228,10 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
           {onOpenRuralMode && (
             <button
               onClick={onOpenRuralMode}
-              className="hidden lg:flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#140b28] hover:bg-[#1d1038] text-yellow-300 border border-purple-500/40 transition"
+              className="hidden lg:flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 transition cursor-pointer"
               title="Open Simplified Rural Beekeeper Touch UI with Telugu & Hindi"
             >
-              <Globe className="w-3.5 h-3.5 text-yellow-400" />
+              <Globe className="w-3.5 h-3.5 text-purple-700" />
               <span>తెలుగు | हिन्दी</span>
             </button>
           )}
@@ -246,7 +246,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
                 navigateTo('judge-demo');
               }
             }}
-            className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-400 text-purple-950 font-black text-xs sm:text-sm shadow-xl shadow-purple-900/50 border-2 border-purple-200 hover:shadow-2xl hover:scale-104 active:scale-96 transition-all cursor-pointer shrink-0"
+            className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-400 text-purple-950 font-black text-xs sm:text-sm shadow-lg shadow-yellow-500/25 border-2 border-yellow-200 hover:scale-104 active:scale-96 transition-all cursor-pointer shrink-0"
           >
             <Sparkles className="w-4 h-4 text-purple-950 animate-spin" style={{ animationDuration: '3.5s' }} />
             <span>🎬 JUDGE DEMO MODE</span>
@@ -255,7 +255,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl bg-[#160d2c] border border-purple-500/40 text-yellow-300 xl:hidden cursor-pointer"
+            className="p-2 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 hover:bg-purple-100 xl:hidden cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -267,11 +267,11 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="xl:hidden px-4 py-4 border-t border-slate-800 bg-slate-950 text-xs font-bold space-y-2 animate-fadeIn">
+        <div className="xl:hidden px-4 py-4 border-t border-purple-100 bg-white text-xs font-bold space-y-2 animate-fadeIn shadow-lg">
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => navigateTo('landing')}
-              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-slate-200"
+              className="p-2.5 rounded-xl bg-purple-50 text-left hover:bg-purple-100 text-purple-950 cursor-pointer"
             >
               Home Page
             </button>
@@ -281,7 +281,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
                 setAppScreen('portal');
                 navigateTo('beekeeper');
               }}
-              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-amber-400"
+              className="p-2.5 rounded-xl bg-purple-50 text-left hover:bg-purple-100 text-purple-950 cursor-pointer"
             >
               🐝 Beekeeper Portal
             </button>
@@ -291,7 +291,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
                 setAppScreen('portal');
                 navigateTo('admin');
               }}
-              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-indigo-400"
+              className="p-2.5 rounded-xl bg-purple-50 text-left hover:bg-purple-100 text-purple-950 cursor-pointer"
             >
               🏛 KVIC Admin
             </button>
@@ -301,7 +301,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
                 setAppScreen('portal');
                 navigateTo('inspector');
               }}
-              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-cyan-400"
+              className="p-2.5 rounded-xl bg-purple-50 text-left hover:bg-purple-100 text-purple-950 cursor-pointer"
             >
               🧪 Lab Inspector
             </button>
@@ -311,23 +311,23 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
                 setAppScreen('portal');
                 navigateTo('customer');
               }}
-              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-emerald-400"
+              className="p-2.5 rounded-xl bg-purple-50 text-left hover:bg-purple-100 text-purple-950 cursor-pointer"
             >
               🔍 Consumer Scanner
             </button>
             <button
               onClick={() => navigateTo('blockchain')}
-              className="p-2.5 rounded-xl bg-slate-900 text-left hover:bg-slate-800 text-amber-300"
+              className="p-2.5 rounded-xl bg-purple-50 text-left hover:bg-purple-100 text-purple-950 cursor-pointer"
             >
               ⛓ Blockchain Ledger
             </button>
           </div>
 
-          <div className="pt-2 border-t border-slate-800 flex flex-wrap gap-2">
+          <div className="pt-2 border-t border-purple-100 flex flex-wrap gap-2">
             {onOpenProvenanceGraph && (
               <button
                 onClick={() => { onOpenProvenanceGraph(); setMobileMenuOpen(false); }}
-                className="px-3 py-1.5 rounded-xl bg-slate-900 text-amber-300 text-[11px]"
+                className="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-[11px] cursor-pointer"
               >
                 Provenance Graph
               </button>
@@ -335,7 +335,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
             {onOpenRuralMode && (
               <button
                 onClick={() => { onOpenRuralMode(); setMobileMenuOpen(false); }}
-                className="px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 text-[11px]"
+                className="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-[11px] cursor-pointer"
               >
                 తెలుగు / हिन्दी
               </button>
@@ -343,7 +343,7 @@ export const HoneychainNavbar: React.FC<HoneychainNavbarProps> = ({
             {onOpenWallet && (
               <button
                 onClick={() => { onOpenWallet(); setMobileMenuOpen(false); }}
-                className="px-3 py-1.5 rounded-xl bg-slate-900 text-emerald-400 text-[11px]"
+                className="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-[11px] cursor-pointer"
               >
                 My Honey Wallet
               </button>

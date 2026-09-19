@@ -439,7 +439,7 @@ export const CustomerScannerPortal: React.FC = () => {
         <div className="lg:col-span-4 flex flex-col items-center">
 
           {/* Dual Options Selector: Live Camera vs Upload Pic */}
-          <div className="w-full max-w-[320px] mb-3 bg-slate-900 p-1.5 rounded-2xl border-2 border-slate-800 shadow-xl flex items-center gap-1.5">
+          <div className="w-full max-w-[320px] mb-3 bg-white p-1.5 rounded-2xl border-2 border-purple-200 shadow-md flex items-center gap-1.5">
             <button
               type="button"
               id="camera-mode-btn"
@@ -448,11 +448,11 @@ export const CustomerScannerPortal: React.FC = () => {
               }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
                 scanMode === 'camera'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30 ring-1 ring-amber-300'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                  ? 'bg-yellow-400 text-purple-950 shadow-md shadow-yellow-500/20 ring-1 ring-yellow-300'
+                  : 'text-purple-700 hover:text-purple-950 hover:bg-purple-50'
               }`}
             >
-              <Camera className="w-4 h-4" />
+              <Camera className="w-4 h-4 text-purple-900" />
               <span>Camera</span>
             </button>
             <button
@@ -465,23 +465,23 @@ export const CustomerScannerPortal: React.FC = () => {
               }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
                 scanMode === 'upload'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30 ring-1 ring-amber-300'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                  ? 'bg-yellow-400 text-purple-950 shadow-md shadow-yellow-500/20 ring-1 ring-yellow-300'
+                  : 'text-purple-700 hover:text-purple-950 hover:bg-purple-50'
               }`}
             >
-              <UploadCloud className="w-4 h-4" />
+              <UploadCloud className="w-4 h-4 text-purple-900" />
               <span>Upload Pic</span>
             </button>
           </div>
 
           {/* Smartphone Frame */}
-          <div className="relative w-full max-w-[320px] bg-slate-900 rounded-[3rem] p-3.5 shadow-2xl border-4 border-slate-800 ring-1 ring-amber-400/30">
+          <div className="relative w-full max-w-[320px] bg-white rounded-[3rem] p-3.5 shadow-xl border-4 border-purple-200 ring-2 ring-yellow-400/40">
             
             {/* Phone Notch */}
             <div className="absolute top-2 inset-x-0 flex justify-center z-30 pointer-events-none">
-              <div className="w-24 h-4 bg-slate-950 rounded-b-xl flex items-center justify-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-slate-800" />
-                <div className="w-8 h-1 rounded-full bg-slate-800" />
+              <div className="w-24 h-4 bg-purple-100 rounded-b-xl flex items-center justify-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-purple-300" />
+                <div className="w-8 h-1 rounded-full bg-purple-300" />
               </div>
             </div>
 
