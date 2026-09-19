@@ -31,6 +31,7 @@ import {
 import { QRCodeSVG } from 'qrcode.react';
 
 interface LandingPageProps {
+  onEnterApp?: () => void;
   onEnterDemo?: () => void;
   onSelectRole?: (role: string) => void;
   onOpenScanner?: () => void;
@@ -38,6 +39,7 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
+  onEnterApp,
   onEnterDemo,
   onSelectRole,
   onOpenScanner,
@@ -192,25 +194,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         {/* Primary Action Buttons (Hero CTA) */}
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           <button
-            onClick={onEnterDemo}
-            className="flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 px-7 py-4 text-sm sm:text-base font-black text-purple-950 hover:from-yellow-300 hover:to-amber-400 transition-all shadow-lg shadow-yellow-500/25 hover:scale-104 active:scale-96 cursor-pointer border-2 border-yellow-200"
+            onClick={() => onEnterApp ? onEnterApp() : onEnterDemo?.()}
+            className="flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 px-8 py-4 text-base font-black text-purple-950 hover:from-yellow-300 hover:to-amber-400 transition-all shadow-xl shadow-yellow-500/30 hover:scale-105 active:scale-95 cursor-pointer border-2 border-yellow-200"
           >
             <Sparkles className="h-5 w-5 text-purple-950" />
-            <span>🎬 Launch 3-Min Judge Demo</span>
-            <ArrowRight className="h-4 w-4" />
+            <span>Enter HoneyChain Platform</span>
+            <ArrowRight className="h-5 w-5" />
+          </button>
+
+          <button
+            onClick={onEnterDemo}
+            className="flex items-center gap-2.5 rounded-2xl border-2 border-purple-300 bg-white px-6 py-4 text-sm sm:text-base font-bold text-purple-900 hover:bg-purple-50 hover:border-purple-400 transition-all shadow-md shadow-purple-900/5 hover:scale-102 active:scale-98 cursor-pointer"
+          >
+            <span>🎬 3-Min Judge Demo</span>
           </button>
 
           <button
             onClick={onOpenScanner}
-            className="flex items-center gap-2.5 rounded-2xl border-2 border-purple-300 bg-white px-6 py-4 text-sm sm:text-base font-bold text-purple-900 hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all shadow-md shadow-purple-900/5 hover:scale-102 active:scale-98 cursor-pointer"
+            className="flex items-center gap-2.5 rounded-2xl border-2 border-purple-200 bg-purple-50/80 px-6 py-4 text-sm sm:text-base font-bold text-purple-900 hover:bg-purple-100 transition-all shadow-md shadow-purple-900/5 hover:scale-102 active:scale-98 cursor-pointer"
           >
-            <Scan className="h-5 w-5 text-amber-500" />
+            <Scan className="h-5 w-5 text-yellow-600" />
             <span>Scan a Honey Jar</span>
           </button>
 
           <button
             onClick={onOpenProvenanceGraph}
-            className="flex items-center gap-2 rounded-2xl border border-purple-200 bg-purple-50/80 px-6 py-4 text-sm sm:text-base font-bold text-purple-900 hover:bg-purple-100 transition cursor-pointer"
+            className="flex items-center gap-2 rounded-2xl border border-purple-200 bg-white px-6 py-4 text-sm sm:text-base font-bold text-purple-900 hover:bg-purple-50 transition cursor-pointer"
           >
             <GitBranch className="h-5 w-5 text-purple-700" />
             <span>Provenance Graph</span>

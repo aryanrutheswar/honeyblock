@@ -1,5 +1,5 @@
-import React from 'react';
 import {
+  Home,
   LayoutDashboard,
   Package,
   SearchCheck,
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export type NavTabId =
+  | 'landing'
   | 'dashboard'
   | 'batches'
   | 'traceability'
@@ -61,6 +62,7 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
     {
       group: 'OVERVIEW',
       items: [
+        { id: 'landing' as NavTabId, label: 'Home Page', icon: Home },
         { id: 'dashboard' as NavTabId, label: 'Dashboard', icon: LayoutDashboard },
         { id: 'batches' as NavTabId, label: 'Honey Batches', icon: Package },
         { id: 'traceability' as NavTabId, label: 'Traceability', icon: SearchCheck },
@@ -110,7 +112,7 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
         {/* Brand Header */}
         <div className="h-16 px-5 border-b border-purple-50 flex items-center justify-between">
           <div
-            onClick={() => handleNavClick('dashboard')}
+            onClick={() => handleNavClick('landing')}
             className="flex items-center gap-2.5 cursor-pointer select-none group"
           >
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-700 to-purple-900 border border-purple-400/30 flex items-center justify-center text-yellow-300 shadow-md shadow-purple-900/15 group-hover:scale-105 transition-transform">

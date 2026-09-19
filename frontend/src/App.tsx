@@ -34,7 +34,7 @@ import { BiometricModal } from './components/BiometricModal';
 
 const HoneychainMainLayout: React.FC = () => {
   const { currentRole, setCurrentRole } = useHoneychain();
-  const [activeTab, setActiveTab] = useState<NavTabId>('dashboard');
+  const [activeTab, setActiveTab] = useState<NavTabId>('landing');
   const [selectedBatchId, setSelectedBatchId] = useState<string>('HC-2026-00124');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -62,6 +62,7 @@ const HoneychainMainLayout: React.FC = () => {
     }
 
     if (
+      tab === 'landing' ||
       tab === 'dashboard' ||
       tab === 'batches' ||
       tab === 'traceability' ||
@@ -85,6 +86,33 @@ const HoneychainMainLayout: React.FC = () => {
   // Render Main Page Content
   const renderContentPage = () => {
     switch (activeTab) {
+      case 'landing':
+        return (
+          <LandingPage
+            onEnterApp={() => handleSelectTab('dashboard')}
+            onEnterDemo={() => handleSelectTab('dashboard')}
+            onSelectRole={(role) => {
+              if (role === 'beekeeper') {
+                setCurrentRole('beekeeper');
+                handleSelectTab('smart-hive');
+              } else if (role === 'inspector') {
+                setCurrentRole('inspector');
+                handleSelectTab('quality');
+              } else if (role === 'customer') {
+                setCurrentRole('customer');
+                handleSelectTab('qr-verify');
+              } else if (role === 'processor') {
+                setCurrentRole('admin');
+                handleSelectTab('batches');
+              } else {
+                handleSelectTab('dashboard');
+              }
+            }}
+            onOpenScanner={() => handleSelectTab('qr-verify')}
+            onOpenProvenanceGraph={() => setIsProvenanceGraphOpen(true)}
+          />
+        );
+
       case 'dashboard':
         return (
           <DashboardPage
