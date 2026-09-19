@@ -172,8 +172,18 @@ const HoneychainMainLayout: React.FC = () => {
     }
   };
 
+  // If on landing entrance screen, render pure focused Home Page gateway
+  if (activeTab === 'landing') {
+    return (
+      <LandingPage
+        onEnterApp={() => handleSelectTab('dashboard')}
+        onEnterDemo={() => handleSelectTab('dashboard')}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#faf8ff] text-[#1e1b4b] flex font-sans selection:bg-yellow-300 selection:text-purple-950">
+    <div className="min-h-screen bg-[#faf8ff] text-[#1e1035] flex font-sans selection:bg-yellow-300 selection:text-purple-950">
       
       {/* Left Application Sidebar */}
       <HoneychainSidebar
