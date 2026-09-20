@@ -1,37 +1,32 @@
 import React, { useState } from 'react';
 import {
   Menu,
-  Search,
   Bell,
-  PlusCircle,
-  QrCode,
-  ShieldCheck,
   ChevronDown,
   User,
   CheckCircle2,
-  AlertTriangle
+  ArrowLeft
 } from 'lucide-react';
 import { NavTabId } from './HoneychainSidebar';
 
 interface HoneychainHeaderProps {
   onToggleMobileNav: () => void;
   onNavigateTab: (tab: NavTabId) => void;
+  onGoBack?: () => void;
   onOpenMintModal?: () => void;
   currentRole: string;
   onChangeRole: (role: string) => void;
-  searchQuery: string;
-  onSearchChange: (q: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (q: string) => void;
   alertCount?: number;
 }
 
 export const HoneychainHeader: React.FC<HoneychainHeaderProps> = ({
   onToggleMobileNav,
   onNavigateTab,
-  onOpenMintModal,
+  onGoBack,
   currentRole,
   onChangeRole,
-  searchQuery,
-  onSearchChange,
   alertCount = 2
 }) => {
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
@@ -48,62 +43,31 @@ export const HoneychainHeader: React.FC<HoneychainHeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 sm:px-6 flex items-center justify-between gap-4">
-      {/* Left: Mobile Menu Toggle & Global Search */}
-      <div className="flex items-center gap-3 flex-1 max-w-xl">
+      {/* Left: Go Back Button & Mobile Menu Toggle */}
+      <div className="flex items-center gap-2.5 sm:gap-3">
+        {/* Prominent Go Back Button */}
+        <button
+          type="button"
+          onClick={onGoBack || (() => onNavigateTab('portals'))}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-950 font-black text-xs border border-purple-200 shadow-2xs hover:scale-105 active:scale-95 transition cursor-pointer shrink-0"
+          title="Go back to previous page or Role Portals"
+        >
+          <ArrowLeft className="w-4 h-4 text-purple-700" />
+          <span>Go Back</span>
+        </button>
+
         <button
           type="button"
           onClick={onToggleMobileNav}
-          className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 lg:hidden cursor-pointer"
+          className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 lg:hidden cursor-pointer shrink-0"
           title="Open Navigation Menu"
         >
           <Menu className="w-5 h-5" />
         </button>
-
-        {/* Global Search Bar */}
-        <div className="relative w-full max-w-md hidden sm:block">
-          <Search className="w-4 h-4 text-purple-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={e => onSearchChange(e.target.value)}
-            placeholder="Search batch ID, hive, or blockchain hash... (e.g. HC-2026-00124)"
-            className="w-full pl-9 pr-4 py-2 bg-purple-50/40 border border-purple-100 rounded-xl text-xs text-purple-950 placeholder:text-purple-400/70 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:bg-white transition-all font-medium"
-          />
-        </div>
       </div>
 
-      {/* Right: Actions, Alerts, Role Selector */}
+      {/* Right: Alerts Bell & Role Selector */}
       <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-        
-        {/* Network Consensus Badge (Desktop) */}
-        <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-50/60 border border-purple-100 text-[11px] font-bold text-purple-900">
-          <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-          <span>PBFT Consensus: 4 Nodes Synced</span>
-        </div>
-
-        {/* Quick Action: Scan Bottle QR */}
-        <button
-          type="button"
-          onClick={() => onNavigateTab('qr-verify')}
-          className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-50/70 hover:bg-purple-100 border border-purple-200 text-xs font-bold text-purple-900 transition cursor-pointer"
-        >
-          <QrCode className="w-3.5 h-3.5 text-purple-600" />
-          <span>Scan Bottle</span>
-        </button>
-
-        {/* Quick Action: Mint Batch */}
-        <button
-          type="button"
-          onClick={() => {
-            if (onOpenMintModal) onOpenMintModal();
-            else onNavigateTab('batches');
-          }}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-purple-950 text-xs font-black shadow-sm shadow-yellow-400/30 border border-yellow-500/40 transition cursor-pointer active:scale-95"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Mint Harvest</span>
-        </button>
-
         {/* Alerts Bell */}
         <button
           type="button"

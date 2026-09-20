@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import jsQR from 'jsqr';
 import confetti from 'canvas-confetti';
 import {
-  QrCode,
   Camera,
   CheckCircle2,
   AlertTriangle,
@@ -24,7 +23,8 @@ import {
   Layers,
   X,
   RefreshCw,
-  FileCheck
+  FileCheck,
+  ArrowLeft
 } from 'lucide-react';
 import {
   getInspectedBatch,
@@ -35,14 +35,15 @@ import {
 import { decodeBarcodeOrQRFromImage, extractBatchId } from '../utils/qrDecoder';
 import { registerCameraStream, stopAllCameraHardware, killStream } from '../utils/mediaManager';
 import { soundManager } from '../utils/audio';
+import { BarcodeIcon } from '../components/HoneyBarcodeCanvas';
 
 interface ConsumerQRVerificationPageProps {
   onNavigateTab?: (tab: string) => void;
 }
 
 export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProps> = ({ onNavigateTab }) => {
-  const [activeTab, setActiveTab] = useState<'scan' | 'results'>('scan');
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isSimulatingScan, setIsSimulatingScan] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [scannedData, setScannedData] = useState<InspectedBatchRecord>(() => getLatestInspectedBatch());
   const [hasScannedOnce, setHasScannedOnce] = useState(false);
@@ -54,12 +55,42 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
   const animationFrameId = useRef<number | null>(null);
   const isScanningRef = useRef(false);
 
+  // Stop Camera & release hardware tracks completely
+  const stopCameraScanner = () => {
+    isScanningRef.current = false;
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = null;
+    }
+    if (currentStreamRef.current) {
+      killStream(currentStreamRef.current);
+      currentStreamRef.current = null;
+    }
+    stopAllCameraHardware();
+    setIsCameraActive(false);
+    setIsSimulatingScan(false);
+  };
+
   // Stop camera hardware on component unmount
   useEffect(() => {
     return () => {
       stopCameraScanner();
     };
   }, []);
+
+  // Safely hook video stream when video element mounts and camera is active
+  useEffect(() => {
+    if (isCameraActive && !isSimulatingScan && currentStreamRef.current && videoRef.current) {
+      const video = videoRef.current;
+      video.srcObject = currentStreamRef.current;
+      video.setAttribute('playsinline', 'true');
+      video.play().then(() => {
+        startScanLoop();
+      }).catch(err => {
+        console.warn('Video playback notice:', err);
+      });
+    }
+  }, [isCameraActive, isSimulatingScan]);
 
   // Parse QR content into InspectedBatchRecord
   const processRawQRText = (rawText: string) => {
@@ -110,7 +141,6 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
     stopCameraScanner();
     setScannedData(record);
     setHasScannedOnce(true);
-    setActiveTab('results');
     soundManager.playSuccess();
     try {
       confetti({
@@ -121,42 +151,123 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
     } catch {}
   };
 
-  // Start Live Camera
+  // Start Live Camera with Multi-Level Fallback (Rear Camera -> Generic Video)
   const startCameraScanner = async () => {
     setCameraError(null);
-    setIsCameraActive(true);
-    isScanningRef.current = true;
+    setIsSimulatingScan(false);
     soundManager.playClick();
 
-    try {
-      const constraints: MediaStreamConstraints = {
-        video: {
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraError('Camera API is not supported in this browser environment. You can test using "Run Camera Barcode Demo" or image upload below.');
+      return;
+    }
+
+    // Check if any video input device exists on this machine
+    if (navigator.mediaDevices.enumerateDevices) {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+        if (devices.length > 0 && videoDevices.length === 0) {
+          setCameraError('No camera or webcam device detected on your computer. You can click "Run Camera Barcode Demo" below to test the complete scanning flow!');
+          return;
         }
-      };
+      } catch (enumErr) {
+        console.warn('enumerateDevices notice:', enumErr);
+      }
+    }
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      currentStreamRef.current = stream;
-      registerCameraStream(stream);
-
+    // If a camera stream is already running, immediately re-attach and display it
+    if (currentStreamRef.current && currentStreamRef.current.active) {
+      isScanningRef.current = true;
+      setIsCameraActive(true);
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute('playsinline', 'true');
-        await videoRef.current.play();
+        videoRef.current.srcObject = currentStreamRef.current;
+        videoRef.current.muted = true;
+        videoRef.current.play().catch(() => {});
         startScanLoop();
       }
+      return;
+    }
+
+    try {
+      let stream: MediaStream | null = null;
+      let lastErr: any = null;
+
+      // Strategy 1: Ideal environment camera (smartphones / tablets)
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } }
+        });
+      } catch (e) {
+        lastErr = e;
+      }
+
+      // Strategy 2: Standard video constraint (universal for all webcams & laptops)
+      if (!stream) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true
+          });
+        } catch (e) {
+          lastErr = e;
+        }
+      }
+
+      if (!stream) {
+        throw lastErr || new Error('Failed to acquire camera stream');
+      }
+
+      currentStreamRef.current = stream;
+      registerCameraStream(stream);
+      isScanningRef.current = true;
+      setIsCameraActive(true);
     } catch (err: any) {
       console.error('Camera access error:', err);
-      setCameraError('Unable to access camera. Please allow camera permissions or upload the downloaded QR image file below.');
+      const errName = err?.name || '';
+      const errMsg = err?.message || '';
+
+      let errorMsg = 'Unable to access camera hardware. Please check your browser permissions.';
+      if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError' || errMsg.includes('Permission denied')) {
+        errorMsg = 'Camera permission was denied. Please click the camera/lock icon in your browser address bar and choose "Always allow".';
+      } else if (errName === 'NotFoundError' || errName === 'DevicesNotFoundError' || errMsg.includes('device not found')) {
+        errorMsg = 'No camera device was detected on your computer. You can click "Run Camera Barcode Demo" below to test the full scanning flow!';
+      } else if (errName === 'NotReadableError' || errName === 'TrackStartError' || errMsg.includes('Could not start video source')) {
+        errorMsg = 'Your camera is already in use by another application or tab (Windows Camera, Zoom, Teams, Meet). Please close that app or click "Force Reset & Re-open".';
+      } else if (errName === 'OverconstrainedError') {
+        errorMsg = 'Camera hardware does not support the requested video format. Click "Run Camera Barcode Demo" to test.';
+      } else if (errMsg) {
+        errorMsg = `Camera notice: ${errMsg}. You can click "Run Camera Barcode Demo" below to preview the verification flow.`;
+      }
+      setCameraError(errorMsg);
       stopCameraScanner();
     }
   };
 
+  // Force Stop and Reconnect Camera Hardware
+  const handleForceResetCamera = async () => {
+    soundManager.playClick();
+    stopCameraScanner();
+    await new Promise(r => setTimeout(r, 250));
+    startCameraScanner();
+  };
+
+  // Interactive Camera Scanning Simulation (works without physical webcam)
+  const handleSimulateCameraScan = () => {
+    soundManager.playClick();
+    setCameraError(null);
+    setIsCameraActive(true);
+    setIsSimulatingScan(true);
+
+    setTimeout(() => {
+      stopCameraScanner();
+      const latest = getLatestInspectedBatch();
+      applySuccessfulScan(latest);
+    }, 1600);
+  };
+
   // Continuous Camera Scanner Loop
   const startScanLoop = () => {
-    const scanTick = () => {
+    const scanTick = async () => {
       if (!isScanningRef.current || !videoRef.current || !canvasRef.current) return;
 
       const video = videoRef.current;
@@ -177,27 +288,26 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
           processRawQRText(code.data);
           return; // Stop scan loop on first hit
         }
+
+        // Native BarcodeDetector for camera 1D barcodes (EAN-13, UPC, Code-128)
+        if ('BarcodeDetector' in window) {
+          try {
+            const detector = new (window as any).BarcodeDetector({
+              formats: ['ean_13', 'upc_a', 'code_128', 'qr_code']
+            });
+            const barcodes = await detector.detect(canvas);
+            if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+              processRawQRText(barcodes[0].rawValue);
+              return;
+            }
+          } catch {}
+        }
       }
 
       animationFrameId.current = requestAnimationFrame(scanTick);
     };
 
     animationFrameId.current = requestAnimationFrame(scanTick);
-  };
-
-  // Stop Camera
-  const stopCameraScanner = () => {
-    isScanningRef.current = false;
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current);
-      animationFrameId.current = null;
-    }
-    if (currentStreamRef.current) {
-      killStream(currentStreamRef.current);
-      currentStreamRef.current = null;
-    }
-    stopAllCameraHardware();
-    setIsCameraActive(false);
   };
 
   // Handle Upload of Downloaded QR Code Image
@@ -253,11 +363,6 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
     }
   };
 
-  // Quick Demo Trigger
-  const handleScanLatestDemo = () => {
-    const latest = getLatestInspectedBatch();
-    applySuccessfulScan(latest);
-  };
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-5xl mx-auto pb-16">
@@ -265,78 +370,90 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
       {/* Top Banner */}
       <div className="bg-white p-6 sm:p-7 rounded-3xl border border-purple-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5 bumble-border-top">
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <button
+              type="button"
+              onClick={() => onNavigateTab ? onNavigateTab('portals') : undefined}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black text-purple-950 bg-white hover:bg-purple-100 border border-purple-300 shadow-2xs transition cursor-pointer hover:scale-105 active:scale-95"
+              title="Go Back to Role Portals"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-purple-700" />
+              <span>Go Back</span>
+            </button>
             <span className="text-[11px] font-black text-emerald-950 bg-emerald-300 px-2.5 py-1 rounded-full border border-emerald-400 uppercase tracking-wider inline-flex items-center gap-1">
-              <QrCode className="w-3.5 h-3.5 text-emerald-900" />
-              Customer Verification Portal
+              <BarcodeIcon className="w-3.5 h-3.5 text-emerald-900" />
+              Customer Barcode Verification
             </span>
             <span className="text-[11px] font-bold text-purple-800 bg-purple-100 px-2.5 py-0.5 rounded-full border border-purple-200">
-              Live Scanner & Passport
+              Retail Barcode Scanner
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-purple-950 tracking-tight">
             Verify Honey Authenticity & Lab Reports
           </h1>
           <p className="text-xs sm:text-sm text-purple-900/70 mt-1 max-w-2xl font-medium">
-            Scan the QR code you downloaded from the Inspector Portal using your camera or upload the QR image file to view the exact verified chemical analysis, floral origin, and beekeeper credentials.
+            Scan the GS1 EAN-13 Barcode from your retail honey jar label using your smartphone camera or upload the downloaded barcode image to view verified chemical analysis, floral origin, and beekeeper credentials.
           </p>
-        </div>
-
-        {/* View Tabs */}
-        <div className="flex items-center gap-2 bg-purple-50/80 p-1.5 rounded-2xl border border-purple-200">
-          <button
-            type="button"
-            onClick={() => setActiveTab('scan')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              activeTab === 'scan'
-                ? 'bg-purple-950 text-yellow-300 shadow-xs'
-                : 'text-purple-900 hover:text-purple-950'
-            }`}
-          >
-            <Camera className="w-3.5 h-3.5" />
-            <span>QR Scanner</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('results')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
-              activeTab === 'results'
-                ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-purple-950 font-black shadow-xs'
-                : 'text-purple-900 hover:text-purple-950'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Verified Dossier</span>
-          </button>
         </div>
       </div>
 
       {/* =========================================================================
-          TAB 1: QR SCANNER (CAMERA & FILE UPLOADER)
+          RETAIL BARCODE SCANNER (CAMERA & FILE UPLOADER)
           ========================================================================= */}
-      {activeTab === 'scan' && (
-        <div className="space-y-6">
+      <div className="space-y-6">
           
           {/* Main Action Banner: Camera or File Upload */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-emerald-200 shadow-xl shadow-purple-900/5 space-y-6 text-center">
             
             <div className="max-w-xl mx-auto space-y-2">
               <h2 className="text-xl sm:text-2xl font-black text-purple-950">
-                Ready to Scan Your Honey Jar QR Code?
+                Ready to Scan Your Honey Jar Retail Barcode?
               </h2>
               <p className="text-xs sm:text-sm text-purple-900/70">
-                Point your smartphone camera at the downloaded QR code or upload the downloaded PNG image directly from your device.
+                Point your smartphone camera at the GS1 EAN-13 barcode, or upload the downloaded barcode label image directly from your device.
               </p>
             </div>
 
             {/* Camera Viewfinder (when active) */}
             {isCameraActive ? (
               <div className="relative max-w-md mx-auto rounded-3xl overflow-hidden border-4 border-emerald-400 shadow-2xl bg-black aspect-square flex items-center justify-center">
-                <video
-                  ref={videoRef}
-                  className="w-full h-full object-cover"
-                />
-                <canvas ref={canvasRef} className="hidden" />
+                {isSimulatingScan ? (
+                  <div className="w-full h-full bg-linear-to-b from-purple-950 via-slate-900 to-black flex flex-col items-center justify-center p-6 text-center text-white space-y-4">
+                    <div className="w-20 h-20 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center animate-pulse">
+                      <BarcodeIcon className="w-10 h-10 text-emerald-300 animate-pulse" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="font-black text-base text-emerald-300">Scanning Retail Barcode...</p>
+                      <p className="text-xs text-purple-200/70">Simulating real camera sensor on GS1 EAN-13 label</p>
+                    </div>
+                    <div className="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-400 animate-pulse" style={{ width: '85%' }} />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <video
+                      ref={(el) => {
+                        videoRef.current = el;
+                        if (el && currentStreamRef.current && el.srcObject !== currentStreamRef.current) {
+                          el.srcObject = currentStreamRef.current;
+                          el.muted = true;
+                          el.setAttribute('playsinline', 'true');
+                          el.play().then(() => startScanLoop()).catch(() => startScanLoop());
+                        }
+                      }}
+                      autoPlay
+                      muted
+                      playsInline
+                      onLoadedMetadata={() => {
+                        videoRef.current?.play().catch(() => {});
+                        startScanLoop();
+                      }}
+                      className="w-full h-full object-cover"
+                    />
+                    <canvas ref={canvasRef} className="hidden" />
+                  </>
+                )}
 
                 {/* Animated Scanner Laser Overlay */}
                 <div className="absolute inset-0 pointer-events-none border-2 border-emerald-400/40 m-8 rounded-2xl flex flex-col justify-between p-4">
@@ -344,7 +461,7 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
                   <div className="w-8 h-8 border-t-4 border-r-4 border-emerald-400 -mt-1 -mr-1 self-end rounded-tr-lg" />
                   
                   {/* Laser line moving vertically */}
-                  <div className="w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-bounce self-center" />
+                  <div className="w-full h-1 bg-linear-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-bounce self-center" />
 
                   <div className="w-8 h-8 border-b-4 border-l-4 border-emerald-400 -mb-1 -ml-1 rounded-bl-lg" />
                   <div className="w-8 h-8 border-b-4 border-r-4 border-emerald-400 -mb-1 -mr-1 self-end rounded-br-lg" />
@@ -353,14 +470,14 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
                 {/* Live Scanning Status Pill */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/80 backdrop-blur-xs text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-slate-700">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span>Scanning Video Frames for QR...</span>
+                  <span>{isSimulatingScan ? 'Decoding Barcode Pattern...' : 'Scanning Video Frames for Retail Barcode...'}</span>
                 </div>
 
                 {/* Stop Camera Button */}
                 <button
                   type="button"
                   onClick={stopCameraScanner}
-                  className="absolute top-4 right-4 p-2 bg-black/60 hover:bg-black/80 text-white rounded-full transition cursor-pointer"
+                  className="absolute top-4 right-4 p-2 bg-black/60 hover:bg-black/80 text-white rounded-full transition cursor-pointer z-10"
                   title="Close Camera"
                 >
                   <X className="w-5 h-5" />
@@ -370,12 +487,30 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
 
             {/* Error Banner if camera failed */}
             {cameraError && (
-              <div className="max-w-md mx-auto p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 text-xs font-medium space-y-1 text-left">
+              <div className="max-w-md mx-auto p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 text-xs font-medium space-y-3 text-left shadow-xs">
                 <div className="font-bold flex items-center gap-1.5 text-amber-900">
-                  <AlertTriangle className="w-4 h-4 text-amber-700" />
-                  <span>Camera Notice</span>
+                  <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
+                  <span className="text-sm">Camera Notice</span>
                 </div>
-                <p>{cameraError}</p>
+                <p className="leading-relaxed">{cameraError}</p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleForceResetCamera}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 font-black text-xs transition cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Force Reset & Re-open</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSimulateCameraScan}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs shadow-xs transition cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                    <span>Run Camera Barcode Demo</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -401,10 +536,10 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
                 </button>
               )}
 
-              {/* Upload Downloaded QR Code file */}
+              {/* Upload Downloaded Barcode file */}
               <label className="flex items-center gap-2.5 py-4 px-6 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-950 font-black text-sm border-2 border-purple-300 transition-all hover:scale-103 cursor-pointer shadow-sm">
                 <Upload className="w-5 h-5 text-purple-700" />
-                <span>Upload Downloaded QR Image</span>
+                <span>Upload Barcode Image</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -413,20 +548,11 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
                 />
               </label>
 
-              {/* Quick Auto-Load Latest Inspector Batch */}
-              <button
-                type="button"
-                onClick={handleScanLatestDemo}
-                className="flex items-center gap-2 py-4 px-6 rounded-2xl bg-yellow-400 hover:bg-yellow-300 text-purple-950 font-black text-sm border border-yellow-500 shadow-sm transition-all hover:scale-103 cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4 text-purple-950" />
-                <span>Quick-Inspect Latest Batch</span>
-              </button>
             </div>
 
             {isProcessingFile && (
               <p className="text-xs font-bold text-purple-700 animate-pulse">
-                Decoding uploaded QR image pixels...
+                Decoding uploaded Barcode image pixels...
               </p>
             )}
 
@@ -440,12 +566,11 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
           </div>
 
         </div>
-      )}
 
       {/* =========================================================================
-          TAB 2: VERIFIED DOSSIER (EXACT DETAILS FILLED IN INSPECTOR PORTAL)
+          VERIFIED AUTHENTICITY DOSSIER (APPEARS UPON BARCODE SCAN)
           ========================================================================= */}
-      {(activeTab === 'results' || hasScannedOnce) && (
+      {hasScannedOnce && (
         <div className="space-y-6 animate-fadeIn">
           
           {/* Big Verification Banner */}
@@ -479,13 +604,12 @@ export const ConsumerQRVerificationPage: React.FC<ConsumerQRVerificationPageProp
               <button
                 type="button"
                 onClick={() => {
-                  setActiveTab('scan');
                   startCameraScanner();
                 }}
                 className="px-4 py-2.5 bg-white hover:bg-emerald-50 border border-emerald-300 rounded-xl text-xs font-black text-emerald-950 transition cursor-pointer shadow-xs flex items-center gap-2"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Scan Another QR</span>
+                <span>Scan Another Barcode</span>
               </button>
             </div>
           </div>

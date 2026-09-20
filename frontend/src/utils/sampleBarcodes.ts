@@ -41,9 +41,35 @@ const FIRST_DIGIT_PARITY = [
 ];
 
 /**
+ * Computes standard GS1 EAN-13 Modulo-10 check digit for a 12-digit string.
+ */
+export function computeEan13Checksum(first12: string): number {
+  const digits = first12.replace(/\D/g, '').padEnd(12, '0').slice(0, 12);
+  let sum = 0;
+  for (let i = 0; i < 12; i++) {
+    const d = parseInt(digits[i], 10) || 0;
+    sum += (i % 2 === 0) ? d : d * 3;
+  }
+  const mod = sum % 10;
+  return mod === 0 ? 0 : 10 - mod;
+}
+
+/**
+ * Derives a valid 13-digit EAN-13 barcode number from any HoneyChain Batch ID.
+ * Standard format: 890 (GS1 India) + 1030 (HoneyChain) + 5 digits batch suffix + Mod-10 Checksum.
+ */
+export function getEan13FromBatchId(batchId: string): string {
+  const digits = batchId.replace(/\D/g, '');
+  const suffix = (digits.slice(-5) || '08821').padStart(5, '0');
+  const first12 = `8901030${suffix}`;
+  const checksum = computeEan13Checksum(first12);
+  return `${first12}${checksum}`;
+}
+
+/**
  * Encodes a 13-digit barcode string into a 95-bit array of module widths.
  */
-function encodeEan13Bits(code: string): string {
+export function encodeEan13Bits(code: string): string {
   const digits = code.replace(/\D/g, '').padEnd(13, '0').slice(0, 13);
   const first = parseInt(digits[0], 10) || 0;
   const parity = FIRST_DIGIT_PARITY[first] || 'LLLLLL';

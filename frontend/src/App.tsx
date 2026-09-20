@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HoneychainProvider, useHoneychain } from './context/HoneychainContext';
 import { AppProvider, useApp } from './context/AppContext';
 
@@ -8,7 +8,6 @@ import { HoneychainHeader } from './components/HoneychainHeader';
 import { HoneyAIAssistant } from './components/HoneyAIAssistant';
 
 // Core Application Pages
-import { DashboardPage } from './pages/DashboardPage';
 import { HoneyBatchesPage } from './pages/HoneyBatchesPage';
 import { TraceabilityPage } from './pages/TraceabilityPage';
 import { SmartHivePage } from './pages/SmartHivePage';
@@ -19,6 +18,7 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { ConsumerQRVerificationPage } from './pages/ConsumerQRVerificationPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { LandingPage } from './pages/LandingPage';
+import { StakeholderPortalsPage } from './pages/StakeholderPortalsPage';
 import { JudgeDemoFlowPage } from './pages/JudgeDemoFlowPage';
 
 // Specialized Deep-Dive Modals (Interactive Demonstrators)
@@ -31,6 +31,8 @@ import { BeekeeperWalletModal } from './components/BeekeeperWalletModal';
 import { QrCounterfeitDetectorModal } from './components/QrCounterfeitDetectorModal';
 import { DigitalCertificateModal } from './components/DigitalCertificateModal';
 import { BiometricModal } from './components/BiometricModal';
+import { InspectorPasswordModal } from './components/InspectorPasswordModal';
+import { BeekeeperPasswordModal } from './components/BeekeeperPasswordModal';
 
 const HoneychainMainLayout: React.FC = () => {
   const { currentRole, setCurrentRole } = useHoneychain();
@@ -50,20 +52,46 @@ const HoneychainMainLayout: React.FC = () => {
   const [isQrDetectorOpen, setIsQrDetectorOpen] = useState(false);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
 
-  // Handle Tab Switch
-  const handleSelectTab = (tab: string | NavTabId, batchId?: string) => {
+  // Inspector & Beekeeper Password Authentication State
+  const [isInspectorModalOpen, setIsInspectorModalOpen] = useState(false);
+  const [isBeekeeperModalOpen, setIsBeekeeperModalOpen] = useState(false);
+
+  // Clear any old stored tokens on mount so it always prompts on fresh access
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem('honeychain_inspector_unlocked');
+      sessionStorage.removeItem('honeychain_beekeeper_unlocked');
+    } catch {}
+  }, []);
+
+  // Navigation History Stack for Go Back
+  const [tabHistory, setTabHistory] = useState<NavTabId[]>(['portals']);
+
+  const handleInspectorUnlockSuccess = () => {
+    setIsInspectorModalOpen(false);
+    setCurrentRole('inspector');
+    performTabSwitch('quality');
+  };
+
+  const handleBeekeeperUnlockSuccess = () => {
+    setIsBeekeeperModalOpen(false);
+    setCurrentRole('beekeeper');
+    performTabSwitch('smart-hive');
+  };
+
+  const handleLockInspector = () => {
+    setCurrentRole('beekeeper');
+    performTabSwitch('portals');
+  };
+
+  const performTabSwitch = (tab: string | NavTabId, batchId?: string) => {
     if (batchId) {
       setSelectedBatchId(batchId);
     }
 
-    if (tab === 'ai-assistant') {
-      setIsAiDrawerOpen(true);
-      return;
-    }
-
     if (
       tab === 'landing' ||
-      tab === 'dashboard' ||
+      tab === 'portals' ||
       tab === 'batches' ||
       tab === 'traceability' ||
       tab === 'smart-hive' ||
@@ -74,7 +102,49 @@ const HoneychainMainLayout: React.FC = () => {
       tab === 'qr-verify' ||
       tab === 'settings'
     ) {
+      setTabHistory(prev => {
+        if (prev[prev.length - 1] === tab) return prev;
+        return [...prev, tab as NavTabId];
+      });
       setActiveTab(tab as NavTabId);
+    }
+  };
+
+  // Handle Tab Switch with Inspector Interception
+  const handleSelectTab = (tab: string | NavTabId, batchId?: string) => {
+    if (batchId) {
+      setSelectedBatchId(batchId);
+    }
+
+    if (tab === 'ai-assistant') {
+      setIsAiDrawerOpen(true);
+      return;
+    }
+
+    // Intercept Beekeeper / Smart Hive tab if not already on it
+    if (tab === 'smart-hive' && activeTab !== 'smart-hive') {
+      setIsBeekeeperModalOpen(true);
+      return;
+    }
+
+    // Intercept Quality / Inspector tab if not already on it
+    if (tab === 'quality' && activeTab !== 'quality') {
+      setIsInspectorModalOpen(true);
+      return;
+    }
+
+    performTabSwitch(tab, batchId);
+  };
+
+  const handleGoBack = () => {
+    if (tabHistory.length > 1) {
+      const updated = [...tabHistory];
+      updated.pop();
+      const prev = updated[updated.length - 1];
+      setTabHistory(updated);
+      setActiveTab(prev);
+    } else {
+      setActiveTab('portals');
     }
   };
 
@@ -83,42 +153,49 @@ const HoneychainMainLayout: React.FC = () => {
     setActiveTab('traceability');
   };
 
+  const handleSelectRole = (role: string) => {
+    if (role === 'beekeeper') {
+      // Always prompt for password when pressing HoneyChain beekeeper option
+      setIsBeekeeperModalOpen(true);
+    } else if (role === 'inspector') {
+      // Always prompt for password when pressing HoneyChain inspector option
+      setIsInspectorModalOpen(true);
+    } else if (role === 'customer') {
+      setCurrentRole('customer');
+      performTabSwitch('qr-verify');
+    } else if (role === 'processor') {
+      setCurrentRole('admin');
+      performTabSwitch('batches');
+    } else if (role === 'regulator') {
+      setCurrentRole('admin');
+      performTabSwitch('blockchain');
+    } else {
+      performTabSwitch('portals');
+    }
+  };
+
   // Render Main Page Content
   const renderContentPage = () => {
     switch (activeTab) {
       case 'landing':
         return (
           <LandingPage
-            onEnterApp={() => handleSelectTab('dashboard')}
-            onEnterDemo={() => handleSelectTab('dashboard')}
-            onSelectRole={(role) => {
-              if (role === 'beekeeper') {
-                setCurrentRole('beekeeper');
-                handleSelectTab('smart-hive');
-              } else if (role === 'inspector') {
-                setCurrentRole('inspector');
-                handleSelectTab('quality');
-              } else if (role === 'customer') {
-                setCurrentRole('customer');
-                handleSelectTab('qr-verify');
-              } else if (role === 'processor') {
-                setCurrentRole('admin');
-                handleSelectTab('batches');
-              } else {
-                handleSelectTab('dashboard');
-              }
+            onEnterApp={() => handleSelectTab('portals')}
+            onEnterDemo={() => handleSelectTab('portals')}
+            onSelectRole={handleSelectRole}
+            onOpenScanner={() => {
+              setCurrentRole('customer');
+              handleSelectTab('qr-verify');
             }}
-            onOpenScanner={() => handleSelectTab('qr-verify')}
             onOpenProvenanceGraph={() => setIsProvenanceGraphOpen(true)}
           />
         );
 
-      case 'dashboard':
+      case 'portals':
         return (
-          <DashboardPage
-            onNavigateTab={handleSelectTab}
-            onSelectBatchForTraceability={handleSelectBatchForTraceability}
-            onOpenMintModal={() => handleSelectTab('batches')}
+          <StakeholderPortalsPage
+            onSelectRole={handleSelectRole}
+            onBackHome={() => handleSelectTab('landing')}
           />
         );
 
@@ -141,7 +218,12 @@ const HoneychainMainLayout: React.FC = () => {
         return <SmartHivePage onNavigateTab={(tab, batchId) => handleSelectTab(tab as NavTabId, batchId)} />;
 
       case 'quality':
-        return <QualityAuthenticityPage onNavigateTab={(tab) => handleSelectTab(tab as NavTabId)} />;
+        return (
+          <QualityAuthenticityPage
+            onNavigateTab={(tab) => handleSelectTab(tab as NavTabId)}
+            onLockInspector={handleLockInspector}
+          />
+        );
 
       case 'blockchain':
         return <BlockchainLedgerPage />;
@@ -164,9 +246,9 @@ const HoneychainMainLayout: React.FC = () => {
 
       default:
         return (
-          <DashboardPage
-            onNavigateTab={handleSelectTab}
-            onSelectBatchForTraceability={handleSelectBatchForTraceability}
+          <StakeholderPortalsPage
+            onSelectRole={handleSelectRole}
+            onBackHome={() => handleSelectTab('landing')}
           />
         );
     }
@@ -175,10 +257,50 @@ const HoneychainMainLayout: React.FC = () => {
   // If on landing entrance screen, render pure focused Home Page gateway
   if (activeTab === 'landing') {
     return (
-      <LandingPage
-        onEnterApp={() => handleSelectTab('dashboard')}
-        onEnterDemo={() => handleSelectTab('dashboard')}
-      />
+      <>
+        <LandingPage
+          onEnterApp={() => handleSelectTab('portals')}
+          onEnterDemo={() => handleSelectTab('portals')}
+          onSelectRole={handleSelectRole}
+          onOpenScanner={() => {
+            setCurrentRole('customer');
+            handleSelectTab('qr-verify');
+          }}
+          onOpenProvenanceGraph={() => setIsProvenanceGraphOpen(true)}
+        />
+        <InspectorPasswordModal
+          isOpen={isInspectorModalOpen}
+          onClose={() => setIsInspectorModalOpen(false)}
+          onSuccess={handleInspectorUnlockSuccess}
+        />
+        <BeekeeperPasswordModal
+          isOpen={isBeekeeperModalOpen}
+          onClose={() => setIsBeekeeperModalOpen(false)}
+          onSuccess={handleBeekeeperUnlockSuccess}
+        />
+      </>
+    );
+  }
+
+  // If on dedicated stakeholder portal selection screen, render full-screen gateway
+  if (activeTab === 'portals') {
+    return (
+      <>
+        <StakeholderPortalsPage
+          onSelectRole={handleSelectRole}
+          onBackHome={() => handleSelectTab('landing')}
+        />
+        <InspectorPasswordModal
+          isOpen={isInspectorModalOpen}
+          onClose={() => setIsInspectorModalOpen(false)}
+          onSuccess={handleInspectorUnlockSuccess}
+        />
+        <BeekeeperPasswordModal
+          isOpen={isBeekeeperModalOpen}
+          onClose={() => setIsBeekeeperModalOpen(false)}
+          onSuccess={handleBeekeeperUnlockSuccess}
+        />
+      </>
     );
   }
 
@@ -189,6 +311,8 @@ const HoneychainMainLayout: React.FC = () => {
       <HoneychainSidebar
         activeTab={activeTab}
         onSelectTab={handleSelectTab}
+        currentRole={currentRole || 'beekeeper'}
+        onSelectRole={handleSelectRole}
         activeAlertCount={2}
         isOpenMobile={mobileNavOpen}
         onCloseMobile={() => setMobileNavOpen(false)}
@@ -201,9 +325,10 @@ const HoneychainMainLayout: React.FC = () => {
         <HoneychainHeader
           onToggleMobileNav={() => setMobileNavOpen(!mobileNavOpen)}
           onNavigateTab={handleSelectTab}
+          onGoBack={handleGoBack}
           onOpenMintModal={() => handleSelectTab('batches')}
           currentRole={currentRole || 'beekeeper'}
-          onChangeRole={(r) => setCurrentRole(r as any)}
+          onChangeRole={(r) => handleSelectRole(r)}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           alertCount={2}
@@ -328,6 +453,16 @@ const HoneychainMainLayout: React.FC = () => {
       />
 
       <BiometricModal />
+      <InspectorPasswordModal
+        isOpen={isInspectorModalOpen}
+        onClose={() => setIsInspectorModalOpen(false)}
+        onSuccess={handleInspectorUnlockSuccess}
+      />
+      <BeekeeperPasswordModal
+        isOpen={isBeekeeperModalOpen}
+        onClose={() => setIsBeekeeperModalOpen(false)}
+        onSuccess={handleBeekeeperUnlockSuccess}
+      />
     </div>
   );
 };

@@ -1,5 +1,8 @@
+import { getEan13FromBatchId } from './sampleBarcodes';
+
 export interface InspectedBatchRecord {
   batchId: string;
+  barcodeNumber?: string;
   productName: string;
   floralSource: string;
   apiaryLocation: string;
@@ -26,6 +29,7 @@ const LATEST_KEY = 'HONEYCHAIN_LATEST_INSPECTED';
 
 export const DEFAULT_INSPECTOR_BATCH: InspectedBatchRecord = {
   batchId: 'HC-2026-INSP-8821',
+  barcodeNumber: '8901030688218',
   productName: 'Nilgiri Mountain Wild Kurinji Reserve',
   floralSource: 'Wild Kurinji (Strobilanthes) & Blue Mountain Acacia',
   apiaryLocation: 'Nilgiris Biosphere Reserve Node #AP-NIL-01 (2,240m)',
@@ -53,17 +57,25 @@ export function saveInspectedBatch(batch: InspectedBatchRecord): void {
     const existingStr = localStorage.getItem(STORAGE_KEY);
     const list: InspectedBatchRecord[] = existingStr ? JSON.parse(existingStr) : [];
     
+    // Ensure barcodeNumber is populated
+    const barcodeNumber = batch.barcodeNumber || getEan13FromBatchId(batch.batchId);
+    const batchWithBarcode: InspectedBatchRecord = {
+      ...batch,
+      barcodeNumber
+    };
+
     // Replace or prepend
     const filtered = list.filter(b => b.batchId !== batch.batchId);
-    filtered.unshift(batch);
+    filtered.unshift(batchWithBarcode);
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-    localStorage.setItem(LATEST_KEY, JSON.stringify(batch));
+    localStorage.setItem(LATEST_KEY, JSON.stringify(batchWithBarcode));
 
     // Register into barcode resolver map
     const mapStr = localStorage.getItem('HONEYCHAIN_DYNAMIC_BARCODE_MAP') || '{}';
     const map = JSON.parse(mapStr);
     map[batch.batchId] = batch.batchId;
+    map[barcodeNumber] = batch.batchId;
     localStorage.setItem('HONEYCHAIN_DYNAMIC_BARCODE_MAP', JSON.stringify(map));
   } catch (err) {
     console.warn('Error saving inspected batch:', err);

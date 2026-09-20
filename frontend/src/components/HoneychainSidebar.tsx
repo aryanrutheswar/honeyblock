@@ -1,6 +1,5 @@
 import {
   Home,
-  LayoutDashboard,
   Package,
   SearchCheck,
   Radio,
@@ -13,12 +12,14 @@ import {
   Settings,
   ChevronRight,
   ShieldCheck,
-  Hexagon
+  Hexagon,
+  ArrowLeft
 } from 'lucide-react';
+import { BarcodeIcon } from './HoneyBarcodeCanvas';
 
 export type NavTabId =
   | 'landing'
-  | 'dashboard'
+  | 'portals'
   | 'batches'
   | 'traceability'
   | 'smart-hive'
@@ -46,6 +47,8 @@ interface NavSection {
 interface HoneychainSidebarProps {
   activeTab: NavTabId;
   onSelectTab: (tab: NavTabId) => void;
+  currentRole?: string;
+  onSelectRole?: (role: string) => void;
   activeAlertCount?: number;
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
@@ -54,6 +57,8 @@ interface HoneychainSidebarProps {
 export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
   activeTab,
   onSelectTab,
+  currentRole = 'beekeeper',
+  onSelectRole,
   activeAlertCount = 2,
   isOpenMobile = false,
   onCloseMobile
@@ -63,7 +68,7 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
       group: 'OVERVIEW',
       items: [
         { id: 'landing' as NavTabId, label: 'Home Page', icon: Home },
-        { id: 'dashboard' as NavTabId, label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'portals' as NavTabId, label: 'Role Portals', icon: Hexagon },
         { id: 'batches' as NavTabId, label: 'Honey Batches', icon: Package },
         { id: 'traceability' as NavTabId, label: 'Traceability', icon: SearchCheck },
         { id: 'smart-hive' as NavTabId, label: 'Smart Hive', icon: Radio },
@@ -76,7 +81,7 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
         { id: 'blockchain' as NavTabId, label: 'Blockchain Ledger', icon: Database },
         { id: 'alerts' as NavTabId, label: 'Alerts', icon: AlertTriangle, badge: activeAlertCount },
         { id: 'analytics' as NavTabId, label: 'Analytics', icon: BarChart3 },
-        { id: 'qr-verify' as NavTabId, label: 'QR Verification', icon: QrCode }
+        { id: 'qr-verify' as NavTabId, label: 'Barcode Verification', icon: BarcodeIcon }
       ]
     },
     {
@@ -127,6 +132,57 @@ export const HoneychainSidebar: React.FC<HoneychainSidebarProps> = ({
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Active Stakeholder Portal Indicator */}
+        <div className="mx-3 mt-3 p-3 rounded-2xl bg-gradient-to-br from-purple-50/90 via-yellow-50/50 to-purple-50/80 border border-purple-200/90 shadow-xs">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[9px] font-black uppercase tracking-wider text-purple-900/60">
+              Active Portal
+            </span>
+            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Live
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 bg-white border border-purple-200 shadow-xs">
+              {currentRole === 'beekeeper' ? '🐝' : currentRole === 'inspector' ? '🔬' : currentRole === 'customer' ? '📱' : currentRole === 'processor' ? '📦' : '⛓️'}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-black text-purple-950 truncate">
+                {currentRole === 'beekeeper'
+                  ? 'Beekeeper Portal'
+                  : currentRole === 'inspector'
+                  ? 'Lab Inspector Portal'
+                  : currentRole === 'customer'
+                  ? 'Customer Portal'
+                  : currentRole === 'processor'
+                  ? 'Processor Portal'
+                  : 'Regulator Portal'}
+              </div>
+              <div className="text-[10px] text-purple-700/75 font-semibold truncate">
+                {currentRole === 'beekeeper'
+                  ? 'Apiary IoT & Batches'
+                  : currentRole === 'inspector'
+                  ? 'Chemical Assays & QR'
+                  : currentRole === 'customer'
+                  ? 'Scanner & Passport'
+                  : 'Enterprise Access'}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Return to Portal Selection */}
+          <button
+            type="button"
+            onClick={() => handleNavClick('portals')}
+            className="w-full mt-2.5 py-1.5 px-2 rounded-xl text-[11px] font-extrabold text-purple-950 bg-white hover:bg-purple-100 border border-purple-200 hover:border-purple-300 flex items-center justify-center gap-1.5 transition cursor-pointer shadow-2xs hover:scale-102 active:scale-98"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-purple-700" />
+            <span>Go Back to Portals</span>
+          </button>
         </div>
 
         {/* Navigation Sections */}

@@ -368,7 +368,7 @@ export const HoneyBatchesPage: React.FC<HoneyBatchesPageProps> = ({ onNavigateTa
                   >
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-900 border border-purple-200 flex items-center justify-center font-mono font-black text-xs shrink-0">
+                        <div className="px-2.5 py-1.5 min-w-[76px] rounded-xl bg-purple-100 text-purple-900 border border-purple-200 flex items-center justify-center font-mono font-black text-xs shrink-0 whitespace-nowrap shadow-2xs">
                           {batch.hiveId}
                         </div>
                         <div>
@@ -479,7 +479,7 @@ export const HoneyBatchesPage: React.FC<HoneyBatchesPageProps> = ({ onNavigateTa
               <div>
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 font-mono font-bold text-xs flex items-center justify-center">
+                    <span className="px-2.5 py-1 min-w-[72px] rounded-lg bg-amber-100 text-amber-800 font-mono font-bold text-xs flex items-center justify-center whitespace-nowrap shrink-0">
                       {batch.hiveId}
                     </span>
                     <div>

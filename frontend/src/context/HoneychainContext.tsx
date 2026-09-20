@@ -586,13 +586,6 @@ export const HoneychainProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     stopAllCameraHardware();
   };
 
-  // Aggressively guarantee all camera hardware tracks are stopped whenever user is not on customer screen
-  useEffect(() => {
-    if (currentRole !== 'customer') {
-      stopAllCameraHardware();
-    }
-  }, [currentRole, appScreen]);
-
   // Automatically persist screen & role to localStorage and URL hash on state updates
   useEffect(() => {
     try {

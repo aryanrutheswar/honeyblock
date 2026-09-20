@@ -141,50 +141,6 @@ export function stopAllCameraHardware(): void {
   }
 }
 
-// =========================================================================
-// UNIVERSAL BROWSER INTERCEPTOR FOR navigator.mediaDevices.getUserMedia
-// =========================================================================
-if (
-  typeof window !== 'undefined' &&
-  typeof navigator !== 'undefined' &&
-  navigator.mediaDevices &&
-  typeof navigator.mediaDevices.getUserMedia === 'function'
-) {
-  const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-
-  navigator.mediaDevices.getUserMedia = async function (
-    constraints?: MediaStreamConstraints
-  ): Promise<MediaStream> {
-    // If customer portal is not active, refuse to activate hardware
-    if (!isCustomerPortalActive) {
-      const err = new DOMException('Camera access blocked: Customer portal is inactive', 'AbortError');
-      return Promise.reject(err);
-    }
-
-    // Stop any existing stream before creating a new one to prevent hardware stacking
-    const existingStreams = Array.from(activeStreams);
-    existingStreams.forEach(s => killStream(s));
-
-    try {
-      const stream = await originalGetUserMedia(constraints);
-
-      // Register immediately
-      registerCameraStream(stream);
-
-      // CRITICAL: Did the user navigate away or stop the camera while getUserMedia was resolving?
-      if (!isCustomerPortalActive) {
-        killStream(stream);
-        const err = new DOMException('Camera cancelled: User navigated away while camera was initializing', 'AbortError');
-        throw err;
-      }
-
-      return stream;
-    } catch (error) {
-      throw error;
-    }
-  };
-}
-
 // Global browser event listeners for guaranteed camera turn-off
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => stopAllCameraHardware());

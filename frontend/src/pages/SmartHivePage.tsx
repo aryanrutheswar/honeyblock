@@ -27,7 +27,8 @@ import {
   ArrowUpRight,
   ArrowRight,
   ChevronRight,
-  QrCode
+  QrCode,
+  ArrowLeft
 } from 'lucide-react';
 import { useHoneychain } from '../context/HoneychainContext';
 
@@ -271,7 +272,16 @@ export const SmartHivePage: React.FC<SmartHivePageProps> = ({ onNavigateTab }) =
       {/* Top Banner with Beekeeper View Switcher */}
       <div className="bg-white p-6 sm:p-7 rounded-3xl border border-purple-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <button
+              type="button"
+              onClick={() => onNavigateTab ? onNavigateTab('portals') : undefined}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black text-purple-950 bg-white hover:bg-purple-100 border border-purple-300 shadow-2xs transition cursor-pointer hover:scale-105 active:scale-95"
+              title="Go Back to Role Portals"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-purple-700" />
+              <span>Go Back</span>
+            </button>
             <span className="text-[11px] font-black text-purple-900 bg-yellow-300/90 px-2.5 py-1 rounded-full border border-yellow-400 uppercase tracking-wider inline-flex items-center gap-1">
               <Radio className="w-3 h-3 text-amber-700" />
               Beekeeper Portal
