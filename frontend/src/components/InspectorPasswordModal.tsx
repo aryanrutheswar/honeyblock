@@ -263,17 +263,6 @@ export const InspectorPasswordModal: React.FC<InspectorPasswordModalProps> = ({
               </button>
             </div>
           </form>
-
-          {/* Discreet hint for demo / evaluator convenience */}
-          <div className="pt-1 text-center">
-            <span className="text-[11px] text-purple-900/60 font-medium">
-              Demo Access Password:{' '}
-              <code className="bg-purple-100/90 text-purple-950 font-mono font-bold px-1.5 py-0.5 rounded border border-purple-200">
-                honey@123
-              </code>
-            </span>
-          </div>
-
         </div>
       </div>
     </div>

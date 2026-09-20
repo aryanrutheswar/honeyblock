@@ -371,8 +371,9 @@ export const StakeholderPortalsPage: React.FC<StakeholderPortalsPageProps> = ({
                 <span>Enter HoneyChain: Inspector Portal</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <p className="text-[10px] text-center text-purple-600/70 mt-1 font-semibold">
-                Protected Console • Password Required (honey@123)
+              <p className="text-[10px] text-center text-purple-600/70 mt-1 font-semibold flex items-center justify-center gap-1">
+                <Lock className="w-3 h-3 text-purple-600" />
+                <span>Protected Console • Password Required</span>
               </p>
             </div>
           </div>

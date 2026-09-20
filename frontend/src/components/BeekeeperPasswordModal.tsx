@@ -146,8 +146,8 @@ export const BeekeeperPasswordModal: React.FC<BeekeeperPasswordModalProps> = ({
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-purple-950 flex items-center justify-between">
                 <span>Enter Beekeeper Password</span>
-                <span className="text-[10px] text-amber-700 font-semibold">
-                  Default: honey@123
+                <span className="text-[10px] text-amber-700/70 font-semibold">
+                  Case sensitive
                 </span>
               </label>
 
@@ -163,7 +163,7 @@ export const BeekeeperPasswordModal: React.FC<BeekeeperPasswordModalProps> = ({
                     setPassword(e.target.value);
                     if (error) setError(null);
                   }}
-                  placeholder="Enter honey@123"
+                  placeholder="Enter beekeeper password"
                   disabled={isVerifying || isSuccess}
                   className={`w-full pl-10 pr-11 py-3 bg-purple-50/40 border-2 rounded-2xl text-sm font-semibold text-purple-950 placeholder:text-purple-300 focus:outline-none transition-all ${
                     error
@@ -239,12 +239,6 @@ export const BeekeeperPasswordModal: React.FC<BeekeeperPasswordModalProps> = ({
               </button>
             </div>
           </form>
-
-          {/* Helper Hint */}
-          <div className="pt-3 border-t border-purple-100 flex items-center justify-between text-[11px] text-purple-900/60 font-medium">
-            <span>Authentication Requirement</span>
-            <span className="font-mono font-bold text-amber-700">honey@123</span>
-          </div>
         </div>
       </div>
     </div>

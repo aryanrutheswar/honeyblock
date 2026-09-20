@@ -333,7 +333,7 @@ export const QualityAuthenticityPage: React.FC<QualityAuthenticityPageProps> = (
                   onLockInspector();
                 }}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black text-purple-950 bg-amber-100 hover:bg-amber-200 border border-amber-300 shadow-2xs transition cursor-pointer hover:scale-105 active:scale-95"
-                title="Lock Inspector Console (requires password honey@123 to re-enter)"
+                title="Lock Inspector Console (requires password to re-enter)"
               >
                 <Lock className="w-3.5 h-3.5 text-purple-800" />
                 <span>Lock Console</span>
