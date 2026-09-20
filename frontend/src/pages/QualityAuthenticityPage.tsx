@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { QRCodeCanvas } from 'qrcode.react';
 import {
   FlaskConical,
   ShieldCheck,
@@ -10,346 +11,609 @@ import {
   Thermometer,
   Award,
   Sparkles,
-  Search,
   Download,
   FileText,
-  HelpCircle,
-  XCircle
+  QrCode,
+  ArrowRight,
+  RefreshCw,
+  Cpu,
+  Layers,
+  Check,
+  Copy,
+  ExternalLink,
+  Scale
 } from 'lucide-react';
+import {
+  saveInspectedBatch,
+  getLatestInspectedBatch,
+  InspectedBatchRecord,
+  DEFAULT_INSPECTOR_BATCH
+} from '../utils/inspectorStore';
+import { soundManager } from '../utils/audio';
 
-export const QualityAuthenticityPage: React.FC = () => {
-  // Test simulation state
-  const [testMode, setTestMode] = useState<'pure' | 'adulterated'>('pure');
-  const [selectedBatch, setSelectedBatch] = useState('HC-2026-00124');
+interface QualityAuthenticityPageProps {
+  onNavigateTab?: (tab: string) => void;
+}
 
-  const isVerified = testMode === 'pure';
+export const QualityAuthenticityPage: React.FC<QualityAuthenticityPageProps> = ({ onNavigateTab }) => {
+  // Form State initialized with latest or default
+  const [formData, setFormData] = useState<InspectedBatchRecord>(() => getLatestInspectedBatch());
+  const [isGenerated, setIsGenerated] = useState(true);
+  const [copiedHash, setCopiedHash] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const qrCanvasRef = useRef<HTMLDivElement>(null);
+
+  // Generate a random unique batch ID
+  const handleGenerateNewId = () => {
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    setFormData(prev => ({
+      ...prev,
+      batchId: `HC-2026-INSP-${randomSuffix}`,
+      blockchainHash: '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
+    }));
+  };
+
+  // Presets
+  const applyPreset = (preset: 'nilgiri' | 'kashmir' | 'warangal') => {
+    if (preset === 'nilgiri') {
+      setFormData({
+        ...DEFAULT_INSPECTOR_BATCH,
+        batchId: `HC-2026-NIL-${Math.floor(1000 + Math.random() * 9000)}`
+      });
+    } else if (preset === 'kashmir') {
+      setFormData({
+        batchId: `HC-2026-KSH-${Math.floor(1000 + Math.random() * 9000)}`,
+        productName: 'Kashmir High-Altitude White Acacia Reserve',
+        floralSource: 'Wild White Acacia Blossom (Robinia Pseudoacacia)',
+        apiaryLocation: 'Pahalgam Valley Alpine Apiary Node #08 (1,850m)',
+        beekeeperName: 'Farooq Ahmad Mir (Kashmir Tribal Apiary #14)',
+        harvestWeightKg: 120.5,
+        harvestDate: '12 Sep 2026',
+        inspectorName: 'Dr. Bashir Qureshi, Lead Chromatographer',
+        laboratoryName: 'NABL High-Altitude Testing Enclave #KSH-01',
+        purityScore: 99.9,
+        c4Syrups: '0.00% (EA-IRMS Negative)',
+        hmfMgKg: 6.4,
+        diastaseUnits: 28.2,
+        moisturePct: 16.2,
+        carbonDelta: -27.2,
+        verdict: 'Grade A Ultra-Pure Raw Honey Certified',
+        blockchainHash: '0x3f4a2104c89e24f8d689b741e29851720a4b73a8f9d4e21074bb9420bfa47289',
+        blockNumber: 8426,
+        timestamp: new Date().toLocaleDateString('en-GB') + ', 11:30 AM IST',
+        qrPayloadString: ''
+      });
+    } else if (preset === 'warangal') {
+      setFormData({
+        batchId: `HC-2026-TG-${Math.floor(1000 + Math.random() * 9000)}`,
+        productName: 'Warangal Forest Multiflora Pure Reserve',
+        floralSource: 'Wild Forest Multiflora, Jamun & Neem Flora',
+        apiaryLocation: 'Warangal Rural Cluster Apiary Node AP-TG-01',
+        beekeeperName: 'Ravi Kumar (KVIC-BK-91)',
+        harvestWeightKg: 68.5,
+        harvestDate: '14 Sep 2026',
+        inspectorName: 'Dr. Ananya Iyer, Chief Spectroscopist',
+        laboratoryName: 'NABL Certified Testing Node #TN-02 (ISO/IEC 17025)',
+        purityScore: 99.6,
+        c4Syrups: '0.00% (EA-IRMS Negative)',
+        hmfMgKg: 8.2,
+        diastaseUnits: 24.8,
+        moisturePct: 17.2,
+        carbonDelta: -26.8,
+        verdict: 'Grade A 100% Pure Raw Honey Certified',
+        blockchainHash: '0x9b7f4a2104c89e24f8d689b741e29851720a4b73a8f9d4e21074bb9420bfa472',
+        blockNumber: 8421,
+        timestamp: new Date().toLocaleDateString('en-GB') + ', 04:55 PM IST',
+        qrPayloadString: ''
+      });
+    }
+    soundManager.playClick();
+    setIsGenerated(true);
+  };
+
+  // Encoded payload to put in QR
+  const qrPayload = JSON.stringify({
+    app: 'HoneyChain',
+    protocol: 'honeychain-v1',
+    batchId: formData.batchId,
+    name: formData.productName,
+    beekeeper: formData.beekeeperName,
+    location: formData.apiaryLocation,
+    inspector: formData.inspectorName,
+    lab: formData.laboratoryName,
+    purity: formData.purityScore,
+    c4: formData.c4Syrups,
+    hmf: formData.hmfMgKg,
+    diastase: formData.diastaseUnits,
+    moisture: formData.moisturePct,
+    weight: formData.harvestWeightKg,
+    date: formData.harvestDate,
+    verdict: formData.verdict,
+    hash: formData.blockchainHash,
+    block: formData.blockNumber
+  });
+
+  // Handle Generate QR
+  const handleGenerateQR = (e: React.FormEvent) => {
+    e.preventDefault();
+    const updatedRecord: InspectedBatchRecord = {
+      ...formData,
+      qrPayloadString: qrPayload,
+      timestamp: new Date().toLocaleDateString('en-GB') + ', ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    };
+    saveInspectedBatch(updatedRecord);
+    setFormData(updatedRecord);
+    setIsGenerated(true);
+    soundManager.playSuccess();
+  };
+
+  // Download QR as PNG Image
+  const handleDownloadQR = () => {
+    soundManager.playClick();
+    const sourceCanvas = document.getElementById('inspector-qr-canvas') as HTMLCanvasElement;
+    if (!sourceCanvas) return;
+
+    // Create a beautifully branded printable label canvas
+    const downloadCanvas = document.createElement('canvas');
+    downloadCanvas.width = 460;
+    downloadCanvas.height = 540;
+    const ctx = downloadCanvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 460, 540);
+
+    // Border & bumblebee yellow banner
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(0, 0, 460, 48);
+    ctx.fillStyle = '#1e1035';
+    ctx.font = 'bold 15px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🐝 HONEYCHAIN DIGITAL TRUST PASSPORT', 230, 30);
+
+    // Batch ID Header
+    ctx.fillStyle = '#1e1035';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText(formData.batchId, 230, 80);
+
+    ctx.font = '12px sans-serif';
+    ctx.fillStyle = '#581c87';
+    ctx.fillText(formData.productName, 230, 100);
+
+    // Draw QR Code centered
+    ctx.drawImage(sourceCanvas, 100, 115, 260, 260);
+
+    // Inspector Stamp & Metrics below QR
+    ctx.fillStyle = '#065f46';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText(`✓ ${formData.purityScore}% Pure • C4 Syrups: ${formData.c4Syrups}`, 230, 405);
+
+    ctx.fillStyle = '#475569';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(`Certified By: ${formData.inspectorName}`, 230, 430);
+    ctx.fillText(formData.laboratoryName, 230, 448);
+    ctx.fillText(`HMF: ${formData.hmfMgKg} mg/kg • Diastase: ${formData.diastaseUnits} DN • Moisture: ${formData.moisturePct}%`, 230, 468);
+
+    // Footer instructions
+    ctx.fillStyle = '#7e22ce';
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText(`SHA-256: ${formData.blockchainHash.slice(0, 32)}...`, 230, 498);
+    ctx.fillStyle = '#64748b';
+    ctx.font = 'italic 10px sans-serif';
+    ctx.fillText('Scan this QR code with the HoneyChain Customer Scanner', 230, 520);
+
+    // Trigger PNG Download
+    const dataUrl = downloadCanvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = `HoneyChain-QR-${formData.batchId}.png`;
+    a.click();
+
+    setDownloadSuccess(true);
+    setTimeout(() => setDownloadSuccess(false), 4000);
+  };
+
+  // Copy hash helper
+  const handleCopyHash = () => {
+    navigator.clipboard.writeText(formData.blockchainHash);
+    setCopiedHash(true);
+    setTimeout(() => setCopiedHash(false), 2000);
+  };
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-7xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-7xl mx-auto pb-16">
       
-      {/* Top Banner & Mode Toggle */}
-      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-purple-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Top Banner */}
+      <div className="bg-white p-6 sm:p-7 rounded-3xl border border-purple-100 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5 bumble-border-top">
         <div>
-          <span className="text-[11px] font-black text-purple-900 bg-yellow-300/80 px-2.5 py-1 rounded-full border border-yellow-400 uppercase tracking-wider inline-block mb-2">
-            ISO/IEC 17025 Certified Laboratory Intelligence
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-purple-950 tracking-tight">
-            Quality & Authenticity Verification
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[11px] font-black text-purple-900 bg-yellow-300 px-2.5 py-1 rounded-full border border-yellow-400 uppercase tracking-wider inline-flex items-center gap-1">
+              <FlaskConical className="w-3.5 h-3.5 text-purple-900" />
+              Inspector Portal
+            </span>
+            <span className="text-[11px] font-bold text-purple-800 bg-purple-100 px-2.5 py-1 rounded-full border border-purple-200">
+              NABL ISO/IEC 17025 Accredited
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-purple-950 tracking-tight">
+            Quality Certification & QR Code Notary
           </h1>
-          <p className="text-xs sm:text-sm text-purple-900/60 mt-1 max-w-xl font-medium">
-            Molecular NMR spectral profiling, Pollen-DNA metagenomics, and EA-IRMS carbon isotope mass spectrometry.
+          <p className="text-xs sm:text-sm text-purple-900/70 mt-1 max-w-2xl font-medium">
+            Fill in official laboratory inspection assays, generate a cryptographic QR code, and download the verified label. Consumers can immediately scan this downloaded QR code in the Customer Portal.
           </p>
         </div>
 
-        {/* Demo Mode Toggle */}
-        <div className="flex items-center gap-2 bg-purple-50/60 p-1.5 rounded-xl border border-purple-200">
-          <span className="text-xs font-black text-purple-900/70 px-2">Sample Test:</span>
+        {/* Preset Selector */}
+        <div className="flex flex-wrap items-center gap-2 bg-purple-50/80 p-2 rounded-2xl border border-purple-200">
+          <span className="text-xs font-bold text-purple-900 px-1">Quick Presets:</span>
           <button
             type="button"
-            onClick={() => setTestMode('pure')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-              testMode === 'pure'
-                ? 'bg-yellow-400 text-purple-950 font-black shadow-xs border border-yellow-500/50'
-                : 'text-purple-900/70 hover:text-purple-950'
-            }`}
+            onClick={() => applyPreset('nilgiri')}
+            className="px-3 py-1.5 rounded-xl bg-white hover:bg-yellow-100 text-purple-950 text-xs font-bold transition border border-purple-200 cursor-pointer"
           >
-            Pure Honey Sample
+            Nilgiri Kurinji
           </button>
           <button
             type="button"
-            onClick={() => setTestMode('adulterated')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-              testMode === 'adulterated'
-                ? 'bg-rose-600 text-white shadow-xs font-bold'
-                : 'text-purple-900/70 hover:text-purple-950'
-            }`}
+            onClick={() => applyPreset('kashmir')}
+            className="px-3 py-1.5 rounded-xl bg-white hover:bg-yellow-100 text-purple-950 text-xs font-bold transition border border-purple-200 cursor-pointer"
           >
-            Adulterated Sample
+            Kashmir Acacia
+          </button>
+          <button
+            type="button"
+            onClick={() => applyPreset('warangal')}
+            className="px-3 py-1.5 rounded-xl bg-white hover:bg-yellow-100 text-purple-950 text-xs font-bold transition border border-purple-200 cursor-pointer"
+          >
+            Warangal Forest
           </button>
         </div>
       </div>
 
-      {/* Main Authenticity Status Card */}
-      <div className={`p-6 sm:p-7 rounded-2xl border shadow-xs transition-all ${
-        isVerified
-          ? 'bg-emerald-50/40 border-emerald-200 ring-1 ring-emerald-300/40'
-          : 'bg-rose-50/50 border-rose-200 ring-1 ring-rose-300/50'
-      }`}>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-3.5">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${
-              isVerified ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
-            }`}>
-              {isVerified ? <CheckCircle2 className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Overall Authenticity Status:
-                </span>
-                <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full ${
-                  isVerified
-                    ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
-                    : 'bg-rose-100 text-rose-900 border border-rose-200 animate-pulse'
-                }`}>
-                  {isVerified ? '✓ VERIFIED AUTHENTIC' : '⚠ NEEDS REVIEW / QUARANTINED'}
-                </span>
+      {/* Main 2-Column Interface: Inspector Form (Left) vs Generated QR & Seal (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* =========================================================================
+            LEFT: INSPECTOR VERIFICATION FORM
+            ========================================================================= */}
+        <div className="lg:col-span-7 space-y-6">
+          <form onSubmit={handleGenerateQR} className="space-y-6">
+            
+            {/* Card 1: Batch Identification */}
+            <div className="bg-white p-6 rounded-3xl border border-purple-100 shadow-xs space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-purple-100">
+                <div className="flex items-center gap-2">
+                  <Cpu className="w-4 h-4 text-purple-700" />
+                  <h3 className="text-base font-black text-purple-950">1. Batch & Apiary Identification</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleGenerateNewId}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 hover:text-purple-950 bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg border border-purple-200 cursor-pointer"
+                >
+                  <RefreshCw className="w-3 h-3" /> New Batch ID
+                </button>
               </div>
-              <h2 className={`text-xl sm:text-2xl font-black mt-1 ${isVerified ? 'text-emerald-950' : 'text-rose-950'}`}>
-                {isVerified
-                  ? 'Grade A 100% Pure Raw Honey Certified'
-                  : 'Potential Adulteration Detected — Exogenous Sugars Found'}
-              </h2>
-              <p className="text-xs text-slate-600 mt-1">
-                Batch #{selectedBatch} • Analyzed at NABL Testing Enclave TN-99824 • Notarized on Block #8421
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Batch ID</label>
+                  <input
+                    type="text"
+                    value={formData.batchId}
+                    onChange={e => setFormData({ ...formData, batchId: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-mono font-bold focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Product / Honey Name</label>
+                  <input
+                    type="text"
+                    value={formData.productName}
+                    onChange={e => setFormData({ ...formData, productName: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-bold focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Floral Botanical Origin</label>
+                  <input
+                    type="text"
+                    value={formData.floralSource}
+                    onChange={e => setFormData({ ...formData, floralSource: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Apiary Forest Location</label>
+                  <input
+                    type="text"
+                    value={formData.apiaryLocation}
+                    onChange={e => setFormData({ ...formData, apiaryLocation: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Registered Beekeeper</label>
+                  <input
+                    type="text"
+                    value={formData.beekeeperName}
+                    onChange={e => setFormData({ ...formData, beekeeperName: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block font-bold text-purple-900 mb-1">Tare Net (kg)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={formData.harvestWeightKg}
+                      onChange={e => setFormData({ ...formData, harvestWeightKg: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-mono focus:outline-none focus:border-purple-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-purple-900 mb-1">Harvest Date</label>
+                    <input
+                      type="text"
+                      value={formData.harvestDate}
+                      onChange={e => setFormData({ ...formData, harvestDate: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 focus:outline-none focus:border-purple-500"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Chemical & Laboratory Assays */}
+            <div className="bg-white p-6 rounded-3xl border border-purple-100 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-purple-100">
+                <FlaskConical className="w-4 h-4 text-purple-700" />
+                <h3 className="text-base font-black text-purple-950">2. Laboratory Assays & Purity Results</h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Certified Inspector Name</label>
+                  <input
+                    type="text"
+                    value={formData.inspectorName}
+                    onChange={e => setFormData({ ...formData, inspectorName: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-semibold focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Accredited Testing Laboratory</label>
+                  <input
+                    type="text"
+                    value={formData.laboratoryName}
+                    onChange={e => setFormData({ ...formData, laboratoryName: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Overall Purity Score (%)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    max="100"
+                    value={formData.purityScore}
+                    onChange={e => setFormData({ ...formData, purityScore: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-emerald-700 font-mono font-black focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">C4 Sugar Syrups (EA-IRMS)</label>
+                  <input
+                    type="text"
+                    value={formData.c4Syrups}
+                    onChange={e => setFormData({ ...formData, c4Syrups: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-bold focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">HMF Freshness (mg/kg)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={formData.hmfMgKg}
+                    onChange={e => setFormData({ ...formData, hmfMgKg: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-mono focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Diastase Enzymes (DN / Schade)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={formData.diastaseUnits}
+                    onChange={e => setFormData({ ...formData, diastaseUnits: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-mono focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Moisture Content (%)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={formData.moisturePct}
+                    onChange={e => setFormData({ ...formData, moisturePct: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-mono focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-purple-900 mb-1">Isotope Ratio δ13C (‰)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={formData.carbonDelta}
+                    onChange={e => setFormData({ ...formData, carbonDelta: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-purple-950 font-mono focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block font-bold text-purple-900 mb-1">Certification Verdict</label>
+                  <input
+                    type="text"
+                    value={formData.verdict}
+                    onChange={e => setFormData({ ...formData, verdict: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-purple-50/50 border border-purple-200 text-emerald-800 font-bold focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Primary Action Button: Create & Generate QR */}
+            <div>
+              <button
+                type="submit"
+                className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-400 text-purple-950 font-black text-sm sm:text-base shadow-xl shadow-yellow-500/25 transition-all hover:scale-102 active:scale-98 cursor-pointer border-2 border-yellow-200"
+              >
+                <QrCode className="w-5 h-5 text-purple-950" />
+                <span>Create & Generate Certified QR Code</span>
+                <Sparkles className="w-4 h-4 text-purple-950" />
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        {/* =========================================================================
+            RIGHT: GENERATED QR CODE & DOWNLOAD SECTION
+            ========================================================================= */}
+        <div className="lg:col-span-5 space-y-6">
+          
+          {/* Branded Certified QR Card */}
+          <div className="bg-white rounded-3xl border-2 border-purple-200 p-6 sm:p-7 shadow-xl shadow-purple-900/10 bumble-border-top space-y-5 text-center">
+            
+            <div className="space-y-1">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                Officially Notarized & Ready
+              </span>
+              <h3 className="text-xl font-black text-purple-950 pt-1">
+                Certified Inspection QR Code
+              </h3>
+              <p className="text-xs text-purple-900/70">
+                Contains cryptographically signed chemical & origin specifications
               </p>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <button
-              type="button"
-              className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 transition cursor-pointer shadow-2xs flex items-center gap-1.5"
+            {/* Rendered QR Canvas */}
+            <div
+              ref={qrCanvasRef}
+              className="p-5 bg-purple-50/50 rounded-2xl border-2 border-purple-200 inline-block mx-auto shadow-sm"
             >
-              <FileText className="w-4 h-4 text-slate-500" />
-              <span>Full Lab Dossier (PDF)</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Clear Adulteration Warning Card if failed */}
-        {!isVerified && (
-          <div className="mt-5 p-4 rounded-xl bg-white border border-rose-200 text-xs text-slate-700 space-y-2">
-            <div className="font-bold text-rose-800 flex items-center gap-1.5 text-sm">
-              <AlertTriangle className="w-4 h-4 text-rose-600" />
-              <span>Reason for Quality Flag:</span>
+              <QRCodeCanvas
+                id="inspector-qr-canvas"
+                value={qrPayload}
+                size={220}
+                level="H"
+                includeMargin={true}
+              />
             </div>
-            <p className="leading-relaxed">
-              EA-IRMS isotope mass spectrometry detected a <strong>carbon ratio deviation (δ¹³C -18.2‰)</strong>, indicating approximately <strong>18.4% added C4 sugar syrup (corn or sugar cane syrup)</strong>. In accordance with FSSAI/KVIC regulations, this batch is automatically locked from distribution and barred from token minting.
-            </p>
-          </div>
-        )}
-      </div>
 
-      {/* 6 Organised Testing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {/* 1. Pollen DNA Analysis */}
-        <div className="saas-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-purple-50 text-purple-700 rounded-xl">
-                <Dna className="w-4 h-4" />
+            {/* Summary Highlights */}
+            <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/70 text-left text-xs space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Batch ID:</span>
+                <span className="font-mono font-bold text-purple-950">{formData.batchId}</span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900">Pollen DNA Analysis</h3>
-            </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-              99.8% Match
-            </span>
-          </div>
-
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Metagenomic barcode sequencing of microscopic botanical pollen grains confirms authentic floral origin.
-          </p>
-
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-1.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Primary Flora:</span>
-              <span className="font-bold text-slate-800">Wild Kurinji (Strobilanthes)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Secondary Flora:</span>
-              <span className="font-semibold text-slate-700">Acacia & Forest Blossom</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Pollen Density:</span>
-              <span className="font-semibold text-slate-700">42,000 grains / 10g (High)</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 2. NMR Spectral Analysis */}
-        <div className="saas-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-blue-50 text-blue-700 rounded-xl">
-                <Activity className="w-4 h-4" />
+              <div className="flex justify-between">
+                <span className="text-slate-500">Purity Score:</span>
+                <span className="font-bold text-emerald-700">{formData.purityScore}% Raw Honey</span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900">NMR Spectral Analysis</h3>
+              <div className="flex justify-between">
+                <span className="text-slate-500">C4 Adulteration:</span>
+                <span className="font-bold text-emerald-700">{formData.c4Syrups}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Inspector Stamp:</span>
+                <span className="font-bold text-purple-900 truncate max-w-[180px]">{formData.inspectorName}</span>
+              </div>
             </div>
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-              isVerified
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                : 'bg-rose-50 text-rose-800 border-rose-200'
-            }`}>
-              {isVerified ? 'Spectrum Normal' : 'Anomaly Detected'}
-            </span>
-          </div>
 
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Nuclear Magnetic Resonance molecular fingerprint verifying botanical authenticity and absence of artificial sugars.
-          </p>
+            {/* Download Action Buttons */}
+            <div className="space-y-3 pt-2">
+              <button
+                type="button"
+                onClick={handleDownloadQR}
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl bg-purple-950 hover:bg-purple-900 text-yellow-300 font-black text-sm shadow-md transition-all hover:scale-102 active:scale-98 cursor-pointer border border-purple-800"
+              >
+                <Download className="w-4 h-4 text-yellow-300" />
+                <span>Download QR Code (PNG)</span>
+              </button>
 
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-1.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Fructose / Glucose:</span>
-              <span className="font-bold text-slate-800">1.24 (Natural Sweetness)</span>
+              {downloadSuccess && (
+                <div className="p-3 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-950 text-xs font-bold animate-fadeIn flex items-center justify-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>QR Code Image Downloaded! Ready to scan in Customer Portal.</span>
+                </div>
+              )}
+
+              {/* Shortcut: Jump directly to Customer Portal */}
+              {onNavigateTab && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab('qr-verify')}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-950 font-bold text-xs border border-emerald-200 transition cursor-pointer"
+                >
+                  <span>Open Customer Scanner to Test →</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-emerald-700" />
+                </button>
+              )}
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Sucrose Content:</span>
-              <span className="font-semibold text-slate-700">1.8% (Below 5% limit)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Spectral Similarity:</span>
-              <span className={`font-bold ${isVerified ? 'text-emerald-700' : 'text-rose-700'}`}>
-                {isVerified ? '98.7% Authentic' : '72.4% (Failed)'}
+
+            {/* Blockchain Notary Seal Info */}
+            <div className="pt-3 border-t border-purple-100 text-[11px] text-purple-900/60 text-left space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold">SHA-256 Digest:</span>
+                <button
+                  type="button"
+                  onClick={handleCopyHash}
+                  className="text-purple-700 hover:text-purple-950 flex items-center gap-1 font-mono cursor-pointer"
+                >
+                  {copiedHash ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedHash ? 'Copied' : 'Copy Hash'}</span>
+                </button>
+              </div>
+              <span className="font-mono text-[10px] text-purple-900 block break-all">
+                {formData.blockchainHash}
               </span>
             </div>
-          </div>
-        </div>
 
-        {/* 3. Adulteration Detection */}
-        <div className="saas-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-amber-50 text-amber-700 rounded-xl">
-                <FlaskConical className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-slate-900">Adulteration Detection</h3>
-            </div>
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-              isVerified
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                : 'bg-rose-50 text-rose-800 border-rose-200'
-            }`}>
-              {isVerified ? '0.00% Syrups' : '18.4% Corn Syrup'}
-            </span>
           </div>
 
-          <p className="text-xs text-slate-500 leading-relaxed">
-            EA-IRMS isotope ratio mass spec detecting C4 cane/corn syrups and C3 rice/beet sugar adulterants.
-          </p>
-
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-1.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-400">C4 Sugar Syrups:</span>
-              <span className={`font-bold ${isVerified ? 'text-emerald-700' : 'text-rose-700'}`}>
-                {isVerified ? '0.00% (Pass)' : '18.4% (FAIL)'}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">C3 Rice/Beet Syrups:</span>
-              <span className="font-bold text-emerald-700">0.00% (Pass)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Carbon δ¹³C Ratio:</span>
-              <span className="font-mono font-semibold text-slate-800">
-                {isVerified ? '-26.8‰ (Natural)' : '-18.2‰ (Altered)'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* 4. Moisture Level */}
-        <div className="saas-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-emerald-50 text-emerald-700 rounded-xl">
-                <Droplets className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-slate-900">Moisture Level</h3>
-            </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-              16.5% (Safe)
-            </span>
-          </div>
-
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Refractometer moisture measurement to ensure stability and prevent yeast fermentation. Safe threshold is below 20%.
-          </p>
-
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-1.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Reading:</span>
-              <span className="font-bold text-emerald-700">16.5% Moisture</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Permissible Limit:</span>
-              <span className="font-semibold text-slate-700">&le; 20.0% (FSSAI)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Fermentation Risk:</span>
-              <span className="font-bold text-emerald-700">Zero / Sterile</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 5. Thermal Freshness (HMF) */}
-        <div className="saas-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-amber-50 text-amber-700 rounded-xl">
-                <Thermometer className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-slate-900">Thermal Freshness (HMF)</h3>
-            </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-              8.2 mg/kg (Raw)
-            </span>
-          </div>
-
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Hydroxymethylfurfural test measures heat exposure. Low HMF proves the honey is unpasteurized, unheated, and fresh.
-          </p>
-
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-1.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-400">HMF Value:</span>
-              <span className="font-bold text-emerald-700">8.2 mg/kg</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Codex Limit:</span>
-              <span className="font-semibold text-slate-700">&lt; 40.0 mg/kg</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Thermal State:</span>
-              <span className="font-bold text-slate-800">100% Unheated Cold-Extracted</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 6. Quality Grade & Living Enzymes */}
-        <div className="saas-card p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-yellow-50 text-yellow-700 rounded-xl">
-                <Award className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-slate-900">Enzyme Activity & Grade</h3>
-            </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-              Grade A Premium
-            </span>
-          </div>
-
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Diastase and invertase enzyme activity tests demonstrate biological vitality and intact antioxidants.
-          </p>
-
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-1.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Diastase Activity:</span>
-              <span className="font-bold text-slate-800">24.8 Schade Units</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Minimum Standard:</span>
-              <span className="font-semibold text-slate-700">&ge; 8.0 Schade Units</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Overall Grade:</span>
-              <span className="font-bold text-amber-700">Grade A Raw Virgin</span>
-            </div>
-          </div>
         </div>
 
       </div>
@@ -357,3 +621,5 @@ export const QualityAuthenticityPage: React.FC = () => {
     </div>
   );
 };
+
+export default QualityAuthenticityPage;

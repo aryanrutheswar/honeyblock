@@ -138,10 +138,10 @@ const HoneychainMainLayout: React.FC = () => {
         );
 
       case 'smart-hive':
-        return <SmartHivePage />;
+        return <SmartHivePage onNavigateTab={(tab, batchId) => handleSelectTab(tab as NavTabId, batchId)} />;
 
       case 'quality':
-        return <QualityAuthenticityPage />;
+        return <QualityAuthenticityPage onNavigateTab={(tab) => handleSelectTab(tab as NavTabId)} />;
 
       case 'blockchain':
         return <BlockchainLedgerPage />;
@@ -157,7 +157,7 @@ const HoneychainMainLayout: React.FC = () => {
         return <AnalyticsPage />;
 
       case 'qr-verify':
-        return <ConsumerQRVerificationPage />;
+        return <ConsumerQRVerificationPage onNavigateTab={(tab) => handleSelectTab(tab as NavTabId)} />;
 
       case 'settings':
         return <SettingsPage />;

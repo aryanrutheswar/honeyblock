@@ -730,10 +730,6 @@ export const HoneyBatchesPage: React.FC<HoneyBatchesPageProps> = ({ onNavigateTa
                 </div>
               </div>
 
-              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-[11px]">
-                Upon creation, cryptographic token signatures will be minted by the nearest consortium node (Node-1 Srinagar).
-              </div>
-
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"

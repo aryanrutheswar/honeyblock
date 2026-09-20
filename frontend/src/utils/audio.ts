@@ -131,6 +131,11 @@ class SoundManager {
     }
   }
 
+  // Play generic success chime / scan success
+  playSuccess() {
+    this.playBiometricSuccess();
+  }
+
   // Play stress alarm siren
   playStressAlarm() {
     try {
