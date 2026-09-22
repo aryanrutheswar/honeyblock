@@ -31,6 +31,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { useHoneychain } from '../context/HoneychainContext';
+import { BeekeeperFloraMap } from '../components/BeekeeperFloraMap';
 
 export interface BeekeeperBatch {
   id: string;
@@ -74,7 +75,7 @@ export const SmartHivePage: React.FC<SmartHivePageProps> = ({ onNavigateTab }) =
     resetHiveHealth
   } = useHoneychain();
 
-  const [activeView, setActiveView] = useState<'hives' | 'batches'>('hives');
+  const [activeView, setActiveView] = useState<'hives' | 'batches' | 'flora'>('hives');
   const [selectedBatchForDetails, setSelectedBatchForDetails] = useState<BeekeeperBatch | null>(null);
   const [batchSearchQuery, setBatchSearchQuery] = useState('');
   const [activeBatchModalTab, setActiveBatchModalTab] = useState<'overview' | 'quality' | 'blockchain' | 'payout'>('overview');
@@ -289,6 +290,21 @@ export const SmartHivePage: React.FC<SmartHivePageProps> = ({ onNavigateTab }) =
             <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
               KVIC Apiary #AP-TG-01
             </span>
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById('flora-map-section');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  setActiveView('flora');
+                }
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black text-emerald-950 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 shadow-2xs transition cursor-pointer hover:scale-105 active:scale-95"
+              title="Slide down to Nearby Blooming Flowers & Flora Map"
+            >
+              <span>🌸 Slide down to Flora Map ↓</span>
+            </button>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-purple-950 tracking-tight">
             Beekeeper Apiary & Batch Dashboard
@@ -298,12 +314,12 @@ export const SmartHivePage: React.FC<SmartHivePageProps> = ({ onNavigateTab }) =
           </p>
         </div>
 
-        {/* View Switcher: Live Hives vs Harvest Batches */}
-        <div className="flex items-center gap-2 bg-purple-50/80 p-1.5 rounded-2xl border border-purple-200 self-start md:self-center">
+        {/* View Switcher: Live Hives vs Flora Map vs Harvest Batches */}
+        <div className="flex items-center gap-2 bg-purple-50/80 p-1.5 rounded-2xl border border-purple-200 self-start md:self-center flex-wrap">
           <button
             type="button"
             onClick={() => setActiveView('hives')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeView === 'hives'
                 ? 'bg-purple-950 text-yellow-300 shadow-md shadow-purple-950/20'
                 : 'text-purple-900 hover:text-purple-950 hover:bg-white/60'
@@ -315,8 +331,21 @@ export const SmartHivePage: React.FC<SmartHivePageProps> = ({ onNavigateTab }) =
 
           <button
             type="button"
+            onClick={() => setActiveView('flora')}
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeView === 'flora'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-600/25 border border-emerald-500'
+                : 'text-purple-900 hover:text-purple-950 hover:bg-white/60'
+            }`}
+          >
+            <span>🌸</span>
+            <span>Flora Map (Live)</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveView('batches')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeView === 'batches'
                 ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-purple-950 shadow-md shadow-amber-500/25 border border-amber-300'
                 : 'text-purple-900 hover:text-purple-950 hover:bg-white/60'
@@ -512,6 +541,20 @@ export const SmartHivePage: React.FC<SmartHivePageProps> = ({ onNavigateTab }) =
               );
             })}
           </div>
+
+          {/* Flora Map Section displayed when sliding down past the hives */}
+          <div className="pt-4">
+            <BeekeeperFloraMap />
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW 3: DEDICATED FLORA MAP VIEW
+          ========================================================================= */}
+      {activeView === 'flora' && (
+        <div className="space-y-6">
+          <BeekeeperFloraMap />
         </div>
       )}
 

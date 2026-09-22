@@ -259,14 +259,18 @@ export const StakeholderPortalsPage: React.FC<StakeholderPortalsPageProps> = ({
               {/* Content */}
               <div>
                 <h2 className="text-2xl font-black text-purple-950 group-hover:text-amber-700 transition-colors">Beekeeper Workspace</h2>
-                <p className="text-xs font-semibold text-amber-700 mt-0.5">Smart Apiary & Harvest Batches</p>
+                <p className="text-xs font-semibold text-amber-700 mt-0.5">Smart Apiary, Flora Map & Harvest Batches</p>
                 <p className="text-xs sm:text-sm text-purple-900/75 mt-3 leading-relaxed">
-                  Real-time internal hive temperature monitoring, 240 Hz queen bee acoustic telemetry, calibrated tare scale weights, and verifiable batch harvest details.
+                  Real-time internal hive temperature monitoring, 240 Hz queen bee acoustic telemetry, satellite floral bloom maps, and verifiable batch harvest details.
                 </p>
               </div>
 
               {/* Feature Points */}
               <ul className="space-y-2.5 text-xs text-purple-950 font-medium pt-2 border-t border-purple-50">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="font-bold text-emerald-950">🌸 Beekeeper's Flora Map & Nearby Blooming Flowers</span>
+                </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" />
                   <span>240 Hz Queen acoustic disease prediction</span>
